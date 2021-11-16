@@ -12,7 +12,7 @@ namespace Chef.Ingredients
             : base(weight)
         {
             Name = "Огурец";
-            CaloricContentPer100Gramm = 16;
+            CaloricContentPer100Gram = 16;
         }
     }
 }

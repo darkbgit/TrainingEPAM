@@ -11,7 +11,7 @@ namespace Chef.Cooking
 {
     public class SaladIngredients : ICollection<Vegetable>
     {
-        private List<Vegetable> _saladIngredients;
+        private readonly List<Vegetable> _saladIngredients;
 
         public SaladIngredients()
         {
@@ -57,9 +57,5 @@ namespace Chef.Cooking
         {
             return ((IEnumerable)_saladIngredients).GetEnumerator();
         }
-
-
-
-
     }
 }

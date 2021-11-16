@@ -12,7 +12,7 @@ namespace Chef.Ingredients
             : base(weight)
         {
             Name = "Салат-латук";
-            CaloricContentPer100Gramm = 15;
+            CaloricContentPer100Gram = 15;
         }
     }
 }

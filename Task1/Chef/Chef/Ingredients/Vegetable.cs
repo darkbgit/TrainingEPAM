@@ -2,11 +2,11 @@
 {
     public abstract class Vegetable
     {
-        public string Name { get; set; }
-        public double CaloricContentPer100Gramm { get; set; }
-        public double Weight { get; set; }
+        public string Name { get; protected init; }
+        public double CaloricContentPer100Gram { get; protected init; }
+        public double Weight { get; }
 
-        public double CaloricContent => CaloricContentPer100Gramm * Weight / 100;
+        public double CaloricContent => CaloricContentPer100Gram * Weight / 100;
 
         protected Vegetable(double weight)
         {

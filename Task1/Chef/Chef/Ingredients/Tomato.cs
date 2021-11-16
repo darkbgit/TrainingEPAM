@@ -11,7 +11,7 @@ namespace Chef.Ingredients
         public Tomato(double weight) : base(weight)
         {
             Name = "Помидор";
-            CaloricContentPer100Gramm = 19.9;
+            CaloricContentPer100Gram = 19.9;
         }
     }
 }
