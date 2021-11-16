@@ -18,18 +18,18 @@ namespace Chef.Cooking
 
         public void MakeSalad()
         {
-            const int collumnCount = 4;
+            const int columnCount = 4;
             const int nameWidth = 20;
             const int caloricContentPer100GrammWidth = 20;
             const int caloricContentWidth = 10;
             const int weightWidth = 10;
-            const int totalWidth = nameWidth + caloricContentPer100GrammWidth + caloricContentWidth + weightWidth + collumnCount - 1;
+            const int totalWidth = nameWidth + caloricContentPer100GrammWidth + caloricContentWidth + weightWidth + columnCount - 1;
 
 
             var builder = new StringBuilder();
             builder.Append('_', totalWidth);
             builder.Append(Environment.NewLine);
-            builder.Append($"{"Ингридиент", nameWidth}");
+            builder.Append($"{"Ингредиент", nameWidth}");
             builder.Append('|');
             builder.Append($"{"ККал в 100 грамм", caloricContentPer100GrammWidth}");
             builder.Append('|');
@@ -44,7 +44,7 @@ namespace Chef.Cooking
             {
                 builder.Append($"{ingredient.Name, nameWidth}");
                 builder.Append('|');
-                builder.Append($"{ingredient.CaloricContentPer100Gramm, caloricContentPer100GrammWidth}");
+                builder.Append($"{ingredient.CaloricContentPer100Gram, caloricContentPer100GrammWidth}");
                 builder.Append('|');
                 builder.Append($"{ingredient.CaloricContent, caloricContentWidth}");
                 builder.Append('|');

@@ -24,7 +24,7 @@ while (breakFlag)
     Console.WriteLine("Свойства \"-k100\" - ККалорий в 100 грамм продукта");
     Console.WriteLine("Свойства \"-k\" - ККалорий в продукте");
     Console.WriteLine("Свойства \"-w\" - вес продукта");
-    Console.WriteLine("Для поиска ингридиентов по каллорийности введите \"-с\"");
+    Console.WriteLine("Для поиска ингредиентов по калорийности введите \"-с\"");
     Console.WriteLine("Для выхода введите \"exit\"");
     var input = Console.ReadLine();
 
@@ -64,7 +64,7 @@ string GetSortedIngredients(string input)
         {
             case "-k100":
                 var k100Sort = saladIngredients
-                    .OrderBy(i => i.CaloricContentPer100Gramm)
+                    .OrderBy(i => i.CaloricContentPer100Gram)
                     .ToList();
                 return k100Sort.ToConsoleStr();
             case "-k":
@@ -95,7 +95,7 @@ string GetSortedIngredients(string input)
 
     while (true)
     {
-        Console.WriteLine("Введите нижнию границу диапазона");
+        Console.WriteLine("Введите нижнею границу диапазона");
         var input = Console.ReadLine();
         if (int.TryParse(input, System.Globalization.NumberStyles.Number,
             System.Globalization.CultureInfo.InvariantCulture, out bottom))
