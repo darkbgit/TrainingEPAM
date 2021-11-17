@@ -1,4 +1,4 @@
-﻿namespace Chef.Ingredients
+﻿namespace Chef.Cook.Ingredients
 {
     public abstract class Vegetable
     {

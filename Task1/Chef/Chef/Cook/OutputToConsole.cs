@@ -1,15 +1,15 @@
-﻿using Chef.Ingredients;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Chef.Cook.Ingredients;
 
-namespace Chef.Cooking
+namespace Chef.Cook
 {
     public static class OutputToConsole
     {
-        public static string ToConsoleStr(this IEnumerable<Vegetable> ingredients)
+        public static string ToConsoleStr(this Salad<Vegetable> ingredients)
         {
             const int columnCount = 4;
             const int nameWidth = 20;
@@ -33,8 +33,7 @@ namespace Chef.Cooking
             builder.Append('_', totalWidth);
             builder.Append(Environment.NewLine);
 
-            var vegetables = ingredients.ToList();
-            foreach (var ingredient in vegetables)
+            foreach (var ingredient in ingredients)
             {
                 builder.Append($"{ingredient.Name,nameWidth}");
                 builder.Append('|');
@@ -48,7 +47,7 @@ namespace Chef.Cooking
             builder.Append('_', totalWidth);
             builder.Append(Environment.NewLine);
             builder.Append("Общая калорийность ");
-            builder.Append(vegetables.Sum(i => i.CaloricContent));
+            builder.Append(ingredients.SumOfCaloricContent());
             builder.Append(" ККал");
             builder.Append(Environment.NewLine);
             builder.Append('_', totalWidth);

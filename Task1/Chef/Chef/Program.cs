@@ -1,49 +1,55 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using Chef.Cooking;
-using Chef.Ingredients;
-using System.Collections.ObjectModel;
+using Chef.Cook;
+using Chef.Cook.Ingredients;
 
-var saladIngredients = new Collection<Vegetable>();
+const string Sort = "s";
+const string CaloricContent100 = "k100";
+const string CaloricContent = "k";
+const string Weight = "w";
+const string SearchCaloricContentRange = "c";
+const string Exit = "e";
 
-saladIngredients.Add(new Lettuce(300));
-saladIngredients.Add(new Cucumber(150));
-saladIngredients.Add(new Tomato(200));
+
+var salad = new Salad<Vegetable>
+{
+    new Lettuce(300),
+    new Cucumber(150),
+    new Tomato(200)
+
+};
 
 
-//var salad = new Cook(saladIngredients);
-
-//salad.MakeSalad();
-
-Console.WriteLine(saladIngredients.ToConsoleStr());
+Console.WriteLine(salad.ToConsoleStr());
 
 bool breakFlag = true;
 
 while (breakFlag)
 {
-    Console.WriteLine("Для сортировки по свойству введите \"-s Свойство\"");
-    Console.WriteLine("Свойства \"-k100\" - ККалорий в 100 грамм продукта");
-    Console.WriteLine("Свойства \"-k\" - ККалорий в продукте");
-    Console.WriteLine("Свойства \"-w\" - вес продукта");
-    Console.WriteLine("Для поиска ингредиентов по калорийности введите \"-с\"");
-    Console.WriteLine("Для выхода введите \"exit\"");
-    var input = Console.ReadLine();
+    Console.WriteLine($"Для сортировки по свойству введите \"-{Sort}");
+    Console.WriteLine($"                                       -{CaloricContent100}\" - ККалорий в 100 грамм продукта");
+    Console.WriteLine($"                                       -{CaloricContent}\" - ККалорий в продукте");
+    Console.WriteLine($"                                       -{Weight}\" - вес продукта");
+    Console.WriteLine($"Для поиска ингредиентов по калорийности введите \"-{SearchCaloricContentRange}\"");
+    Console.WriteLine($"Для выхода введите \"-{Exit}\"");
+    var input = Console.ReadLine()?
+        .Split('-')
+        .Where(p => !string.IsNullOrWhiteSpace(p))
+        .Select(p => p.Trim())
+        .ToArray();
 
-    if (input?.Length > 1)
+    if (input != null && input.Any())
     {
-        switch (input[..2])
+        switch (input[0])
         {
-            case "-s":
+            case Sort:
                 Console.WriteLine(GetSortedIngredients(input));
                 break;
-            case "-c":
+            case SearchCaloricContentRange:
                 (int bottom, int top) = GetCaloricContentRange();
                 Console.WriteLine(GetIngredientsForCaloricContentRange(bottom, top));
                 break;
-            case "ex":
-                if (input.Trim() == "exit")
-                {
-                    breakFlag = !breakFlag;
-                }
+            case Exit:
+                breakFlag = !breakFlag;
                 break;
             default:
                 Console.WriteLine("Неопознанная команда");
@@ -56,27 +62,23 @@ while (breakFlag)
     }
 }
 
-string GetSortedIngredients(string input)
+string GetSortedIngredients(string[] input)
 {
-    if (input.Length > 4)
+    if (input.Length == 2)
     {
-        switch (input[3..].Trim())
+        switch (input[1])
         {
-            case "-k100":
-                var k100Sort = saladIngredients
-                    .OrderBy(i => i.CaloricContentPer100Gram)
-                    .ToList();
+            case CaloricContent100:
+                var k100Sort = new Salad<Vegetable>(salad
+                    .OrderBy(i => i.CaloricContentPer100Gram));
                 return k100Sort.ToConsoleStr();
-            case "-k":
-                var kSort = saladIngredients
-                    .OrderBy(i => i.CaloricContent)
-                    .ToList();
+            case CaloricContent:
+                var kSort = new Salad<Vegetable>(salad
+                    .OrderBy(i => i.CaloricContent));
                 return kSort.ToConsoleStr();
-
-            case "-w":
-                var wSort = saladIngredients
-                    .OrderBy(i => i.Weight)
-                    .ToList();
+            case Weight:
+                var wSort = new Salad<Vegetable>(salad
+                    .OrderBy(i => i.Weight));
                 return wSort.ToConsoleStr();
             default:
                 return "Неправильный параметр сортировки";
@@ -136,8 +138,8 @@ string GetSortedIngredients(string input)
 
 string GetIngredientsForCaloricContentRange(int bottom, int top)
 {
-    return saladIngredients
+    var result = new Salad<Vegetable>(salad
         .Where(i => i.CaloricContent >= bottom && i.CaloricContent <= top)
-        .OrderBy(i => i.CaloricContent)
-        .ToList().ToConsoleStr();
+        .OrderBy(i => i.CaloricContent));
+    return result.ToConsoleStr();
 }
