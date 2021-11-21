@@ -1,6 +1,8 @@
-﻿namespace Chef.Cook.Ingredients
+﻿using Chef.Cook.Ingredients.Base;
+
+namespace Chef.Cook.Ingredients
 {
-    public class Lettuce : Vegetable
+    public class Lettuce : Ingredient
     {
         public Lettuce(double weight) 
             : base(weight)
