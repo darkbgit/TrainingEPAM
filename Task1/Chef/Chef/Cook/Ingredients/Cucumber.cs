@@ -1,12 +1,14 @@
-﻿namespace Chef.Cook.Ingredients
+﻿using Chef.Cook.Ingredients.Base;
+
+namespace Chef.Cook.Ingredients
 {
-    public class Cucumber : Vegetable
+    public class Cucumber : Ingredient
     {
-        public Cucumber(double weight) 
-            : base(weight)
+        private const string CUCUMBER_NAME = "Огурец";
+
+        public Cucumber() 
+            : base(CUCUMBER_NAME)
         {
-            Name = "Огурец";
-            CaloricContentPer100Gram = 16;
         }
     }
 }

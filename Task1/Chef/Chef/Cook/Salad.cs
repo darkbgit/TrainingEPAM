@@ -6,20 +6,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Chef.Cook.Ingredients;
+using Chef.Cook.Ingredients.Base;
 
 namespace Chef.Cook
 {
-    public class Salad<T> : IEnumerable<T> where T : Vegetable
+    public class Salad : IEnumerable<SaladIngredient>
 
     {
-        private readonly List<T> _saladIngredients;
+        private readonly List<SaladIngredient> _saladIngredients;
 
-        public Salad()
-        {
-            _saladIngredients = new List<T>();
-        }
+        //public Salad()
+        //{
+        //    _saladIngredients = new List<SaladIngredient>();
+        //}
 
-        public Salad(IEnumerable<T> saladIngredients)
+        public Salad(IEnumerable<SaladIngredient> saladIngredients)
         {
             _saladIngredients = saladIngredients.ToList();
         }
@@ -27,14 +28,14 @@ namespace Chef.Cook
         public double SumOfCaloricContent() => _saladIngredients.Sum(i => i.CaloricContent);
 
 
-        public void Add(T item)
-        {
-            _saladIngredients.Add(item);
-        }
+        //public void Add(T item)
+        //{
+        //    _saladIngredients.Add(item);
+        //}
 
-        public IEnumerator<T> GetEnumerator()
+        public IEnumerator<SaladIngredient> GetEnumerator()
         {
-            return ((IEnumerable<T>) _saladIngredients).GetEnumerator();
+            return ((IEnumerable<SaladIngredient>) _saladIngredients).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

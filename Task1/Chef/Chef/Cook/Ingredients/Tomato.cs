@@ -1,6 +1,8 @@
-﻿namespace Chef.Cook.Ingredients
+﻿using Chef.Cook.Ingredients.Base;
+
+namespace Chef.Cook.Ingredients
 {
-    public class Tomato : Vegetable
+    public class Tomato : Ingredient
     {
         public Tomato(double weight) : base(weight)
         {
