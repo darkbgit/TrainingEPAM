@@ -1,4 +1,5 @@
 ﻿using Chef.Cook.Ingredients.Base;
+using Chef.Cook.Units;
 
 namespace Chef.Cook.Ingredients
 {
@@ -10,5 +11,6 @@ namespace Chef.Cook.Ingredients
             : base(CUCUMBER_NAME)
         {
         }
+
     }
 }
