@@ -5,6 +5,8 @@ using System.Linq;
 using Chef.Cook;
 using Chef.Cook.Ingredients;
 using Chef.Cook.Ingredients.Base;
+using Chef.Cook.Units;
+using Chef.Cook.Units.Interfaces;
 
 namespace Chef
 {
@@ -20,11 +22,25 @@ namespace Chef
 
         static void Main(string[] args)
         {
-            ICaloricContentProvider cucumberCaloricContentProvider = new CucumberCaloricContentProvider();
+            Ingredient cucumber = new Cucumber();
+            IWeight cucumberUnit = new Gram();
+            ICaloricContentProvider cucumberCaloricContentProvider = new CucumberCaloricContentProvider(cucumberUnit);
+
+            Ingredient tomato = new Tomato();
+            IPiece tomatoUnit = new Piece("шт", 50);
+            ICaloricContentProvider tomatoCaloricContentProvider = new TomatoCaloricContentProvider(tomatoUnit);
+
+            Ingredient oliveOil = new OliveOil();
+            IVolume oliveOilUnit 
+
+            Ingredient salt = new Salt();
+            IVolume saltUnit = new TeaSpoon();
+            ICaloricContentProvider solCaloricContentProvider = new SaltCaloricContentProvider();
             
             IEnumerable<SaladIngredient> saladIngredients = new List<SaladIngredient>
             {
-                new SaladIngredient(new Cucumber(), cucumberCaloricContentProvider, UnitType.Gram, 150)
+                new SaladIngredient(cucumber, cucumberCaloricContentProvider, cucumberUnit.ToString(), 150),
+                new SaladIngredient(cucumber, tomatoCaloricContentProvider, tomatoUnit.ToString(), 2)
             };
 
 
