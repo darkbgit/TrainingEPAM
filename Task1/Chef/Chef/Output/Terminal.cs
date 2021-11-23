@@ -7,15 +7,6 @@ namespace Chef.Output
 {
     public class Terminal : IOutput
     {
-
-        public const string Sort = "s";
-        public const string OnCaloricContentPerUnit = "u";
-        public const string OnCaloricContent = "k";
-        public const string OnWeight = "w";
-        public const string SearchOnCaloricContentRange = "c";
-        public const string Exit = "e";
-
-
         private string _helpString;
 
         public Terminal()
@@ -99,24 +90,22 @@ namespace Chef.Output
             {
                 switch (input[0])
                 {
-                    case Sort:
+                    case TerminalCommands.Sort:
                         switch (input[1])
                         {
-                            case OnCaloricContent:
-                                return Sort + OnCaloricContent;
-                            case OnWeight:
-                                return Sort + OnWeight;
-                            case OnCaloricContentPerUnit:
-                                return Sort + OnCaloricContentPerUnit;
+                            case TerminalCommands.OnCaloricContent:
+                                return TerminalCommands.Sort + TerminalCommands.OnCaloricContent;
+                            case TerminalCommands.OnIngredientName:
+                                return TerminalCommands.Sort + TerminalCommands.OnIngredientName;
                             default:
                                 Console.WriteLine("Неправильный параметр сортировки");
                                 break;
                         }
                         break;
-                    case SearchOnCaloricContentRange:
-                        return SearchOnCaloricContentRange;
-                    case Exit:
-                        return Exit;
+                    case TerminalCommands.SearchOnCaloricContentRange:
+                        return TerminalCommands.SearchOnCaloricContentRange;
+                    case TerminalCommands.Exit:
+                        return TerminalCommands.Exit;
                     default:
                         Console.WriteLine("Неопознанная команда");
                         break;
@@ -140,17 +129,15 @@ namespace Chef.Output
         {
             var builder = new StringBuilder();
 
-            builder.AppendLine($"Для сортировки по свойству введите \"-{Sort}");
+            builder.AppendLine($"Для сортировки по свойству введите \"-{TerminalCommands.Sort}");
             var firstLength = builder.Length;
             builder.Append(' ', firstLength);
-            builder.AppendLine($"-{OnCaloricContentPerUnit}\" - ККалорий в 100 грамм продукта");
+            builder.AppendLine($"-{TerminalCommands.OnIngredientName}\" - название продукта");
             builder.Append(' ', firstLength);
-            builder.AppendLine($"-{OnCaloricContent}\" - ККалорий в продукте");
-            builder.Append(' ', firstLength);
-            builder.AppendLine($"-{OnWeight}\" - вес продукта");
+            builder.AppendLine($"-{TerminalCommands.OnCaloricContent}\" - ККалорий в продукте");
             builder.AppendLine(
-                $"Для поиска ингредиентов по калорийности введите \"-{SearchOnCaloricContentRange}\"");
-            builder.AppendLine($"Для выхода введите \"-{Exit}\"");
+                $"Для поиска ингредиентов по калорийности введите \"-{TerminalCommands.SearchOnCaloricContentRange}\"");
+            builder.AppendLine($"Для выхода введите \"-{TerminalCommands.Exit}\"");
 
             return builder.ToString();
         }
