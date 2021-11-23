@@ -36,10 +36,10 @@ namespace Chef.Cook
         //}
 
 
-        //public IEnumerable<SaladIngredient> Sort(Func<SaladIngredient, TKey> keySelector)
-        //{
-        //    return _saladIngredients.OrderBy()
-        //}
+        public IEnumerable<SaladIngredient> Sort(Func<SaladIngredient, bool> keySelector)
+        {
+            return _saladIngredients.OrderBy(keySelector);
+        }
 
 
         public IEnumerator<SaladIngredient> GetEnumerator()

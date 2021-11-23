@@ -55,31 +55,34 @@ namespace Chef
 
             saladAssistant.PrintHelp();
 
-            
-            //bool breakFlag = true;
-            //while (breakFlag)
-            //{
-            //    ISalad result;
-            //    switch (terminal.GetUserInput())
-            //    {
-            //        case Terminal.Sort + Terminal.OnCaloricContent:
-            //            result = salad.OrderBy(
-            //            break;
-            //        case Terminal.Sort + Terminal.OnCaloricContentPerUnit:
-            //            break;
-            //        case Terminal.Sort + Terminal.OnWeight:
-            //            break;
-            //        case Terminal.SearchOnCaloricContentRange:
-            //            break;
-            //        case Terminal.Exit:
-            //            breakFlag = false;
-            //            break;
-            //        default:
-            //            continue;
-            //    }
-            //    terminal.Print();
-            //}
-            
+
+            //saladAssistant.GetUserInput();
+
+            bool breakFlag = true;
+            while (breakFlag)
+            {
+                ISalad result;
+                switch (saladAssistant.GetUserInput())
+                {
+                    case TerminalCommands.Sort + TerminalCommands.OnCaloricContent:
+                        result = saladAssistant.SortByName();
+                        saladAssistant.Print(result);
+                        break;
+                    case TerminalCommands.Sort + TerminalCommands.OnIngredientName:
+                        result = saladAssistant.SortByName();
+                        saladAssistant.Print(result);
+                        break;
+                    case TerminalCommands.SearchOnCaloricContentRange:
+                        break;
+                    case TerminalCommands.Exit:
+                        breakFlag = false;
+                        break;
+                    default:
+                        continue;
+                }
+                //terminal.Print();
+            }
+
 
 
         }

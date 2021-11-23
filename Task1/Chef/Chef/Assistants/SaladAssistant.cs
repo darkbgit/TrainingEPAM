@@ -8,14 +8,22 @@ namespace Chef.Assistants
     public class SaladAssistant : IAssistant
     {
         private IOutput _output;
-        public void Sort()
+        private  ISalad _salad;
+
+        private Sorting _sorting;
+
+        public ISalad SortByName()
         {
-            throw new NotImplementedException();
+            _sorting = new Sorting();
+
+            return new Salad(_sorting.Sort(_salad, i => i.Ingredient.Name));
+
+            
         }
 
         public void Print(ISalad salad)
         {
-            _output?.Print(salad);
+            _output.Print(salad);
 
         }
 
@@ -29,13 +37,14 @@ namespace Chef.Assistants
             _output.PrintHelp();
         }
 
-        public void GetUserInput()
+        public string GetUserInput()
         {
-            throw new NotImplementedException();
+            return _output.GetUserInput();
         }
 
         public ISalad MakeSalad(IEnumerable<SaladIngredient> ingredients)
         {
+            _salad = new Salad(ingredients);
             return new Salad(ingredients);
         }
 
@@ -44,9 +53,5 @@ namespace Chef.Assistants
             _output = output;
         }
 
-        public void MakeSalad()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

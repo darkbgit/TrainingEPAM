@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Chef.Cook;
 using Chef.Output;
 
@@ -6,7 +7,7 @@ namespace Chef.Assistants
 {
     public interface IAssistant
     {
-        void Sort();
+        ISalad SortByName();
 
         void Print(ISalad salad);
 
@@ -15,7 +16,7 @@ namespace Chef.Assistants
         void PrintHelp();
 
 
-        void GetUserInput();
+        string GetUserInput();
 
         ISalad MakeSalad(IEnumerable<SaladIngredient> ingredients);
 
