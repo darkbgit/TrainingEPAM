@@ -13,15 +13,10 @@ namespace Chef.Cook.Units
 
         private const string TABLESPOON_NAME = "столовая ложка";
 
-        public delegate double ConvertToGram();
+        //public delegate double ConvertToGram();
 
 
-
-        public double ToGram(ConvertToGram convert)
-        {
-
-            return convert() * TABLESPOON_TO_MILLILITER;
-        }
+        public double ToBaseUnit() => TABLESPOON_TO_MILLILITER;
 
         public override string ToString() => TABLESPOON_NAME;
     }

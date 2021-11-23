@@ -2,7 +2,7 @@
 {
     public interface IUnit
     {
-        double ToGram();
+        double ToBaseUnit();
 
         string ToString();
     }

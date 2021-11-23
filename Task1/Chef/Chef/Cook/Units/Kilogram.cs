@@ -13,7 +13,7 @@ namespace Chef.Cook.Units
 
         private const string KILOGRAM_NAME = "кг";
 
-        public double ToGram() => KILOGRAM_TO_GRAM;
+        public double ToBaseUnit() => KILOGRAM_TO_GRAM;
 
         public override string ToString() => KILOGRAM_NAME;
     }

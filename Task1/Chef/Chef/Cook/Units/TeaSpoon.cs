@@ -13,7 +13,7 @@ namespace Chef.Cook.Units
 
         private const string TEA_SPOON_NAME = "чайна ложка";
 
-        public double ToGram() => TEA_SPOON_TO_GRAM;
+        public double ToBaseUnit() => TEA_SPOON_TO_GRAM;
 
         public override string ToString() => TEA_SPOON_NAME;
 

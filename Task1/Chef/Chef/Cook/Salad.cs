@@ -10,7 +10,7 @@ using Chef.Cook.Ingredients.Base;
 
 namespace Chef.Cook
 {
-    public class Salad : IEnumerable<SaladIngredient>
+    public class Salad : ISalad
 
     {
         private readonly List<SaladIngredient> _saladIngredients;
@@ -25,6 +25,8 @@ namespace Chef.Cook
             _saladIngredients = saladIngredients.ToList();
         }
 
+        public IEnumerable<SaladIngredient> Ingredients => _saladIngredients;
+
         public double SumOfCaloricContent() => _saladIngredients.Sum(i => i.CaloricContent);
 
 
@@ -32,6 +34,13 @@ namespace Chef.Cook
         //{
         //    _saladIngredients.Add(item);
         //}
+
+
+        //public IEnumerable<SaladIngredient> Sort(Func<SaladIngredient, TKey> keySelector)
+        //{
+        //    return _saladIngredients.OrderBy()
+        //}
+
 
         public IEnumerator<SaladIngredient> GetEnumerator()
         {
