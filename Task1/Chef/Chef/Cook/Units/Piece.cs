@@ -24,7 +24,7 @@ namespace Chef.Cook.Units
             _weight = weightInGrams;
         }
 
-        public double ToGram() => _weight;
+        public double ToBaseUnit() => _weight;
 
         public override string ToString() => _unitName;
 

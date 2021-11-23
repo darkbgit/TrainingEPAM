@@ -9,7 +9,7 @@ namespace Chef.Cook.Units
 
         private const string GRAM_NAME = "г";
 
-        public double ToGram() => GRAM_TO_GRAM;
+        public double ToBaseUnit() => GRAM_TO_GRAM;
 
         public override string ToString() => GRAM_NAME;
     }

@@ -22,7 +22,7 @@ namespace Chef.Cook.Ingredients
 
         public double GetCaloricContent()
         {
-            return _unit.ToGram() * CUCUMBER_CALORIC_CONTENT_PER_GRAM;
+            return _unit.ToBaseUnit() * CUCUMBER_CALORIC_CONTENT_PER_GRAM;
         }
     }
 }

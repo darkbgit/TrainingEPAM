@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Chef.Cook
 {
-    internal interface ISalad
+    public interface ISalad : IEnumerable<SaladIngredient>
     {
+        IEnumerable<SaladIngredient> Ingredients { get; }
+
+        double SumOfCaloricContent();
     }
 }

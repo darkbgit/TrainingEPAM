@@ -2,24 +2,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Chef.Assistants;
 using Chef.Cook;
 using Chef.Cook.Ingredients;
 using Chef.Cook.Ingredients.Base;
 using Chef.Cook.Units;
 using Chef.Cook.Units.Interfaces;
+using Chef.Output;
 
 namespace Chef
 {
     class Program
     {
-        const string Sort = "s";
-        const string CaloricContent100 = "k100";
-        const string CaloricContent = "k";
-        const string Weight = "w";
-        const string SearchCaloricContentRange = "c";
-        const string Exit = "e";
-
-
         static void Main(string[] args)
         {
             Ingredient cucumber = new Cucumber();
@@ -31,63 +25,63 @@ namespace Chef
             ICaloricContentProvider tomatoCaloricContentProvider = new TomatoCaloricContentProvider(tomatoUnit);
 
             Ingredient oliveOil = new OliveOil();
-            IVolume oliveOilUnit 
+            IVolume oliveOilUnit = new Tablespoon();
+            ICaloricContentProvider oliveOilCaloricContentProvider = new OliveOilCaloricContentProvider(oliveOilUnit);
 
             Ingredient salt = new Salt();
             IVolume saltUnit = new TeaSpoon();
-            ICaloricContentProvider solCaloricContentProvider = new SaltCaloricContentProvider();
+            ICaloricContentProvider salCaloricContentProvider = new SaltCaloricContentProvider();
             
             IEnumerable<SaladIngredient> saladIngredients = new List<SaladIngredient>
             {
                 new SaladIngredient(cucumber, cucumberCaloricContentProvider, cucumberUnit.ToString(), 150),
-                new SaladIngredient(cucumber, tomatoCaloricContentProvider, tomatoUnit.ToString(), 2)
+                new SaladIngredient(tomato, tomatoCaloricContentProvider, tomatoUnit.ToString(), 2),
+                new SaladIngredient(oliveOil, oliveOilCaloricContentProvider, oliveOilUnit.ToString(), 3),
+                new SaladIngredient(salt, salCaloricContentProvider, saltUnit.ToString(), 1)
             };
 
 
-            var salad = new Salad(saladIngredients);
+            IAssistant saladAssistant = new SaladAssistant();
 
-            //Console.WriteLine(salad.ToConsoleStr());
+            //ISalad salad = new Salad(saladIngredients);
 
-            bool breakFlag = true;
+            var salad = saladAssistant.MakeSalad(saladIngredients);
 
-            while (breakFlag)
-            {
-                Console.WriteLine($"Для сортировки по свойству введите \"-{Sort}");
-                Console.WriteLine($"                                       -{CaloricContent100}\" - ККалорий в 100 грамм продукта");
-                Console.WriteLine($"                                       -{CaloricContent}\" - ККалорий в продукте");
-                Console.WriteLine($"                                       -{Weight}\" - вес продукта");
-                Console.WriteLine($"Для поиска ингредиентов по калорийности введите \"-{SearchCaloricContentRange}\"");
-                Console.WriteLine($"Для выхода введите \"-{Exit}\"");
-                var input = Console.ReadLine()?
-                    .Split('-')
-                    .Where(p => !string.IsNullOrWhiteSpace(p))
-                    .Select(p => p.Trim())
-                    .ToArray();
+            IOutput terminal = new Terminal();
 
-                if (input != null && input.Any())
-                {
-                    switch (input[0])
-                    {
-                        case Sort:
-                            //Console.WriteLine(GetSortedIngredients(input));
-                            break;
-                        case SearchCaloricContentRange:
-                            (int bottom, int top) = GetCaloricContentRange();
-                            //Console.WriteLine(GetIngredientsForCaloricContentRange(bottom, top));
-                            break;
-                        case Exit:
-                            breakFlag = !breakFlag;
-                            break;
-                        default:
-                            Console.WriteLine("Неопознанная команда");
-                            break;
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Неопознанная команда");
-                }
-            }
+            saladAssistant.SetOutput(terminal);
+           
+            saladAssistant.Print(salad);
+
+            saladAssistant.PrintHelp();
+
+            
+            //bool breakFlag = true;
+            //while (breakFlag)
+            //{
+            //    ISalad result;
+            //    switch (terminal.GetUserInput())
+            //    {
+            //        case Terminal.Sort + Terminal.OnCaloricContent:
+            //            result = salad.OrderBy(
+            //            break;
+            //        case Terminal.Sort + Terminal.OnCaloricContentPerUnit:
+            //            break;
+            //        case Terminal.Sort + Terminal.OnWeight:
+            //            break;
+            //        case Terminal.SearchOnCaloricContentRange:
+            //            break;
+            //        case Terminal.Exit:
+            //            breakFlag = false;
+            //            break;
+            //        default:
+            //            continue;
+            //    }
+            //    terminal.Print();
+            //}
+            
+
+
         }
 
         //private static string GetSortedIngredients(string[] input)
