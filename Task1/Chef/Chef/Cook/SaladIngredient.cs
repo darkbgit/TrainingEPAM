@@ -24,8 +24,5 @@ namespace Chef.Cook
         public string UnitName { get; }
 
         public double CaloricContent => CaloricContentPerUnit * NumberOfUnits;
-
-        //public double Weight { get; }
-
     }
 }

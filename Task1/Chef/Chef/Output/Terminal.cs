@@ -7,7 +7,7 @@ namespace Chef.Output
 {
     public class Terminal : IOutput
     {
-        private string _helpString;
+        private readonly string _helpString;
 
         public Terminal()
         {
@@ -36,26 +36,26 @@ namespace Chef.Output
             var builder = new StringBuilder();
             builder.Append('_', TOTAL_WIDTH);
             builder.Append(Environment.NewLine);
-            builder.Append($"{"Ингредиент", NAME_WIDTH}");
+            builder.Append($"{"Ингредиент",NAME_WIDTH}");
             builder.Append('|');
-            builder.Append($"{"Единицы измерения", UNIT_NAME_WIDTH}");
+            builder.Append($"{"Единицы измерения",UNIT_NAME_WIDTH}");
             builder.Append('|');
-            builder.Append($"{"Количество", NUMBER_OF_UNITS_WIDTH}");
+            builder.Append($"{"Количество",NUMBER_OF_UNITS_WIDTH}");
             builder.Append('|');
-            builder.Append($"{"ККал", CALORIC_CONTENT_WIDTH}");
+            builder.Append($"{"ККал",CALORIC_CONTENT_WIDTH}");
             builder.Append(Environment.NewLine);
             builder.Append('_', TOTAL_WIDTH);
             builder.Append(Environment.NewLine);
 
             foreach (var ingredient in salad)
             {
-                builder.Append($"{ingredient.Ingredient.Name, NAME_WIDTH}");
+                builder.Append($"{ingredient.Ingredient.Name,NAME_WIDTH}");
                 builder.Append('|');
-                builder.Append($"{ingredient.UnitName, UNIT_NAME_WIDTH}");
+                builder.Append($"{ingredient.UnitName,UNIT_NAME_WIDTH}");
                 builder.Append('|');
-                builder.Append($"{ingredient.NumberOfUnits, NUMBER_OF_UNITS_WIDTH}");
+                builder.Append($"{ingredient.NumberOfUnits,NUMBER_OF_UNITS_WIDTH}");
                 builder.Append('|');
-                builder.Append($"{ingredient.CaloricContent, CALORIC_CONTENT_WIDTH:f2}");
+                builder.Append($"{ingredient.CaloricContent,CALORIC_CONTENT_WIDTH:f2}");
                 builder.Append(Environment.NewLine);
             }
 
@@ -68,16 +68,13 @@ namespace Chef.Output
             builder.Append('_', TOTAL_WIDTH);
 
             Console.WriteLine(builder.ToString());
-
         }
 
         public void PrintHelp()
         {
-            _helpString = GenerateHelpString();
             Console.WriteLine(_helpString);
         }
 
-        
         public string GetUserInput()
         {
             var input = Console.ReadLine()?
@@ -86,20 +83,27 @@ namespace Chef.Output
                 .Select(p => p.Trim())
                 .ToArray();
 
-            if (input != null && input.Any())
+            if (input != null && input.Any() && input.Length <= 2)
             {
                 switch (input[0])
                 {
                     case TerminalCommands.Sort:
-                        switch (input[1])
+                        if (input.Length == 2)
                         {
-                            case TerminalCommands.OnCaloricContent:
-                                return TerminalCommands.Sort + TerminalCommands.OnCaloricContent;
-                            case TerminalCommands.OnIngredientName:
-                                return TerminalCommands.Sort + TerminalCommands.OnIngredientName;
-                            default:
-                                Console.WriteLine("Неправильный параметр сортировки");
-                                break;
+                            switch (input[1])
+                            {
+                                case TerminalCommands.OnCaloricContent:
+                                    return TerminalCommands.Sort + TerminalCommands.OnCaloricContent;
+                                case TerminalCommands.OnIngredientName:
+                                    return TerminalCommands.Sort + TerminalCommands.OnIngredientName;
+                                default:
+                                    Console.WriteLine("Неправильный параметр сортировки");
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Неправильный параметр сортировки");
                         }
                         break;
                     case TerminalCommands.SearchOnCaloricContentRange:
@@ -119,9 +123,50 @@ namespace Chef.Output
             return string.Empty;
         }
 
-        public (int top, int bottom) GetUserCaloricContentRange()
+        public (int bottom, int top ) GetUserCaloricContentRange()
         {
-            throw new NotImplementedException();
+            int bottom;
+            int top;
+
+            while (true)
+            {
+                Console.WriteLine("Введите нижнею границу диапазона");
+                var input = Console.ReadLine();
+                if (int.TryParse(input, System.Globalization.NumberStyles.Number,
+                        System.Globalization.CultureInfo.InvariantCulture, out bottom))
+                {
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("Неверный ввод");
+                }
+            }
+
+            while (true)
+            {
+                Console.WriteLine("Введите верхнюю границу диапазона");
+                var input = Console.ReadLine();
+
+                if (int.TryParse(input, System.Globalization.NumberStyles.Number,
+                        System.Globalization.CultureInfo.InvariantCulture, out top))
+                {
+                    if (bottom > top)
+                    {
+                        Console.WriteLine("Верхняя граница должна быть больше нижней");
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Неверный ввод");
+                }
+            }
+
+            return (bottom, top);
         }
 
         private static string GenerateHelpString()

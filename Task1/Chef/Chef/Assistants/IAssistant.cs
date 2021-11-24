@@ -1,25 +1,23 @@
-﻿using System;
+﻿using Chef.Cook;
 using System.Collections.Generic;
-using Chef.Cook;
-using Chef.Output;
 
 namespace Chef.Assistants
 {
     public interface IAssistant
     {
-        ISalad SortByName();
+        ISalad SortByName(ISalad salad);
+
+        ISalad SortByCaloricContent(ISalad salad);
+
+        ISalad SearchOnCaloricContentRange(ISalad salad);
 
         void Print(ISalad salad);
 
         void Print(string str);
 
-        void PrintHelp();
-
-
         string GetUserInput();
 
         ISalad MakeSalad(IEnumerable<SaladIngredient> ingredients);
 
-        void SetOutput(IOutput output);
     }
 }

@@ -1,40 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using Chef.Cook;
+﻿using Chef.Cook;
 using Chef.Output;
+using Chef.SaladExtensions;
+using System.Collections.Generic;
 
 namespace Chef.Assistants
 {
     public class SaladAssistant : IAssistant
     {
-        private IOutput _output;
-        private  ISalad _salad;
+        private readonly IOutput _output;
 
-        private Sorting _sorting;
-
-        public ISalad SortByName()
+        public SaladAssistant(IOutput output)
         {
-            _sorting = new Sorting();
+            _output = output;
+        }
 
-            return new Salad(_sorting.Sort(_salad, i => i.Ingredient.Name));
+        public ISalad SortByName(ISalad salad)
+        {
+            return new Salad(salad.Sort(i => i.Ingredient.Name));
+        }
 
-            
+        public ISalad SortByCaloricContent(ISalad salad)
+        {
+            return new Salad(salad.Sort(i => i.CaloricContent));
+        }
+
+        public ISalad SearchOnCaloricContentRange(ISalad salad)
+        {
+            (int bottom, int top) = _output.GetUserCaloricContentRange();
+            return new Salad(salad.GetRangeByCaloricContent(bottom, top));
         }
 
         public void Print(ISalad salad)
         {
             _output.Print(salad);
-
+            _output.PrintHelp();
         }
 
         public void Print(string str)
         {
             _output.Print(str);
-        }
-
-        public void PrintHelp()
-        {
-            _output.PrintHelp();
         }
 
         public string GetUserInput()
@@ -44,14 +48,7 @@ namespace Chef.Assistants
 
         public ISalad MakeSalad(IEnumerable<SaladIngredient> ingredients)
         {
-            _salad = new Salad(ingredients);
             return new Salad(ingredients);
         }
-
-        public void SetOutput(IOutput output)
-        {
-            _output = output;
-        }
-
     }
 }
