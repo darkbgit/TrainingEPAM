@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Task0.MusicFile">
+    <Position X="4.5" Y="4.5" Width="1.5" />
+    <InheritanceLine Type="Task0.MediaFile" ManuallyRouted="true">
+      <Path>
+        <Point X="8.75" Y="3.44" />
+        <Point X="8.75" Y="3.876" />
+        <Point X="5.25" Y="3.876" />
+        <Point X="5.25" Y="4.5" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAA=</HashCode>
+      <FileName>MusicFile.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.1" />
+  </Class>
+  <Class Name="Task0.MediaPlayer">
+    <Position X="7.25" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAACAAIAAAAgAAAAAAEAAA=</HashCode>
+      <FileName>MediaPlayer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Task0.MediaPlaylist">
+    <Position X="13" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MediaPlaylist.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Task0.MediaFile">
+    <Position X="8" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAQAAAAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>MediaFile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Task0.VideoFile">
+    <Position X="6.5" Y="4.5" Width="1.5" />
+    <InheritanceLine Type="Task0.MediaFile" ManuallyRouted="true" FixedFromPoint="true">
+      <Path>
+        <Point X="8.75" Y="3.44" />
+        <Point X="8.75" Y="3.876" />
+        <Point X="7.25" Y="3.876" />
+        <Point X="7.25" Y="4.5" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAA=</HashCode>
+      <FileName>VideoFile.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Task0.Playlist&lt;T&gt;">
+    <Position X="12.5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAABAAAAAABAAAABAAAAAEAAAAAAAAAAA=</HashCode>
+      <FileName>Playlist.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Task0.PlayListFile">
+    <Position X="10.25" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAIA=</HashCode>
+      <FileName>PlayListFile.cs</FileName>
+      <NewMemberFileName>MediaFilePlaylist.cs</NewMemberFileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Task0.MediaFilePlaylist">
+    <Position X="10.75" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MediaFilePlaylist.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Task0.PhotoFile">
+    <Position X="8.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAA=</HashCode>
+      <FileName>PhotoFile.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Task0.SearchClass">
+    <Position X="4.75" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAABAA=</HashCode>
+      <FileName>SearchClass.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="Task0.IMedia">
+    <Position X="12.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAA=</HashCode>
+      <FileName>IMedia.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
