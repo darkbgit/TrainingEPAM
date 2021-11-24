@@ -1,5 +1,4 @@
 ﻿using Chef.Cook.Ingredients.Base;
-using Chef.Cook.Units;
 
 namespace Chef.Cook.Ingredients
 {
@@ -7,7 +6,7 @@ namespace Chef.Cook.Ingredients
     {
         private const string CUCUMBER_NAME = "Огурец";
 
-        public Cucumber() 
+        public Cucumber()
             : base(CUCUMBER_NAME)
         {
         }
