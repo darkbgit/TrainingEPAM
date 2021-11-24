@@ -1,145 +1,75 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using Chef.Assistants;
 using Chef.Cook;
 using Chef.Cook.Ingredients;
+using Chef.Cook.Ingredients.Base;
+using Chef.Cook.Units;
+using Chef.Cook.Units.Interfaces;
+using Chef.Output;
+using System.Collections.Generic;
 
-const string Sort = "s";
-const string CaloricContent100 = "k100";
-const string CaloricContent = "k";
-const string Weight = "w";
-const string SearchCaloricContentRange = "c";
-const string Exit = "e";
-
-
-var salad = new Salad<Vegetable>
+namespace Chef
 {
-    new Lettuce(300),
-    new Cucumber(150),
-    new Tomato(200)
-
-};
-
-
-Console.WriteLine(salad.ToConsoleStr());
-
-bool breakFlag = true;
-
-while (breakFlag)
-{
-    Console.WriteLine($"Для сортировки по свойству введите \"-{Sort}");
-    Console.WriteLine($"                                       -{CaloricContent100}\" - ККалорий в 100 грамм продукта");
-    Console.WriteLine($"                                       -{CaloricContent}\" - ККалорий в продукте");
-    Console.WriteLine($"                                       -{Weight}\" - вес продукта");
-    Console.WriteLine($"Для поиска ингредиентов по калорийности введите \"-{SearchCaloricContentRange}\"");
-    Console.WriteLine($"Для выхода введите \"-{Exit}\"");
-    var input = Console.ReadLine()?
-        .Split('-')
-        .Where(p => !string.IsNullOrWhiteSpace(p))
-        .Select(p => p.Trim())
-        .ToArray();
-
-    if (input != null && input.Any())
+    class Program
     {
-        switch (input[0])
+        static void Main(string[] args)
         {
-            case Sort:
-                Console.WriteLine(GetSortedIngredients(input));
-                break;
-            case SearchCaloricContentRange:
-                (int bottom, int top) = GetCaloricContentRange();
-                Console.WriteLine(GetIngredientsForCaloricContentRange(bottom, top));
-                break;
-            case Exit:
-                breakFlag = !breakFlag;
-                break;
-            default:
-                Console.WriteLine("Неопознанная команда");
-                break;
-        }
-    }
-    else
-    {
-        Console.WriteLine("Неопознанная команда");
-    }
-}
+            Ingredient cucumber = new Cucumber();
+            IWeight cucumberUnit = new Gram();
+            ICaloricContentProvider cucumberCaloricContentProvider = new CucumberCaloricContentProvider(cucumberUnit);
 
-string GetSortedIngredients(string[] input)
-{
-    if (input.Length == 2)
-    {
-        switch (input[1])
-        {
-            case CaloricContent100:
-                var k100Sort = new Salad<Vegetable>(salad
-                    .OrderBy(i => i.CaloricContentPer100Gram));
-                return k100Sort.ToConsoleStr();
-            case CaloricContent:
-                var kSort = new Salad<Vegetable>(salad
-                    .OrderBy(i => i.CaloricContent));
-                return kSort.ToConsoleStr();
-            case Weight:
-                var wSort = new Salad<Vegetable>(salad
-                    .OrderBy(i => i.Weight));
-                return wSort.ToConsoleStr();
-            default:
-                return "Неправильный параметр сортировки";
-        }
-    }
-    else
-    {
-        return "Неправильный параметр сортировки";
-    }
-}
+            Ingredient tomato = new Tomato();
+            IPiece tomatoUnit = new Piece("шт", 50);
+            ICaloricContentProvider tomatoCaloricContentProvider = new TomatoCaloricContentProvider(tomatoUnit);
 
-(int bottom, int top) GetCaloricContentRange()
-{
-    int bottom;
-    int top;
+            Ingredient oliveOil = new OliveOil();
+            IVolume oliveOilUnit = new Tablespoon();
+            ICaloricContentProvider oliveOilCaloricContentProvider = new OliveOilCaloricContentProvider(oliveOilUnit);
 
-    while (true)
-    {
-        Console.WriteLine("Введите нижнею границу диапазона");
-        var input = Console.ReadLine();
-        if (int.TryParse(input, System.Globalization.NumberStyles.Number,
-            System.Globalization.CultureInfo.InvariantCulture, out bottom))
-        {
-            break;
-        }
-        else
-        {
-            Console.WriteLine("Неверный ввод");
-        }
-    }
+            Ingredient salt = new Salt();
+            IVolume saltUnit = new TeaSpoon();
+            ICaloricContentProvider salCaloricContentProvider = new SaltCaloricContentProvider();
 
-    while (true)
-    {
-        Console.WriteLine("Введите верхнюю границу диапазона");
-        var input = Console.ReadLine();
-
-        if (int.TryParse(input, System.Globalization.NumberStyles.Number,
-            System.Globalization.CultureInfo.InvariantCulture, out top))
-        {
-            if (bottom > top)
+            IEnumerable<SaladIngredient> saladIngredients = new List<SaladIngredient>
             {
-                Console.WriteLine("Верхняя граница должна быть больше нижней");
-            }
-            else
+                new SaladIngredient(cucumber, cucumberCaloricContentProvider, cucumberUnit.ToString(), 150),
+                new SaladIngredient(tomato, tomatoCaloricContentProvider, tomatoUnit.ToString(), 2),
+                new SaladIngredient(oliveOil, oliveOilCaloricContentProvider, oliveOilUnit.ToString(), 3),
+                new SaladIngredient(salt, salCaloricContentProvider, saltUnit.ToString(), 1)
+            };
+
+            IOutput terminal = new Terminal();
+
+            IAssistant saladAssistant = new SaladAssistant(terminal);
+
+            var salad = saladAssistant.MakeSalad(saladIngredients);
+
+            saladAssistant.Print(salad);
+
+            bool breakFlag = true;
+            while (breakFlag)
             {
-                break;
+                ISalad result;
+                switch (saladAssistant.GetUserInput())
+                {
+                    case TerminalCommands.Sort + TerminalCommands.OnCaloricContent:
+                        result = saladAssistant.SortByCaloricContent(salad);
+                        break;
+                    case TerminalCommands.Sort + TerminalCommands.OnIngredientName:
+                        result = saladAssistant.SortByName(salad);
+                        break;
+                    case TerminalCommands.SearchOnCaloricContentRange:
+                        result = saladAssistant.SearchOnCaloricContentRange(salad);
+                        break;
+                    case TerminalCommands.Exit:
+                        breakFlag = false;
+                        continue;
+                    default:
+                        continue;
+                }
+                saladAssistant.Print(result);
             }
         }
-        else
-        {
-            Console.WriteLine("Неверный ввод");
-        }
     }
-
-    return (bottom, top);
 }
 
-string GetIngredientsForCaloricContentRange(int bottom, int top)
-{
-    var result = new Salad<Vegetable>(salad
-        .Where(i => i.CaloricContent >= bottom && i.CaloricContent <= top)
-        .OrderBy(i => i.CaloricContent));
-    return result.ToConsoleStr();
-}
+

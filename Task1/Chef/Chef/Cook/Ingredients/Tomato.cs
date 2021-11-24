@@ -1,11 +1,12 @@
-﻿namespace Chef.Cook.Ingredients
+﻿using Chef.Cook.Ingredients.Base;
+
+namespace Chef.Cook.Ingredients
 {
-    public class Tomato : Vegetable
+    public class Tomato : Ingredient
     {
-        public Tomato(double weight) : base(weight)
+        private const string TOMATO_NAME = "Помидор";
+        public Tomato() : base(TOMATO_NAME)
         {
-            Name = "Помидор";
-            CaloricContentPer100Gram = 19.9;
         }
     }
 }
