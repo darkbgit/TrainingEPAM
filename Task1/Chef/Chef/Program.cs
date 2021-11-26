@@ -37,36 +37,42 @@ namespace Chef
                 new SaladIngredient(salt, salCaloricContentProvider, saltUnit.ToString(), 1)
             };
 
-            IOutput terminal = new Terminal();
-
-            IAssistant saladAssistant = new SaladAssistant(terminal);
+            IAssistant saladAssistant = new SaladAssistant();
 
             var salad = saladAssistant.MakeSalad(saladIngredients);
 
-            saladAssistant.Print(salad);
+            IOutput terminal = new Terminal();
+
+            ICommandLine commandLine = new CommandLine();
 
             bool breakFlag = true;
             while (breakFlag)
             {
-                ISalad result;
-                switch (saladAssistant.GetUserInput())
+                switch (commandLine.CommandLineArgumentParser(args))
                 {
-                    case TerminalCommands.Sort + TerminalCommands.OnCaloricContent:
-                        result = saladAssistant.SortByCaloricContent(salad);
+                    case CommandLineCommand.PrintData:
+                        terminal.Print(salad);
                         break;
-                    case TerminalCommands.Sort + TerminalCommands.OnIngredientName:
-                        result = saladAssistant.SortByName(salad);
+                    case CommandLineCommand.SortOnCaloricContent:
+                        terminal.Print(saladAssistant.SortByCaloricContent(salad));
                         break;
-                    case TerminalCommands.SearchOnCaloricContentRange:
-                        result = saladAssistant.SearchOnCaloricContentRange(salad);
+                    case CommandLineCommand.SortOnIngredientName:
+                        terminal.Print(saladAssistant.SortByName(salad));
                         break;
-                    case TerminalCommands.Exit:
+                    case CommandLineCommand.SearchOnCaloricContentRange:
+                        (int bottom, int top) = commandLine.GetUserCaloricContentRange();
+                        terminal.Print(saladAssistant.SearchOnCaloricContentRange(salad, bottom, top));
+                        break;
+                    case CommandLineCommand.Exit:
                         breakFlag = false;
                         continue;
+                    case CommandLineCommand.Base:
+                    case CommandLineCommand.UndefinedCommand:
                     default:
-                        continue;
+                        terminal.PrintHelp();
+                        break;
                 }
-                saladAssistant.Print(result);
+                args = commandLine.
             }
         }
     }

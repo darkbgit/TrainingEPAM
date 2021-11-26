@@ -9,9 +9,5 @@ namespace Chef.Output
         void Print(ISalad salad);
 
         void PrintHelp();
-
-        string GetUserInput();
-
-        (int bottom, int top) GetUserCaloricContentRange();
     }
 }

@@ -9,13 +9,7 @@ namespace Chef.Assistants
 
         ISalad SortByCaloricContent(ISalad salad);
 
-        ISalad SearchOnCaloricContentRange(ISalad salad);
-
-        void Print(ISalad salad);
-
-        void Print(string str);
-
-        string GetUserInput();
+        ISalad SearchOnCaloricContentRange(ISalad salad, int bottom, int top);
 
         ISalad MakeSalad(IEnumerable<SaladIngredient> ingredients);
 
