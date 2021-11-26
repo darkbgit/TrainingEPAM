@@ -1,6 +1,5 @@
 ﻿using Chef.Cook;
 using System;
-using System.Linq;
 using System.Text;
 
 namespace Chef.Output
@@ -31,7 +30,6 @@ namespace Chef.Output
             const int WEIGHT_WIDTH = 10;
             const int TOTAL_WIDTH = NAME_WIDTH + CALORIC_CONTENT_PER_UNIT_WIDTH + CALORIC_CONTENT_WIDTH + WEIGHT_WIDTH +
                 COLUMN_COUNT - 1;
-
 
             var builder = new StringBuilder();
             builder.Append('_', TOTAL_WIDTH);
@@ -75,115 +73,21 @@ namespace Chef.Output
             Console.WriteLine(_helpString);
         }
 
-        public string GetUserInput()
-        {
-            var input = Console.ReadLine()?
-                .Split('-')
-                .Where(p => !string.IsNullOrWhiteSpace(p))
-                .Select(p => p.Trim())
-                .ToArray();
-
-            if (input != null && input.Any() && input.Length <= 2)
-            {
-                switch (input[0])
-                {
-                    case TerminalCommands.Sort:
-                        if (input.Length == 2)
-                        {
-                            switch (input[1])
-                            {
-                                case TerminalCommands.OnCaloricContent:
-                                    return TerminalCommands.Sort + TerminalCommands.OnCaloricContent;
-                                case TerminalCommands.OnIngredientName:
-                                    return TerminalCommands.Sort + TerminalCommands.OnIngredientName;
-                                default:
-                                    Console.WriteLine("Неправильный параметр сортировки");
-                                    break;
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("Неправильный параметр сортировки");
-                        }
-                        break;
-                    case TerminalCommands.SearchOnCaloricContentRange:
-                        return TerminalCommands.SearchOnCaloricContentRange;
-                    case TerminalCommands.Exit:
-                        return TerminalCommands.Exit;
-                    default:
-                        Console.WriteLine("Неопознанная команда");
-                        break;
-                }
-            }
-            else
-            {
-                Console.WriteLine("Неопознанная команда");
-            }
-
-            return string.Empty;
-        }
-
-        public (int bottom, int top ) GetUserCaloricContentRange()
-        {
-            int bottom;
-            int top;
-
-            while (true)
-            {
-                Console.WriteLine("Введите нижнею границу диапазона");
-                var input = Console.ReadLine();
-                if (int.TryParse(input, System.Globalization.NumberStyles.Number,
-                        System.Globalization.CultureInfo.InvariantCulture, out bottom))
-                {
-                    break;
-                }
-                else
-                {
-                    Console.WriteLine("Неверный ввод");
-                }
-            }
-
-            while (true)
-            {
-                Console.WriteLine("Введите верхнюю границу диапазона");
-                var input = Console.ReadLine();
-
-                if (int.TryParse(input, System.Globalization.NumberStyles.Number,
-                        System.Globalization.CultureInfo.InvariantCulture, out top))
-                {
-                    if (bottom > top)
-                    {
-                        Console.WriteLine("Верхняя граница должна быть больше нижней");
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Неверный ввод");
-                }
-            }
-
-            return (bottom, top);
-        }
-
         private static string GenerateHelpString()
-
         {
             var builder = new StringBuilder();
-
-            builder.AppendLine($"Для сортировки по свойству введите \"-{TerminalCommands.Sort}");
+            builder.AppendLine("usage: chef");
             var firstLength = builder.Length;
             builder.Append(' ', firstLength);
-            builder.AppendLine($"-{TerminalCommands.OnIngredientName}\" - название продукта");
+            builder.AppendLine($"[{CommandLineArguments.PRINT_INITIAL_DATA}] - вывод данных");
             builder.Append(' ', firstLength);
-            builder.AppendLine($"-{TerminalCommands.OnCaloricContent}\" - ККалорий в продукте");
-            builder.AppendLine(
-                $"Для поиска ингредиентов по калорийности введите \"-{TerminalCommands.SearchOnCaloricContentRange}\"");
-            builder.AppendLine($"Для выхода введите \"-{TerminalCommands.Exit}\"");
-
+            builder.AppendLine($"[{CommandLineArguments.SORT_ON_CALORIC_CONTENT}] - сортировка по калорийности");
+            builder.Append(' ', firstLength);
+            builder.AppendLine($"[{CommandLineArguments.SORT_ON_INGREDIENT_NAME}] - сортировка по названию ингредиента");
+            builder.Append(' ', firstLength);
+            builder.AppendLine($"[{CommandLineArguments.SEARCH_ON_CALORIC_CONTENT_RANGE} <min> <max>] - поиск ингредиентов в диапазоне калорийности");
+            builder.Append(' ', firstLength);
+            builder.AppendLine($"[{CommandLineArguments.EXIT}] - выход");
             return builder.ToString();
         }
     }

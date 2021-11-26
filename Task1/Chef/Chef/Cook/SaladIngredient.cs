@@ -17,12 +17,12 @@ namespace Chef.Cook
 
         public Ingredient Ingredient { get; }
 
-        public double CaloricContentPerUnit => _caloricContentProvider.GetCaloricContent();
-
         public double NumberOfUnits { get; }
 
         public string UnitName { get; }
 
         public double CaloricContent => CaloricContentPerUnit * NumberOfUnits;
+
+        private double CaloricContentPerUnit => _caloricContentProvider.GetCaloricContent();
     }
 }
