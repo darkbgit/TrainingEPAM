@@ -1,6 +1,5 @@
 ﻿using Chef.Cook;
 using System;
-using System.Linq;
 using System.Text;
 
 namespace Chef.Output
@@ -31,7 +30,6 @@ namespace Chef.Output
             const int WEIGHT_WIDTH = 10;
             const int TOTAL_WIDTH = NAME_WIDTH + CALORIC_CONTENT_PER_UNIT_WIDTH + CALORIC_CONTENT_WIDTH + WEIGHT_WIDTH +
                 COLUMN_COUNT - 1;
-
 
             var builder = new StringBuilder();
             builder.Append('_', TOTAL_WIDTH);
@@ -76,20 +74,20 @@ namespace Chef.Output
         }
 
         private static string GenerateHelpString()
-
         {
             var builder = new StringBuilder();
             builder.AppendLine("usage: chef");
             var firstLength = builder.Length;
             builder.Append(' ', firstLength);
-            builder.AppendLine($"[{CommandLineArguments.PrintInitialData}] - вывод данных");
+            builder.AppendLine($"[{CommandLineArguments.PRINT_INITIAL_DATA}] - вывод данных");
             builder.Append(' ', firstLength);
-            builder.AppendLine($"[{CommandLineArguments.SortOnCaloricContent}] - сортировка по калорийности");
+            builder.AppendLine($"[{CommandLineArguments.SORT_ON_CALORIC_CONTENT}] - сортировка по калорийности");
             builder.Append(' ', firstLength);
-            builder.AppendLine($"[{CommandLineArguments.SortOnIngredientName}] - сортировка по названию ингредиента");
+            builder.AppendLine($"[{CommandLineArguments.SORT_ON_INGREDIENT_NAME}] - сортировка по названию ингредиента");
             builder.Append(' ', firstLength);
-            builder.AppendLine($"[{CommandLineArguments.SearchOnCaloricContentRange} <min> <max>] - поиск ингредиентов в диапазоне калорийности");
-
+            builder.AppendLine($"[{CommandLineArguments.SEARCH_ON_CALORIC_CONTENT_RANGE} <min> <max>] - поиск ингредиентов в диапазоне калорийности");
+            builder.Append(' ', firstLength);
+            builder.AppendLine($"[{CommandLineArguments.EXIT}] - выход");
             return builder.ToString();
         }
     }

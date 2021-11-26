@@ -7,7 +7,6 @@ namespace Chef.Assistants
 {
     public class SaladAssistant : IAssistant
     {
-
         public ISalad SortByName(ISalad salad)
         {
             return new Salad(salad.Sort(i => i.Ingredient.Name));

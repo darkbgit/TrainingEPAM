@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,79 +16,43 @@ namespace Chef.Output
 
         public CommandLineCommand CommandLineArgumentParser(string[] args)
         {
-            return args.Length switch
+            switch (args.Length)
             {
-                0 => CommandLineCommand.Base,
-                1 => args[0] switch
-                {
-                    CommandLineArguments.PrintInitialData => CommandLineCommand.PrintData,
-                    CommandLineArguments.Exit => CommandLineCommand.Exit,
-                    CommandLineArguments.SortOnCaloricContent => CommandLineCommand.SortOnCaloricContent,
-                    CommandLineArguments.SortOnIngredientName => CommandLineCommand.SortOnIngredientName,
-                    _ => CommandLineCommand.UndefinedCommand
-                },
-                3 => args[0] switch
-                {
-                    CommandLineArguments.SearchOnCaloricContentRange => CommandLineCommand.SearchOnCaloricContentRange,
-                    _ => CommandLineCommand.UndefinedCommand
-                },
-                _ => CommandLineCommand.UndefinedCommand
-            };
-        }
-
-        public (int bottom, int top) GetUserCaloricContentRange(string[] args)
-        {
-            int bottom;
-            int top;
-
-            while (true)
-            {
-                Console.WriteLine("Введите нижнею границу диапазона");
-                var input = Console.ReadLine();
-                if (int.TryParse(input, System.Globalization.NumberStyles.Number,
-                        System.Globalization.CultureInfo.InvariantCulture, out bottom))
-                {
-                    break;
-                }
-                else
-                {
-                    Console.WriteLine("Неверный ввод");
-                }
-            }
-
-            while (true)
-            {
-                Console.WriteLine("Введите верхнюю границу диапазона");
-                var input = Console.ReadLine();
-
-                if (int.TryParse(input, System.Globalization.NumberStyles.Number,
-                        System.Globalization.CultureInfo.InvariantCulture, out top))
-                {
-                    if (bottom > top)
+                case 0:
+                    return CommandLineCommand.Base;
+                case 1:
+                    return args[0] switch
                     {
-                        Console.WriteLine("Верхняя граница должна быть больше нижней");
-                    }
-                    else
+                        CommandLineArguments.PRINT_INITIAL_DATA => CommandLineCommand.PrintData,
+                        CommandLineArguments.EXIT => CommandLineCommand.Exit,
+                        CommandLineArguments.SORT_ON_CALORIC_CONTENT => CommandLineCommand.SortOnCaloricContent,
+                        CommandLineArguments.SORT_ON_INGREDIENT_NAME => CommandLineCommand.SortOnIngredientName,
+                        _ => CommandLineCommand.UndefinedCommand
+                    };
+                case 3:
+                    switch (args[0])
                     {
-                        break;
+                        case CommandLineArguments.SEARCH_ON_CALORIC_CONTENT_RANGE:
+                            if (int.TryParse(args[1], NumberStyles.Integer, CultureInfo.InvariantCulture,
+                                    out int bottom) &&
+                                int.TryParse(args[2], NumberStyles.Integer, CultureInfo.InvariantCulture, out int top) &&
+                                bottom >= 0 && bottom < top)
+                            {
+                                return CommandLineCommand.SearchOnCaloricContentRange;
+                            }
+                            return CommandLineCommand.UndefinedCommand;
+                        default:
+                            return CommandLineCommand.UndefinedCommand;
                     }
-                }
-                else
-                {
-                    Console.WriteLine("Неверный ввод");
-                }
+                default:
+                    return CommandLineCommand.UndefinedCommand;
             }
-
-            return (bottom, top);
         }
-
-
+        
         public string[] GetArguments()
         {
-            var line = Console.ReadLine();
-            return Console.ReadLine()
-                ?.Split(' ')
-                .ToArray();
+            return Console.ReadLine()?.Split(' ').ToArray() 
+                   ?? Array.Empty<string>();
         }
 
     }

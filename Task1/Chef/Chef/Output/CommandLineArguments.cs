@@ -2,16 +2,10 @@
 {
     public static class CommandLineArguments
     {
-        //public const string Sort = "s";
-        //public const string OnCaloricContent = "k";
-        //public const string OnIngredientName = "n";
-        //public const string SearchOnCaloricContentRange = "c";
-        //public const string Exit = "e";
-
-        public const string PrintInitialData = "--d";
-        public const string SortOnCaloricContent = "--s-k";
-        public const string SortOnIngredientName = "--s-n";
-        public const string SearchOnCaloricContentRange = "--c";
-        public const string Exit = "--e";
+        public const string PRINT_INITIAL_DATA = "--d";
+        public const string SORT_ON_CALORIC_CONTENT = "--s-k";
+        public const string SORT_ON_INGREDIENT_NAME = "--s-n";
+        public const string SEARCH_ON_CALORIC_CONTENT_RANGE = "--c";
+        public const string EXIT = "--e";
     }
 }

@@ -5,6 +5,7 @@ using Chef.Cook.Ingredients.Base;
 using Chef.Cook.Units;
 using Chef.Cook.Units.Interfaces;
 using Chef.Output;
+using System;
 using System.Collections.Generic;
 
 namespace Chef
@@ -60,8 +61,9 @@ namespace Chef
                         terminal.Print(saladAssistant.SortByName(salad));
                         break;
                     case CommandLineCommand.SearchOnCaloricContentRange:
-                        (int bottom, int top) = commandLine.GetUserCaloricContentRange();
-                        terminal.Print(saladAssistant.SearchOnCaloricContentRange(salad, bottom, top));
+                        terminal.Print(saladAssistant.SearchOnCaloricContentRange(salad,
+                            Convert.ToInt32(args[1]),
+                            Convert.ToInt32(args[2])));
                         break;
                     case CommandLineCommand.Exit:
                         breakFlag = false;
@@ -72,7 +74,7 @@ namespace Chef
                         terminal.PrintHelp();
                         break;
                 }
-                args = commandLine.
+                args = commandLine.GetArguments();
             }
         }
     }
