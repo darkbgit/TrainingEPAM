@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Task2.Core.TextParts;
-using Task2.Core.TextParts.Interfaces;
+using Task2.Core.TextObjectModel;
+using Task2.Core.TextObjectModel.Interfaces;
+
 
 namespace Task2.Core.Analyzer
 {
@@ -14,7 +15,7 @@ namespace Task2.Core.Analyzer
         private readonly char[] SentencesSeparators = {'.', '!', '?', '\n'};
 
         private readonly char[] WordsSeparators = {' ', '\t'};
-        public IAnalyzedText Analyze(string text)
+        public IText Analyze(string text)
         {
 
             char[] SentencesSeparator = {'.', '!', '?'};
@@ -32,7 +33,7 @@ namespace Task2.Core.Analyzer
                 result.Add(AnalyzeSentence(sentence));
             }
 
-            return new AnalyzedText(result);
+            return new Text(result);
 
         }
 
@@ -54,21 +55,21 @@ namespace Task2.Core.Analyzer
 
         private IEnumerable<ISentenceElement> AnalyzeWord(string word, string sentence, int i)
         {
-            IEnumerable<char> punctuationsMarks = new List<char> {'.', ',', ':'};
+            //IEnumerable<char> punctuationsMarks = new List<char> {'.', ',', ':'};
 
-            List<ISentenceElement> elements = new();
+            //List<ISentenceElement> elements = new();
 
-            if (punctuationsMarks.Contains(word.Last()))
-            {
-                elements.Add(new Word(word[..^1]));
-                elements.Add(new PunctuationMark(word.Last()));
-            }
-            else
-            {
-                elements.Add(new Word(word));
-            }
+            //if (punctuationsMarks.Contains(word.Last()))
+            //{
+            //    elements.Add(new Word(word[..^1]));
+            //    elements.Add(new PunctuationMark(word.Last()));
+            //}
+            //else
+            //{
+            //    elements.Add(new Word(word));
+            //}
 
-            return elements;
+            return default;
         }
     }
 }

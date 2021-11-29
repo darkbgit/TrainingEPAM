@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Task2.Core;
+using Task2.Core.TextObjectModel.Interfaces;
 using Task2.Output;
 
 namespace Task2
@@ -20,7 +21,7 @@ namespace Task2
         /// <summary>
         /// Output all sentences ordered by the number of words in each sentence 
         /// </summary>
-        public void AllSentencesOrderedByWordsCount(IAnalyzedText text)
+        public void AllSentencesOrderedByWordsCount(IText text)
         {
             //var sortedText = text.OrderBy(s => s.WordsCount).ToList();
             var result = string.Join(Environment.NewLine, text.OrderBy(s => s.WordsCount).ToList());
@@ -28,9 +29,9 @@ namespace Task2
         }
 
         
-        public void WordsFromQuestions(int wordLength, IAnalyzedText text)
+        public void WordsFromQuestions(int wordLength, IText text)
         {
-            var result = string.Join(Environment.NewLine, text.SelectMany(s => s.))
+            //var result = string.Join(Environment.NewLine, text.SelectMany(s => s.))
         }
         
 

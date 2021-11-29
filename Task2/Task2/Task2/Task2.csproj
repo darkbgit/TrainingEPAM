@@ -9,4 +9,8 @@
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Core\TextObjectModel\Symbols\ManySigns\" />
+  </ItemGroup>
+
 </Project>

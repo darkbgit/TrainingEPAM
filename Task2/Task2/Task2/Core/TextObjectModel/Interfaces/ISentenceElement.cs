@@ -1,4 +1,4 @@
-﻿namespace Task2.Core.TextParts.Interfaces
+﻿namespace Task2.Core.TextObjectModel.Interfaces
 {
     public interface ISentenceElement
     {

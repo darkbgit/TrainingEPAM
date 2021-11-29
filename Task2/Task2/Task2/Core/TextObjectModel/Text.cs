@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Task2.Core.TextParts;
-using Task2.Core.TextParts.Interfaces;
+using Task2.Core.TextObjectModel.Interfaces;
 
-namespace Task2.Core
+namespace Task2.Core.TextObjectModel
 {
-    public class AnalyzedText : IAnalyzedText
+    public class Text : IText
     {
         private readonly List<ISentence> _sentences;
 
-        public AnalyzedText(IEnumerable<ISentence> sentences)
+        public Text(IEnumerable<ISentence> sentences)
         {
             _sentences = sentences.ToList();
         }

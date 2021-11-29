@@ -1,6 +1,6 @@
-﻿using Task2.Core.TextParts.Interfaces;
+﻿using Task2.Core.TextObjectModel.Interfaces;
 
-namespace Task2.Core.TextParts
+namespace Task2.Core.TextObjectModel
 {
     public class PunctuationMark : ISentenceElement
     {
