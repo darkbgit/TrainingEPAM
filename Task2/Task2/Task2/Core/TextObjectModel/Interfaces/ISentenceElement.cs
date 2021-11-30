@@ -2,8 +2,8 @@
 {
     public interface ISentenceElement
     {
-        string Writing { get; }
+        //string Writing { get; }
 
-        //int Position { get; set; }
+        string ToString();
     }
 }

@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Task2.Core.TextObjectModel.Interfaces;
+using Task2.Core.TextObjectModel.Symbols;
 
 namespace Task2.Core.TextObjectModel
 {
-    public class Word : IEnumerable<ISymbol>
+    public class Word : IEnumerable<ISymbol>, ISentenceElement
     {
         private readonly List<ISymbol> _symbols;
 
@@ -15,12 +16,14 @@ namespace Task2.Core.TextObjectModel
             _symbols = symbols.ToList();
         }
 
+        public string Writing { get; }
+
         public override string ToString()
         {
             var builder = new StringBuilder();
             foreach (var symbol in _symbols)
             {
-                builder.Append(symbol.ToString());
+                builder.Append(symbol.Writing());
             }
 
             return builder.ToString();
@@ -36,10 +39,5 @@ namespace Task2.Core.TextObjectModel
         {
             return ((IEnumerable)_symbols).GetEnumerator();
         }
-
-        //public int Position { get; set; }
-
-
-
     }
 }

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Task2.Core.TextObjectModel.Interfaces;
+using Task2.Core.TextObjectModel.Symbols;
+using Task2.Core.TextObjectModel.Symbols.OneSign;
 
 
 namespace Task2.Core.TextObjectModel
@@ -11,9 +13,9 @@ namespace Task2.Core.TextObjectModel
     {
         private readonly IList<ISentenceElement> _elements;
 
-        public Sentence(IList<ISentenceElement> elements)
+        public Sentence(IEnumerable<ISentenceElement> elements)
         {
-            _elements = elements;
+            _elements = elements.ToList();
         }
 
         public int WordsCount => _elements.Count(e => e is Word);
@@ -24,15 +26,17 @@ namespace Task2.Core.TextObjectModel
 
             var builder = new StringBuilder();
 
-            foreach (var element in _elements)
+            for (var i = 0; i < _elements.Count; i++)
             {
-                if (element is not PunctuationMark)
+                var element = _elements[i];
+                if (i > 0 && element is not IPunctuation)
                 {
                     builder.Append(SPACE_CHAR);
                 }
 
-                builder.Append(element.Writing);
+                builder.Append(element);
             }
+
 
             return builder.ToString().TrimStart();
         }

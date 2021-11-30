@@ -5,7 +5,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using Task2.Core.Analyzer;
+using Task2.Core.TextObjectModel;
 using Task2.Core.TextObjectModel.Interfaces;
+using Task2.Core.TextObjectModel.Symbols;
 using Task2.Core.TextObjectModel.Symbols.OneSign;
 using Task2.Output;
 
@@ -38,19 +40,23 @@ namespace Task2
                 return;
             }
 
+            IText text;
 
-            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
             {
-                StreamReader reader = new StreamReader(fs);
+                var reader = new StreamReader(fs);
+
                 int counter = 0;
 
-                List<ISymbol> symbolBuffer = new List<ISymbol>();
+                ICollection<ISymbol> symbolBuffer = new List<ISymbol>();
 
-                List<ISentenceElement> sentenceElementsBuffer = new List<ISentenceElement>();
+                ICollection<ISentenceElement> sentenceElementsBuffer = new List<ISentenceElement>();
 
-                List<ISentence> sentencesBuffer = new List<ISentence>();
+                ICollection<ISentence> sentencesBuffer = new List<ISentence>();
 
-                ISymbol previousSymbol;
+                ISymbol previousSymbol = null;
+
+                StateMachine stateMachine = new StateMachine();
 
                 while (reader.Peek() != -1)
                 {
@@ -58,18 +64,55 @@ namespace Task2
 
                     char c = (char)b;
 
-                    ISymbol currentSymbol;
+                    ISymbol nextSymbol;
+
+                    var category = char.GetUnicodeCategory(c);
+
                     switch (char.GetUnicodeCategory(c))
                     {
-                            case UnicodeCategory.DecimalDigitNumber:
-                            case UnicodeCategory.UppercaseLetter:
-                            case UnicodeCategory.LowercaseLetter:
-                                currentSymbol = new Dot();
-                                break;
+                        case UnicodeCategory.UppercaseLetter:
+                        case UnicodeCategory.LowercaseLetter:
+                            nextSymbol = new Letter(c);
+                            break;
+                        case UnicodeCategory.DecimalDigitNumber:
+                            nextSymbol = new Digit(c);
+                            break;
+                        case UnicodeCategory.InitialQuotePunctuation:
+                        case UnicodeCategory.FinalQuotePunctuation:
+                        case UnicodeCategory.OpenPunctuation:
+                        case UnicodeCategory.ClosePunctuation:
+                            nextSymbol = new Dot();
+                            break;
+                        case UnicodeCategory.DashPunctuation:
+                            nextSymbol = new Dot();
+                            break;
+                        case UnicodeCategory.SpaceSeparator:
+                        case UnicodeCategory.Control:
+                            nextSymbol = new Space();
+                            break;
+                        case UnicodeCategory.OtherPunctuation:
+                            nextSymbol = new Dot();
+                            break;
+                        case UnicodeCategory.ConnectorPunctuation:
+                            nextSymbol = new Dot();
+                            break;
+                        default:
+                            throw new ArgumentException("Undefined symbol");
                     }
 
-                } 
+                    stateMachine.MoveNext(nextSymbol.Type)
+                        ?.Invoke(nextSymbol, ref symbolBuffer, ref sentenceElementsBuffer, ref sentencesBuffer);
+                }
+
+                stateMachine.MoveNext(SymbolType.End)
+                    ?.Invoke(null, ref symbolBuffer, ref sentenceElementsBuffer, ref sentencesBuffer);
+
+                text = new Text(sentencesBuffer);
             }
+
+            ILogger logger = new ConsoleLogger();
+
+            logger.Print(text.ToString());
 
             //var stream = File.OpenRead(filePath);
 
@@ -95,6 +138,11 @@ namespace Task2
             //    worker.DeleteWordsFromText(8);
 
             //    worker.ExchangeWordsInSentence(8, 7);
+
+        }
+
+        private static void AnalyzePaurSumbol(ISymbol prevueSymbol, ISymbol currentSymbol)
+        {
 
         }
     }

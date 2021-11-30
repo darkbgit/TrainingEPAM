@@ -7,15 +7,13 @@ using Task2.Core.TextObjectModel.Interfaces;
 
 namespace Task2.Core.TextObjectModel.Symbols.OneSign
 {
-    public class Dot : Symbol, ISymbol, IPunctuation, ISentenceElement
+    public class Letter : Symbol, ISymbol
     {
-        private const char DOT_CHAR = '.'; 
-        public Dot()
-            : base(DOT_CHAR, SymbolType.Dot)
+        public Letter(char symbol):
+            base(symbol, SymbolType.Letter)
         {
-
+            
         }
 
-        //public override string ToString() => _symbol.ToString();
     }
 }

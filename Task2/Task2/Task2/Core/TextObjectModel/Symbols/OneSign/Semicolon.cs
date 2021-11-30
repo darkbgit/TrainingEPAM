@@ -7,15 +7,13 @@ using Task2.Core.TextObjectModel.Interfaces;
 
 namespace Task2.Core.TextObjectModel.Symbols.OneSign
 {
-    public class Dot : Symbol, ISymbol, IPunctuation, ISentenceElement
+    public class Semicolon : Symbol, ISymbol, ISentenceElement
     {
-        private const char DOT_CHAR = '.'; 
-        public Dot()
-            : base(DOT_CHAR, SymbolType.Dot)
+        private const char SEMICOLON_CHAR = ';';
+        public Semicolon()
+            : base(SEMICOLON_CHAR, SymbolType.PunctuationMark)
         {
 
         }
-
-        //public override string ToString() => _symbol.ToString();
     }
 }
