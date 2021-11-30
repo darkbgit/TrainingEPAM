@@ -17,7 +17,7 @@ namespace Task2.Core.TextObjectModel.Symbols
 
         public SymbolType Type { get; }
 
-        public new string ToString() => _symbol.ToString();
+        //public new string ToString() => _symbol.ToString();
 
         public string Writing() => _symbol.ToString();
     }

@@ -7,7 +7,7 @@ using Task2.Core.TextObjectModel.Interfaces;
 
 namespace Task2.Core.TextObjectModel.Symbols.OneSign
 {
-    public class Semicolon : Symbol, ISymbol, ISentenceElement
+    public class Semicolon : Symbol, ISymbol
     {
         private const char SEMICOLON_CHAR = ';';
         public Semicolon()
@@ -15,5 +15,7 @@ namespace Task2.Core.TextObjectModel.Symbols.OneSign
         {
 
         }
+
+        public override string ToString() => _symbol.ToString();
     }
 }

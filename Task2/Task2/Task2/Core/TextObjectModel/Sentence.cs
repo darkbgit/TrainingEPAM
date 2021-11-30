@@ -26,17 +26,10 @@ namespace Task2.Core.TextObjectModel
 
             var builder = new StringBuilder();
 
-            for (var i = 0; i < _elements.Count; i++)
+            foreach (var element in _elements)
             {
-                var element = _elements[i];
-                if (i > 0 && element is not IPunctuation)
-                {
-                    builder.Append(SPACE_CHAR);
-                }
-
-                builder.Append(element);
+                builder.Append(element.ToString());
             }
-
 
             return builder.ToString().TrimStart();
         }

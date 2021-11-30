@@ -7,19 +7,15 @@ using Task2.Core.TextObjectModel.Interfaces;
 
 namespace Task2.Core.TextObjectModel.Symbols.OneSign
 {
-    public class Space : ISymbol
+    public class Space : Symbol, ISymbol, ISentenceElement
     {
-
-        public Space()
+        private  const char SPACE_CHAR = ' ';
+        public Space():
+            base(SPACE_CHAR, SymbolType.Space)
         {
-            Type = SymbolType.Space;
+
         }
 
-        public SymbolType Type { get; }
-
-        public string Writing()
-        {
-            throw new NotImplementedException();
-        }
+        public override string ToString() => _symbol.ToString();
     }
 }

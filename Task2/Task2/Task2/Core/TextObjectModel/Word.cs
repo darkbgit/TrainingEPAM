@@ -23,7 +23,7 @@ namespace Task2.Core.TextObjectModel
             var builder = new StringBuilder();
             foreach (var symbol in _symbols)
             {
-                builder.Append(symbol.Writing());
+                builder.Append(symbol.ToString());
             }
 
             return builder.ToString();

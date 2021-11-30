@@ -68,40 +68,58 @@ namespace Task2
 
                     var category = char.GetUnicodeCategory(c);
 
-                    switch (char.GetUnicodeCategory(c))
+                    try
                     {
-                        case UnicodeCategory.UppercaseLetter:
-                        case UnicodeCategory.LowercaseLetter:
-                            nextSymbol = new Letter(c);
-                            break;
-                        case UnicodeCategory.DecimalDigitNumber:
-                            nextSymbol = new Digit(c);
-                            break;
-                        case UnicodeCategory.InitialQuotePunctuation:
-                        case UnicodeCategory.FinalQuotePunctuation:
-                        case UnicodeCategory.OpenPunctuation:
-                        case UnicodeCategory.ClosePunctuation:
-                            nextSymbol = new Dot();
-                            break;
-                        case UnicodeCategory.DashPunctuation:
-                            nextSymbol = new Dot();
-                            break;
-                        case UnicodeCategory.SpaceSeparator:
-                        case UnicodeCategory.Control:
-                            nextSymbol = new Space();
-                            break;
-                        case UnicodeCategory.OtherPunctuation:
-                            nextSymbol = new Dot();
-                            break;
-                        case UnicodeCategory.ConnectorPunctuation:
-                            nextSymbol = new Dot();
-                            break;
-                        default:
-                            throw new ArgumentException("Undefined symbol");
-                    }
+                        switch (char.GetUnicodeCategory(c))
+                        {
+                            case UnicodeCategory.UppercaseLetter:
+                            case UnicodeCategory.LowercaseLetter:
+                                nextSymbol = new Letter(c);
+                                break;
+                            case UnicodeCategory.DecimalDigitNumber:
+                                nextSymbol = new Digit(c);
+                                break;
+                            case UnicodeCategory.InitialQuotePunctuation:
+                            case UnicodeCategory.FinalQuotePunctuation:
+                            case UnicodeCategory.OpenPunctuation:
+                            case UnicodeCategory.ClosePunctuation:
+                            case UnicodeCategory.DashPunctuation:
+                            case UnicodeCategory.OtherPunctuation:
+                            case UnicodeCategory.ConnectorPunctuation:
+                                switch (c)
+                                {
+                                    case '.':
+                                        nextSymbol = new Dot();
+                                        break;
+                                    case ',':
+                                        nextSymbol = new Comma();
+                                        break;
+                                    case ';':
+                                        nextSymbol = new Semicolon();
+                                        break;
+                                    default:
+                                        nextSymbol = new Punctuation(c);
+                                        break;
+                                }
 
-                    stateMachine.MoveNext(nextSymbol.Type)
-                        ?.Invoke(nextSymbol, ref symbolBuffer, ref sentenceElementsBuffer, ref sentencesBuffer);
+                                break;
+
+                            case UnicodeCategory.SpaceSeparator:
+                            case UnicodeCategory.Control:
+                                nextSymbol = new Space();
+                                break;
+
+                            default:
+                                throw new ArgumentException("Undefined symbol");
+                        }
+
+                        stateMachine.MoveNext(nextSymbol.Type)
+                            ?.Invoke(nextSymbol, ref symbolBuffer, ref sentenceElementsBuffer, ref sentencesBuffer);
+                    }
+                    catch (Exception e)
+                    {
+                        //throw;
+                    }
                 }
 
                 stateMachine.MoveNext(SymbolType.End)

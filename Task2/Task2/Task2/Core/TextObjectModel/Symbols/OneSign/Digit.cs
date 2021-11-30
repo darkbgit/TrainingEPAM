@@ -15,5 +15,6 @@ namespace Task2.Core.TextObjectModel.Symbols.OneSign
 
         }
 
+        public override string ToString() => _symbol.ToString();
     }
 }

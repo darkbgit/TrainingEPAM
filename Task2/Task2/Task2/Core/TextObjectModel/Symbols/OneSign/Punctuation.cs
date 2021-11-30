@@ -6,17 +6,12 @@ using System.Threading.Tasks;
 
 namespace Task2.Core.TextObjectModel.Symbols.OneSign
 {
-    public class Comma : Symbol, ISymbol
+    public class Punctuation : Symbol, ISymbol
     {
-        private const char COMMA_CHAR = ',';
-
-        public Comma()
-            : base(COMMA_CHAR, SymbolType.PunctuationMark)
+        public Punctuation(char symbol)
+            : base(symbol, SymbolType.PunctuationMark)
         {
-
         }
-
-        //public string Writing => COMMA_CHAR.ToString();
 
         public override string ToString() => _symbol.ToString();
     }

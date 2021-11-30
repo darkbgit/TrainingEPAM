@@ -4,6 +4,6 @@
     {
         SymbolType Type { get; }
 
-        string Writing();
+        //string Writing();
     }
 }

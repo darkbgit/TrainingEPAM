@@ -8,7 +8,10 @@
         PunctuationMark,
         Space,
         Dot,
+        Question,
+        Exclamation,
         EndOfSentenceMark,
-        End
+        End,
+        Undefined
     }
 }
