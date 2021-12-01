@@ -4,7 +4,7 @@ using System.Configuration;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using Task2.Core.Analyzer;
+using Task2.Core.StateMachine;
 using Task2.Core.TextObjectModel;
 using Task2.Core.TextObjectModel.Interfaces;
 using Task2.Core.TextObjectModel.Symbols;
@@ -28,19 +28,17 @@ namespace Task2
             //    throw;
             //}
 
-            var filePath = ConfigurationManager.AppSettings["TextFileForParsing"];
+            var filePath = ConfigurationManager.AppSettings["TextFileForParsing"]
+                ?? throw new ArgumentException("Couldn't get file path from app.settings");
 
-            if (filePath == null)
-            {
-                return;
-            }
 
             if (!File.Exists(filePath))
             {
-                return;
+                throw new FileNotFoundException($"File {filePath} don't find");
             }
 
             IText text;
+            List<string> errorList = new List<string>();
 
             using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
             {
@@ -56,7 +54,10 @@ namespace Task2
 
                 ISymbol previousSymbol = null;
 
-                StateMachine stateMachine = new StateMachine();
+                IStateMachine stateMachine = new StateMachine();
+
+                int skip = 0;
+
 
                 while (reader.Peek() != -1)
                 {
@@ -86,39 +87,28 @@ namespace Task2
                             case UnicodeCategory.DashPunctuation:
                             case UnicodeCategory.OtherPunctuation:
                             case UnicodeCategory.ConnectorPunctuation:
-                                switch (c)
+                                nextSymbol = c switch
                                 {
-                                    case '.':
-                                        nextSymbol = new Dot();
-                                        break;
-                                    case ',':
-                                        nextSymbol = new Comma();
-                                        break;
-                                    case ';':
-                                        nextSymbol = new Semicolon();
-                                        break;
-                                    default:
-                                        nextSymbol = new Punctuation(c);
-                                        break;
-                                }
-
+                                    '.' => new Dot(),
+                                    '!' => new Exclamation(),
+                                    '?' => new Question(),
+                                    _ => new Punctuation(c)
+                                };
                                 break;
-
                             case UnicodeCategory.SpaceSeparator:
                             case UnicodeCategory.Control:
                                 nextSymbol = new Space();
                                 break;
-
                             default:
-                                throw new ArgumentException("Undefined symbol");
+                                throw new ArgumentException($"Undefined symbol {c}");
                         }
 
                         stateMachine.MoveNext(nextSymbol.Type)
                             ?.Invoke(nextSymbol, ref symbolBuffer, ref sentenceElementsBuffer, ref sentencesBuffer);
                     }
-                    catch (Exception e)
+                    catch (ArgumentException e)
                     {
-                        //throw;
+                        errorList.Add(e.Message);
                     }
                 }
 
@@ -130,26 +120,13 @@ namespace Task2
 
             ILogger logger = new ConsoleLogger();
 
+            logger.Print($"Количество ошибок при конвертации - {errorList.Count}");
+
             logger.Print(text.ToString());
 
-            //var stream = File.OpenRead(filePath);
+            TasksWorker worker = new TasksWorker(logger);
 
-
-            //    var fileText = File.ReadAllText(file);
-
-
-
-            //    IAnalyzer analyzer = new TextAnalyzer();
-
-            //    var analyzedText = analyzer.Analyze(fileText);
-
-
-
-            //    ILogger logger = new ConsoleLogger();
-
-            //    TasksWorker worker = new TasksWorker(logger);
-
-            //    worker.AllSentencesOrderedByWordsCount(analyzedText);
+            worker.AllSentencesOrderedByWordsCount(text);
 
             //    worker.WordsFromQuestions(5);
 
@@ -159,9 +136,5 @@ namespace Task2
 
         }
 
-        private static void AnalyzePaurSumbol(ISymbol prevueSymbol, ISymbol currentSymbol)
-        {
-
-        }
     }
 }

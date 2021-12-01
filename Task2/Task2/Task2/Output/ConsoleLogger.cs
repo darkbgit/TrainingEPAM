@@ -10,7 +10,7 @@ namespace Task2.Output
     {
         public void Print(string str)
         {
-            Console.Write(str);
+            Console.WriteLine(str);
         }
     }
 }

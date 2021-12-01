@@ -18,13 +18,11 @@ namespace Task2
             _logger = logger;
         }
 
-        /// <summary>
-        /// Output all sentences ordered by the number of words in each sentence 
-        /// </summary>
+
         public void AllSentencesOrderedByWordsCount(IText text)
         {
-            //var sortedText = text.OrderBy(s => s.WordsCount).ToList();
-            var result = string.Join(Environment.NewLine, text.OrderBy(s => s.WordsCount).ToList());
+            var result = string.Join(Environment.NewLine, text.OrderBy(s => s.WordsCount)
+                .Select(i => i + " Количество слов - " + i.WordsCount));
             _logger.Print(result);
         }
 

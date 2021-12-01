@@ -1,6 +1,6 @@
 ﻿using Task2.Core.TextObjectModel.Symbols;
 
-namespace Task2.Core.Analyzer
+namespace Task2.Core.StateMachine
 {
     public class StateTransition
     {
