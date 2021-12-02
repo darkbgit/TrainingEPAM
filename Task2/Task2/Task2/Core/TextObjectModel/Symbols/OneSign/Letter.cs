@@ -10,7 +10,7 @@ namespace Task2.Core.TextObjectModel.Symbols.OneSign
     public class Letter : Symbol, ISymbol
     {
         public Letter(char symbol):
-            base(symbol, SymbolType.Letter)
+            base(symbol, SymbolType.LetterOrDigit)
         {
             
         }

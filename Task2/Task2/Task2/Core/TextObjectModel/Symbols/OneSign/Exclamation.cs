@@ -8,7 +8,7 @@ namespace Task2.Core.TextObjectModel.Symbols.OneSign
 {
     public class Exclamation : Symbol, ISymbol
     {
-        private const char EXCLAMATION_CHAR = '.';
+        private const char EXCLAMATION_CHAR = '!';
         public Exclamation()
             : base(EXCLAMATION_CHAR, SymbolType.Exclamation)
         {

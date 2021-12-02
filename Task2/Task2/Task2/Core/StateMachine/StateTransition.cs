@@ -2,7 +2,7 @@
 
 namespace Task2.Core.StateMachine
 {
-    public class StateTransition
+    internal class StateTransition
     {
         private readonly SymbolType _currentSymbol;
         private readonly SymbolType _nextSymbol;

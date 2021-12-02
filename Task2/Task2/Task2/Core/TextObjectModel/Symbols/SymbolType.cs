@@ -3,14 +3,15 @@
     public enum SymbolType
     {
         Begin,
-        Letter,
-        Digit,
+        LetterOrDigit,
         PunctuationMark,
         Space,
         Dot,
+        DoubleDot,
         Question,
+        QuestionWithExclamation,
         Exclamation,
-        EndOfSentenceMark,
+        Ellipsis,
         End,
         Undefined
     }

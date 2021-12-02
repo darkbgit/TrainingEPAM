@@ -10,7 +10,7 @@ namespace Task2.Core.TextObjectModel.Symbols.OneSign
     public class Digit : Symbol, ISymbol
     {
         public Digit(char symbol):
-            base(symbol, SymbolType.Digit)
+            base(symbol, SymbolType.LetterOrDigit)
         {
 
         }

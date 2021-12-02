@@ -4,93 +4,82 @@ using System.Linq;
 using Task2.Core.TextObjectModel;
 using Task2.Core.TextObjectModel.Interfaces;
 using Task2.Core.TextObjectModel.Symbols;
+using Task2.Core.TextObjectModel.Symbols.ManySigns;
 using Task2.Core.TextObjectModel.Symbols.OneSign;
 
 namespace Task2.Core.StateMachine
 {
 
-    public delegate void SymbolChangeDelegate(ISymbol nextSymbol,
+    internal delegate void SymbolChangeDelegate(ISymbol nextSymbol,
         ref ICollection<ISymbol> symbols, ref ICollection<ISentenceElement> elements,
         ref ICollection<ISentence> sentences);
 
-    public class StateMachine : IStateMachine
+    internal class StateMachine : IStateMachine
     {
         private readonly Dictionary<StateTransition, SymbolChangeDelegate> _transitions;
 
         private SymbolType _currentState;
 
-        public StateMachine()
+        internal StateMachine()
         {
             _currentState = SymbolType.Begin;
             _transitions = new Dictionary<StateTransition, SymbolChangeDelegate>
             {
-                {new StateTransition(SymbolType.Begin, SymbolType.Letter), AddSymbol},
-                {new StateTransition(SymbolType.Begin, SymbolType.Digit), AddSymbol},
-                {new StateTransition(SymbolType.Begin, SymbolType.PunctuationMark), SkipSymbol},
+                {new StateTransition(SymbolType.Begin, SymbolType.LetterOrDigit), AddSymbol},
+                {new StateTransition(SymbolType.Begin, SymbolType.PunctuationMark), AddSymbol},
                 {new StateTransition(SymbolType.Begin, SymbolType.Dot), AddSymbol}, //TODO
-                {new StateTransition(SymbolType.Begin, SymbolType.Question), SkipSymbol},
-                {new StateTransition(SymbolType.Begin, SymbolType.Exclamation), SkipSymbol},
                 {new StateTransition(SymbolType.Begin, SymbolType.Space), SkipSymbol},
 
-                {new StateTransition(SymbolType.Digit, SymbolType.Letter), AddSymbol},
-                {new StateTransition(SymbolType.Digit, SymbolType.Digit), AddSymbol},
-                {new StateTransition(SymbolType.Digit, SymbolType.PunctuationMark), MakeWordAndAddSymbol},
-                {new StateTransition(SymbolType.Digit, SymbolType.Dot), MakeWordAndAddSymbol},
-                {new StateTransition(SymbolType.Digit, SymbolType.Question), MakeWordAndAddSymbol},
-                {new StateTransition(SymbolType.Digit, SymbolType.Exclamation), MakeWordAndAddSymbol},
-                {new StateTransition(SymbolType.Digit, SymbolType.Space), MakeWordAndAddSymbol},
+                {new StateTransition(SymbolType.LetterOrDigit, SymbolType.LetterOrDigit), AddSymbol},
+                {new StateTransition(SymbolType.LetterOrDigit, SymbolType.PunctuationMark), MakeWordAndAddSymbol},
+                {new StateTransition(SymbolType.LetterOrDigit, SymbolType.Dot), MakeWordAndAddSymbol},
+                {new StateTransition(SymbolType.LetterOrDigit, SymbolType.Question), MakeWordAndAddSymbol},
+                {new StateTransition(SymbolType.LetterOrDigit, SymbolType.Exclamation), MakeWordAndAddSymbol},
+                {new StateTransition(SymbolType.LetterOrDigit, SymbolType.Space), MakeWordAndAddSymbol},
 
-                {new StateTransition(SymbolType.Letter, SymbolType.Letter), AddSymbol},
-                {new StateTransition(SymbolType.Letter, SymbolType.Digit), AddSymbol},
-                {new StateTransition(SymbolType.Letter, SymbolType.PunctuationMark), MakeWordAndAddSymbol},
-                {new StateTransition(SymbolType.Letter, SymbolType.Dot), MakeWordAndAddSymbol},
-                {new StateTransition(SymbolType.Letter, SymbolType.Question), MakeWordAndAddSymbol},
-                {new StateTransition(SymbolType.Letter, SymbolType.Exclamation), MakeWordAndAddSymbol},
-                {new StateTransition(SymbolType.Letter, SymbolType.Space), MakeWordAndAddSymbol},
 
-                {new StateTransition(SymbolType.PunctuationMark, SymbolType.Letter), MakePunctuationAndAddSymbol},
-                {new StateTransition(SymbolType.PunctuationMark, SymbolType.Digit), MakePunctuationAndAddSymbol},
+                {new StateTransition(SymbolType.PunctuationMark, SymbolType.LetterOrDigit), MakePunctuationAndAddSymbol},
                 {new StateTransition(SymbolType.PunctuationMark, SymbolType.PunctuationMark), MakePunctuationAndAddSymbol},
                 {new StateTransition(SymbolType.PunctuationMark, SymbolType.Dot), MakePunctuationAndAddSymbol},
                 {new StateTransition(SymbolType.PunctuationMark, SymbolType.Question), MakePunctuationAndAddSymbol},
                 {new StateTransition(SymbolType.PunctuationMark, SymbolType.Exclamation), MakePunctuationAndAddSymbol},
                 {new StateTransition(SymbolType.PunctuationMark, SymbolType.Space), MakePunctuationAndAddSymbol},
 
-
-                {new StateTransition(SymbolType.Dot, SymbolType.Letter), MakePunctuationAndMakeSentenceAndAddSymbol},
-                {new StateTransition(SymbolType.Dot, SymbolType.Digit), MakePunctuationAndMakeSentenceAndAddSymbol},
-                {new StateTransition(SymbolType.Dot, SymbolType.PunctuationMark), MakePunctuationAndMakeSentenceAndAddSymbol}, //TODO comma
-                {new StateTransition(SymbolType.Dot, SymbolType.Dot), MakeWordAndPunctuationEndSentence}, //TODO
-                {new StateTransition(SymbolType.Dot, SymbolType.Question), MakePunctuationAndMakeSentenceAndAddSymbol},// TODO
-                {new StateTransition(SymbolType.Dot, SymbolType.Exclamation), MakePunctuationAndMakeSentenceAndAddSymbol}, //TODO
+                {new StateTransition(SymbolType.Dot, SymbolType.LetterOrDigit), MakePunctuationAndMakeSentenceAndAddSymbol},
+                {new StateTransition(SymbolType.Dot, SymbolType.PunctuationMark), MakePunctuationAndMakeSentenceAndAddSymbol},
+                {new StateTransition(SymbolType.Dot, SymbolType.Dot), MakeDoubleDot},
                 {new StateTransition(SymbolType.Dot, SymbolType.Space), MakePunctuationAndMakeSentenceAndAddSymbol},
 
-                {new StateTransition(SymbolType.Question, SymbolType.Letter), MakePunctuationAndMakeSentenceAndAddSymbol},
-                {new StateTransition(SymbolType.Question, SymbolType.Digit), MakePunctuationAndMakeSentenceAndAddSymbol},
+                {new StateTransition(SymbolType.DoubleDot, SymbolType.Dot), MakeEllipsis},
+
+                {new StateTransition(SymbolType.Ellipsis, SymbolType.LetterOrDigit), MakePunctuationAndMakeSentenceAndAddSymbol},
+                {new StateTransition(SymbolType.Dot, SymbolType.PunctuationMark), MakePunctuationAndMakeSentenceAndAddSymbol},
+                {new StateTransition(SymbolType.Dot, SymbolType.Dot), MakeDoubleDot},
+                {new StateTransition(SymbolType.Dot, SymbolType.Space), MakePunctuationAndMakeSentenceAndAddSymbol},
+
+                {new StateTransition(SymbolType.Question, SymbolType.LetterOrDigit), MakePunctuationAndMakeSentenceAndAddSymbol},
                 {new StateTransition(SymbolType.Question, SymbolType.PunctuationMark), MakePunctuationAndMakeSentenceAndAddSymbol},
                 {new StateTransition(SymbolType.Question, SymbolType.Dot), MakePunctuationAndMakeSentenceAndAddSymbol},
-                {new StateTransition(SymbolType.Question, SymbolType.Question), MakePunctuationAndMakeSentenceAndAddSymbol},
                 {new StateTransition(SymbolType.Question, SymbolType.Exclamation), MakePunctuationAndMakeSentenceAndAddSymbol}, // TODO
                 {new StateTransition(SymbolType.Question, SymbolType.Space), MakePunctuationAndMakeSentenceAndAddSymbol},
 
+                {new StateTransition(SymbolType.Exclamation, SymbolType.LetterOrDigit), MakePunctuationAndMakeSentenceAndAddSymbol},
+                {new StateTransition(SymbolType.Exclamation, SymbolType.PunctuationMark), MakePunctuationAndMakeSentenceAndAddSymbol},
+                {new StateTransition(SymbolType.Exclamation, SymbolType.Space), MakePunctuationAndMakeSentenceAndAddSymbol},
 
-                {new StateTransition(SymbolType.Space, SymbolType.Letter), MakeSpaceAndAddSymbol},
-                {new StateTransition(SymbolType.Space, SymbolType.Digit), MakeSpaceAndAddSymbol},
+
+                {new StateTransition(SymbolType.Space, SymbolType.LetterOrDigit), MakeSpaceAndAddSymbol},
                 {new StateTransition(SymbolType.Space, SymbolType.PunctuationMark), MakeSpaceAndAddSymbol},
                 {new StateTransition(SymbolType.Space, SymbolType.Dot), MakeSpaceAndAddSymbol},
-                {new StateTransition(SymbolType.Space, SymbolType.Question), MakeSpaceAndAddSymbol},
-                {new StateTransition(SymbolType.Space, SymbolType.Exclamation), MakeSpaceAndAddSymbol},
                 {new StateTransition(SymbolType.Space, SymbolType.Space), SkipSymbol},
 
 
-                {new StateTransition(SymbolType.Letter, SymbolType.End), EndWithLetterOrDigit},
-                {new StateTransition(SymbolType.Digit, SymbolType.End), EndWithLetterOrDigit},
+                {new StateTransition(SymbolType.LetterOrDigit, SymbolType.End), EndWithLetterOrDigit},
                 {new StateTransition(SymbolType.PunctuationMark, SymbolType.End), EndWithPunctuation},
                 {new StateTransition(SymbolType.Dot, SymbolType.End), EndWithPunctuationEndSentence},
                 {new StateTransition(SymbolType.Question, SymbolType.End), EndWithPunctuationEndSentence},
                 {new StateTransition(SymbolType.Exclamation, SymbolType.End), EndWithPunctuationEndSentence},
                 {new StateTransition(SymbolType.Space, SymbolType.End), EndWithSpace}
-
             };
         }
 
@@ -106,22 +95,11 @@ namespace Task2.Core.StateMachine
 
         public SymbolChangeDelegate MoveNext(SymbolType nextSymbol)
         {
-            SymbolChangeDelegate command;
-            try
-            {
-                command = GetNext(nextSymbol);
-                _currentState = nextSymbol;
-            }
-            catch (ArgumentException)
-            {
-                //command = null;
-                throw;
-            }
+            var command = GetNext(nextSymbol);
+            _currentState = nextSymbol;
 
             return command;
         }
-
-        
 
         private void AddSymbol(ISymbol nextSymbol,
             ref ICollection<ISymbol> symbols, ref ICollection<ISentenceElement> elements,
@@ -156,15 +134,22 @@ namespace Task2.Core.StateMachine
         }
 
 
-        private void MakeWordAndPunctuationEndSentence(ISymbol nextSymbol,
+        private void MakeDoubleDot(ISymbol nextSymbol,
             ref ICollection<ISymbol> symbols, ref ICollection<ISentenceElement> elements,
             ref ICollection<ISentence> sentences)
         {
-            elements.Add(new Word(symbols));
             symbols.Clear();
-            symbols.Add(nextSymbol);
+            symbols.Add(new DoubleDot());
         }
 
+
+        private void MakeEllipsis(ISymbol nextSymbol,
+            ref ICollection<ISymbol> symbols, ref ICollection<ISentenceElement> elements,
+            ref ICollection<ISentence> sentences)
+        {
+            symbols.Clear();
+            symbols.Add(new Ellipsis());
+        }
 
         private void MakePunctuationAndAddSymbol(ISymbol nextSymbol,
             ref ICollection<ISymbol> symbols, ref ICollection<ISentenceElement> elements,
@@ -212,8 +197,12 @@ namespace Task2.Core.StateMachine
             ref ICollection<ISymbol> symbols, ref ICollection<ISentenceElement> elements,
             ref ICollection<ISentence> sentences)
         {
-
-            sentences.Add(new Sentence(elements));
+            if (sentences.LastOrDefault() != null &&
+                sentences.LastOrDefault().Any(e => e is EndOfSentencePunctuationMark))
+            {
+                sentences.Add(new Sentence(elements));
+            }
+            
         }
 
         private void EndWithPunctuationEndSentence(ISymbol nextSymbol,

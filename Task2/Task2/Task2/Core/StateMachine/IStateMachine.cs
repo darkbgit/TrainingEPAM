@@ -2,7 +2,7 @@
 
 namespace Task2.Core.StateMachine
 {
-    public interface  IStateMachine
+    internal interface  IStateMachine
     {
         SymbolChangeDelegate MoveNext(SymbolType nextSymbol);
     }
