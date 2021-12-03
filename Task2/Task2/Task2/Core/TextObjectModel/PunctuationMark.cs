@@ -4,7 +4,7 @@ using Task2.Core.TextObjectModel.Symbols;
 
 namespace Task2.Core.TextObjectModel
 {
-    public class PunctuationMark : IPunctuation, ISentenceElement
+    public class PunctuationMark : ISentenceElement
     {
         private readonly string _writing; 
 

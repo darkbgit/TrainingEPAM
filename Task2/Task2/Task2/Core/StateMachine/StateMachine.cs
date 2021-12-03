@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Task2.Core.Analyzer;
 using Task2.Core.TextObjectModel;
 using Task2.Core.TextObjectModel.Interfaces;
 using Task2.Core.TextObjectModel.Symbols;
@@ -10,9 +11,7 @@ using Task2.Core.TextObjectModel.Symbols.OneSign;
 namespace Task2.Core.StateMachine
 {
 
-    internal delegate void SymbolChangeDelegate(ISymbol nextSymbol,
-        ref ICollection<ISymbol> symbols, ref ICollection<ISentenceElement> elements,
-        ref ICollection<ISentence> sentences);
+    internal delegate void SymbolChangeDelegate(ISymbol nextSymbol, ref AnalyzerBuffer buffer);
 
     internal class StateMachine : IStateMachine
     {
@@ -53,15 +52,18 @@ namespace Task2.Core.StateMachine
                 {new StateTransition(SymbolType.DoubleDot, SymbolType.Dot), MakeEllipsis},
 
                 {new StateTransition(SymbolType.Ellipsis, SymbolType.LetterOrDigit), MakePunctuationAndMakeSentenceAndAddSymbol},
-                {new StateTransition(SymbolType.Dot, SymbolType.PunctuationMark), MakePunctuationAndMakeSentenceAndAddSymbol},
-                {new StateTransition(SymbolType.Dot, SymbolType.Dot), MakeDoubleDot},
-                {new StateTransition(SymbolType.Dot, SymbolType.Space), MakePunctuationAndMakeSentenceAndAddSymbol},
+                {new StateTransition(SymbolType.Ellipsis, SymbolType.PunctuationMark), MakePunctuationAndMakeSentenceAndAddSymbol},
+                {new StateTransition(SymbolType.Ellipsis, SymbolType.Space), MakePunctuationAndMakeSentenceAndAddSymbol},
 
                 {new StateTransition(SymbolType.Question, SymbolType.LetterOrDigit), MakePunctuationAndMakeSentenceAndAddSymbol},
                 {new StateTransition(SymbolType.Question, SymbolType.PunctuationMark), MakePunctuationAndMakeSentenceAndAddSymbol},
                 {new StateTransition(SymbolType.Question, SymbolType.Dot), MakePunctuationAndMakeSentenceAndAddSymbol},
-                {new StateTransition(SymbolType.Question, SymbolType.Exclamation), MakePunctuationAndMakeSentenceAndAddSymbol}, // TODO
+                {new StateTransition(SymbolType.Question, SymbolType.Exclamation), MakeQuestionWithExclamation},
                 {new StateTransition(SymbolType.Question, SymbolType.Space), MakePunctuationAndMakeSentenceAndAddSymbol},
+
+                {new StateTransition(SymbolType.QuestionWithExclamation, SymbolType.LetterOrDigit), MakePunctuationAndMakeSentenceAndAddSymbol},
+                {new StateTransition(SymbolType.QuestionWithExclamation, SymbolType.PunctuationMark), MakePunctuationAndMakeSentenceAndAddSymbol},
+                {new StateTransition(SymbolType.QuestionWithExclamation, SymbolType.Space), MakePunctuationAndMakeSentenceAndAddSymbol},
 
                 {new StateTransition(SymbolType.Exclamation, SymbolType.LetterOrDigit), MakePunctuationAndMakeSentenceAndAddSymbol},
                 {new StateTransition(SymbolType.Exclamation, SymbolType.PunctuationMark), MakePunctuationAndMakeSentenceAndAddSymbol},
@@ -101,134 +103,105 @@ namespace Task2.Core.StateMachine
             return command;
         }
 
-        private void AddSymbol(ISymbol nextSymbol,
-            ref ICollection<ISymbol> symbols, ref ICollection<ISentenceElement> elements,
-            ref ICollection<ISentence> sentences)
+        private void AddSymbol(ISymbol nextSymbol, ref AnalyzerBuffer buffer)
         {
-            symbols.Add(nextSymbol);
+            buffer.Symbols.Add(nextSymbol);
         }
         
-        private void SkipSymbol(ISymbol nextSymbol,
-            ref ICollection<ISymbol> symbols, ref ICollection<ISentenceElement> elements,
-            ref ICollection<ISentence> sentences)
+        private void SkipSymbol(ISymbol nextSymbol, ref AnalyzerBuffer buffer)
         {
 
         }
 
-        private void MakeSpaceAndAddSymbol(ISymbol nextSymbol,
-            ref ICollection<ISymbol> symbols, ref ICollection<ISentenceElement> elements,
-            ref ICollection<ISentence> sentences)
+        private void MakeSpaceAndAddSymbol(ISymbol nextSymbol, ref AnalyzerBuffer buffer)
         {
-            elements.Add(new Space());
-            symbols.Clear();
-            symbols.Add(nextSymbol);
+            buffer.SentenceElements.Add(new Space());
+            buffer.Symbols.Clear();
+            buffer.Symbols.Add(nextSymbol);
         }
 
-        private void MakeWordAndAddSymbol(ISymbol nextSymbol,
-            ref ICollection<ISymbol> symbols, ref ICollection<ISentenceElement> elements,
-            ref ICollection<ISentence> sentences)
+        private void MakeWordAndAddSymbol(ISymbol nextSymbol, ref AnalyzerBuffer buffer)
         {
-            elements.Add(new Word(symbols));
-            symbols.Clear();
-            symbols.Add(nextSymbol);
+            buffer.SentenceElements.Add(new Word(buffer.Symbols));
+            buffer.Symbols.Clear();
+            buffer.Symbols.Add(nextSymbol);
         }
 
 
-        private void MakeDoubleDot(ISymbol nextSymbol,
-            ref ICollection<ISymbol> symbols, ref ICollection<ISentenceElement> elements,
-            ref ICollection<ISentence> sentences)
+        private void MakeDoubleDot(ISymbol nextSymbol, ref AnalyzerBuffer buffer)
         {
-            symbols.Clear();
-            symbols.Add(new DoubleDot());
+            buffer.Symbols.Clear();
+            buffer.Symbols.Add(new DoubleDot());
+            _currentState = SymbolType.DoubleDot;
         }
 
 
-        private void MakeEllipsis(ISymbol nextSymbol,
-            ref ICollection<ISymbol> symbols, ref ICollection<ISentenceElement> elements,
-            ref ICollection<ISentence> sentences)
+        private void MakeEllipsis(ISymbol nextSymbol, ref AnalyzerBuffer buffer)
         {
-            symbols.Clear();
-            symbols.Add(new Ellipsis());
+            buffer.Symbols.Clear();
+            buffer.Symbols.Add(new Ellipsis());
+            _currentState = SymbolType.Ellipsis;
         }
 
-        private void MakePunctuationAndAddSymbol(ISymbol nextSymbol,
-            ref ICollection<ISymbol> symbols, ref ICollection<ISentenceElement> elements,
-            ref ICollection<ISentence> sentences)
+        private void MakeQuestionWithExclamation(ISymbol nextSymbol, ref AnalyzerBuffer buffer)
         {
-            elements.Add(new PunctuationMark(symbols.Last()));
-            symbols.Clear();
-            symbols.Add(nextSymbol);
+            buffer.Symbols.Clear();
+            buffer.Symbols.Add(new QuestionWithExclamation());
+            _currentState = SymbolType.QuestionWithExclamation;
         }
 
-
-        private void MakePunctuationAndMakeSentenceAndAddSymbol(ISymbol nextSymbol,
-            ref ICollection<ISymbol> symbols, ref ICollection<ISentenceElement> elements,
-            ref ICollection<ISentence> sentences)
+        private void MakePunctuationAndAddSymbol(ISymbol nextSymbol, ref AnalyzerBuffer buffer)
         {
-            elements.Add(new PunctuationMark(symbols));
-            symbols.Clear();
-            sentences.Add(new Sentence(elements));
-            elements.Clear();
-            symbols.Add(nextSymbol);
+            buffer.SentenceElements.Add(new PunctuationMark(buffer.Symbols.Last()));
+            buffer.Symbols.Clear();
+            buffer.Symbols.Add(nextSymbol);
         }
 
 
-        private void EndWithLetterOrDigit(ISymbol nextSymbol,
-            ref ICollection<ISymbol> symbols, ref ICollection<ISentenceElement> elements,
-            ref ICollection<ISentence> sentences)
+        private void MakePunctuationAndMakeSentenceAndAddSymbol(ISymbol nextSymbol, ref AnalyzerBuffer buffer)
         {
-            elements.Add(new Word(symbols));
-            symbols.Clear();
-            
-            sentences.Add(new Sentence(elements));
+            buffer.SentenceElements.Add(new PunctuationMark(buffer.Symbols));
+            buffer.Symbols.Clear();
+            buffer.Sentences.Add(new Sentence(buffer.SentenceElements));
+            buffer.SentenceElements.Clear();
+            buffer.Symbols.Add(nextSymbol);
         }
 
-        private void EndWithPunctuation(ISymbol nextSymbol,
-            ref ICollection<ISymbol> symbols, ref ICollection<ISentenceElement> elements,
-            ref ICollection<ISentence> sentences)
+
+        private void EndWithLetterOrDigit(ISymbol nextSymbol, ref AnalyzerBuffer buffer)
         {
-            elements.Add(new Word(symbols));
-            symbols.Clear();
-            elements.Add(new PunctuationMark(nextSymbol));
-            sentences.Add(new Sentence(elements));
+            buffer.SentenceElements.Add(new Word(buffer.Symbols));
+            buffer.Symbols.Clear();
+            buffer.Sentences.Add(new Sentence(buffer.SentenceElements));
+            buffer.SentenceElements.Clear();
         }
 
-        private void EndWithSpace(ISymbol nextSymbol,
-            ref ICollection<ISymbol> symbols, ref ICollection<ISentenceElement> elements,
-            ref ICollection<ISentence> sentences)
+        private void EndWithPunctuation(ISymbol nextSymbol, ref AnalyzerBuffer buffer)
         {
-            if (sentences.LastOrDefault() != null &&
-                sentences.LastOrDefault().Any(e => e is EndOfSentencePunctuationMark))
+            buffer.SentenceElements.Add(new Word(buffer.Symbols));
+            buffer.Symbols.Clear();
+            buffer.SentenceElements.Add(new PunctuationMark(nextSymbol));
+            buffer.Sentences.Add(new Sentence(buffer.SentenceElements));
+            buffer.SentenceElements.Clear();
+        }
+
+        private void EndWithSpace(ISymbol nextSymbol, ref AnalyzerBuffer buffer)
+        {
+            if ((buffer.SentenceElements.Count == 1 && buffer.SentenceElements.LastOrDefault() is not Space) 
+                || buffer.SentenceElements.Count > 1)
             {
-                sentences.Add(new Sentence(elements));
+                buffer.Sentences.Add(new Sentence(buffer.SentenceElements));
             }
-            
+            buffer.SentenceElements.Clear();
+
         }
 
-        private void EndWithPunctuationEndSentence(ISymbol nextSymbol,
-            ref ICollection<ISymbol> symbols, ref ICollection<ISentenceElement> elements,
-            ref ICollection<ISentence> sentences)
+        private void EndWithPunctuationEndSentence(ISymbol nextSymbol, ref AnalyzerBuffer buffer)
         {
-            if (symbols.Any())
-            {
-                switch (symbols.LastOrDefault().Type)
-                {
-                    case SymbolType.Digit:
-                    case SymbolType.Letter:
-                        elements.Add(new Word(symbols));
-                        break;
-                    case SymbolType.PunctuationMark:
-                    case SymbolType.Dot:
-                    case SymbolType.Exclamation:
-                    case SymbolType.Question:
-                        elements.Add(new PunctuationMark(symbols));
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            sentences.Add(new Sentence(elements));
+            buffer.SentenceElements.Add(new PunctuationMark(buffer.Symbols));
+            buffer.Symbols.Clear();
+            buffer.Sentences.Add(new Sentence(buffer.SentenceElements));
+            buffer.SentenceElements.Clear();
         }
 
     }
