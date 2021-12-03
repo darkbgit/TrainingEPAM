@@ -22,8 +22,6 @@ namespace Task2.Core.TextObjectModel
 
         public override string ToString()
         {
-            const char SPACE_CHAR = ' ';
-
             var builder = new StringBuilder();
 
             foreach (var element in _elements)

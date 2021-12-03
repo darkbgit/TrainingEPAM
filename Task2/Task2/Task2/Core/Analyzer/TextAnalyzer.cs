@@ -25,40 +25,36 @@ namespace Task2.Core.Analyzer
 
         public IText Analyze(string filePath)
         {
-            IText text;
-
             ICollection<string> errorList = new List<string>();
+
+            var buffer = new AnalyzerBuffer();
+
+            IStateMachine stateMachine = new StateMachine.StateMachine();
 
             using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
             {
                 var reader = new StreamReader(fs);
 
-                var buffer = new AnalyzerBuffer();
-
-                IStateMachine stateMachine = new StateMachine.StateMachine();
-
                 while (reader.Peek() != -1)
                 {
                     var character = reader.Read();
 
-                    var nextSymbol = GetSymbol((char)character);
+                    var nextSymbol = GetSymbol((char) character);
 
                     try
                     {
-                        var command = stateMachine.MoveNext(nextSymbol.Type);
-                        command?.Invoke(nextSymbol, ref buffer);
+                        stateMachine.MoveNext(nextSymbol.Type)?.Invoke(nextSymbol, ref buffer);
                     }
                     catch (ArgumentException e)
                     {
                         errorList.Add($"{e.Message} in sentence number {buffer.Sentences.Count + 1}");
                     }
                 }
-
-                var endCommand = stateMachine.MoveNext(SymbolType.End);
-                endCommand.Invoke(null, ref buffer);
-
-                text = new Text(buffer.Sentences);
             }
+
+            stateMachine.MoveNext(SymbolType.End).Invoke(null, ref buffer);
+
+            IText text = new Text(buffer.Sentences);
 
             PrintResult(errorList);
 

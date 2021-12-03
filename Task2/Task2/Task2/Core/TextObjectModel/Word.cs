@@ -16,8 +16,6 @@ namespace Task2.Core.TextObjectModel
             _symbols = symbols.ToList();
         }
 
-        public string Writing { get; }
-
         public override string ToString()
         {
             var builder = new StringBuilder();
