@@ -2,7 +2,8 @@
 using System.Configuration;
 using System.IO;
 using Task2.Core.Analyzer;
-using Task2.Output;
+using Task2.Core.Tasks;
+
 
 namespace Task2
 {
@@ -21,23 +22,23 @@ namespace Task2
                 throw new FileNotFoundException($"File {filePath} don't find");
             }
 
-            ILogger logger = new ConsoleLogger();
+            //IOutput logger = new OutputToConsole();
 
-            IAnalyzer analyzer = new TextAnalyzer(logger);
+            IAnalyzer analyzer = new TextAnalyzer();
 
-            var text = analyzer.Analyze(filePath);
+            //var text = analyzer.Analyze(filePath);
 
-            logger.Print(text.ToString());
+            //logger.Output(text);
 
-            TasksWorker worker = new TasksWorker(logger);
+            IWorker worker = new TasksWorker();
 
             worker.AllSentencesOrderedByWordsCount(text);
 
-            //    worker.WordsFromQuestions(5);
+            worker.WordsFromQuestions(5, text);
 
-            //    worker.DeleteWordsFromText(8);
+            worker.DeleteWordsFromText(8, text);
 
-            //    worker.ExchangeWordsInSentence(8, 7);
+            worker.ExchangeWordsInSentence(8, 7);
 
         }
 
