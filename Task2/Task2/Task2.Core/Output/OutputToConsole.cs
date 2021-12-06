@@ -40,7 +40,7 @@ namespace Task2.Core.Output
                 builder.Append(element);
             }
 
-            Console.Write(builder);
+            Console.WriteLine(builder);
         }
     }
 }

@@ -2,6 +2,8 @@
 using System.Configuration;
 using System.IO;
 using Task2.Core.Analyzer;
+using Task2.Core.Loggers;
+using Task2.Core.Output;
 using Task2.Core.Tasks;
 
 
@@ -11,6 +13,8 @@ namespace Task2
     {
         static void Main(string[] args)
         {
+            ILogger logger = new ConsoleLogger();
+
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
             var filePath = ConfigurationManager.AppSettings["TextFileForParsing"]
@@ -22,23 +26,27 @@ namespace Task2
                 throw new FileNotFoundException($"File {filePath} don't find");
             }
 
-            //IOutput logger = new OutputToConsole();
+            IOutput output = new OutputToConsole();
 
-            IAnalyzer analyzer = new TextAnalyzer();
+            
 
-            //var text = analyzer.Analyze(filePath);
+            IAnalyzer analyzer = new TextAnalyzer(logger);
+
+            var fs = analyzer.GetStream(filePath);
+
+            var text = analyzer.Analyze(fs);
 
             //logger.Output(text);
 
-            IWorker worker = new TasksWorker();
+            IWorker worker = new TasksWorker(output);
 
             worker.AllSentencesOrderedByWordsCount(text);
 
-            worker.WordsFromQuestions(5, text);
+            //worker.WordsFromQuestions(5, text);
 
-            worker.DeleteWordsFromText(8, text);
+            //worker.DeleteWordsFromText(8, text);
 
-            worker.ExchangeWordsInSentence(8, 7);
+            //worker.ExchangeWordsInSentence(8, 7);
 
         }
 

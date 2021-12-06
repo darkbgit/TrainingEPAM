@@ -9,22 +9,10 @@ namespace Task2.Core.Tasks
 {
     public interface IWorker
     {
-        /// <summary>
-        /// Returns:
-        /// IText where all sentences ordered by number of words in each sentence
-        /// </summary>
-        /// <param name="text"></param>
-        /// <returns></returns>
-        IText AllSentencesOrderedByWordsCount(IText text);
 
-        /// <summary>
-        /// Returns:
-        /// IEnumerable<string> from question sentences where 
-        /// </summary>
-        /// <param name="wordLength"></param>
-        /// <param name="text"></param>
-        /// <returns></returns>
-        IEnumerable<string> WordsFromQuestions(int wordLength, IText text);
+        void AllSentencesOrderedByWordsCount(IText text);
+
+        void WordsFromQuestions(int wordLength, IText text);
 
         IText DeleteWordsFromText(int wordLength, IText text);
 

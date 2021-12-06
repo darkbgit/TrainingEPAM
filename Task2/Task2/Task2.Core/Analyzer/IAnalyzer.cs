@@ -13,5 +13,8 @@ namespace Task2.Core.Analyzer
     public interface IAnalyzer
     {
         IText Analyze(Stream fileStream);
+
+        Stream GetStream(string filePath);
+
     }
 }

@@ -2,35 +2,45 @@
 using System.Collections.Generic;
 using System.Linq;
 using Task2.Core.Analyzer;
+using Task2.Core.CQRS.Queries;
 using Task2.Core.Model;
 using Task2.Core.Model.Interfaces;
+using Task2.Core.Output;
 
 namespace Task2.Core.Tasks
 {
     public class TasksWorker : IWorker
     {
-        private readonly IAnalyzer _analyzer;
+        //private readonly IAnalyzer _analyzer;
+        private readonly IOutput _output;
 
 
-        public TasksWorker(IAnalyzer analyzer)
+        public TasksWorker(IOutput output)
         {
-            _analyzer = new TextAnalyzer();
+            _output = output;
+            //_analyzer = new TextAnalyzer();
         }
 
 
         public void AllSentencesOrderedByWordsCount(IText text)
         {
-            //_output.Print("");
-            //_output.Print("Все предложения текста в порядке возрастания количества слов в каждом из них");
-            //_output.Print("");
-            var result = string.Join(Environment.NewLine, text.OrderBy(s => s.WordsCount)
-                .Select(i => i + " Количество слов - " + i.WordsCount));
-            //_output.Print(result);
+            _output.Print("");
+            _output.Print("Все предложения текста в порядке возрастания количества слов в каждом из них");
+            _output.Print("");
+            var query = new GetAllSentencesOrderedByWordCountQuery(text);
+            var result = query.Execute();
+            _output.Print(result);
         }
 
-        IEnumerable<string> IWorker.WordsFromQuestions(int wordLength, IText text)
+        public void WordsFromQuestions(int wordLength, IText text)
         {
-            throw new NotImplementedException();
+            //var result = text.Select(s => s.Last() is Question)
+            _output.Print("");
+            _output.Print("Все слова предложения текста в порядке возрастания количества слов в каждом из них");
+            _output.Print("");
+            var query = new GetAllSentencesOrderedByWordCountQuery(text);
+            var result = query.Execute();
+            _output.Print(result);
         }
 
         IText IWorker.DeleteWordsFromText(int wordLength, IText text)
@@ -44,15 +54,8 @@ namespace Task2.Core.Tasks
         }
 
 
-        IText IWorker.AllSentencesOrderedByWordsCount(IText text)
-        {
-            throw new NotImplementedException();
-        }
 
-        public void WordsFromQuestions(int wordLength, IText text)
-        {
-            //var result = text.Select(s => s.Last() is Question)
-        }
+       
 
 
         public void DeleteWordsFromText(int wordLength, IText text)

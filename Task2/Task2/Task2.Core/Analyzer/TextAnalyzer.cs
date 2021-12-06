@@ -7,6 +7,7 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 using Task2.Core.Analyzer.StateMachine;
+using Task2.Core.Loggers;
 using Task2.Core.Model;
 using Task2.Core.Model.Interfaces;
 using Task2.Core.Model.Symbols;
@@ -17,14 +18,12 @@ namespace Task2.Core.Analyzer
 {
     public class TextAnalyzer : IAnalyzer
     {
-        //private readonly Ilogger _logger;
-        private AnalyzerBuffer _buffer;
-        private IStateMachine _machine;
+        private readonly ILogger _logger;
 
 
-        public TextAnalyzer()
+        public TextAnalyzer(ILogger logger)
         {
-            
+            _logger = logger;
         }
 
 
@@ -36,13 +35,9 @@ namespace Task2.Core.Analyzer
 
         public IText Analyze(Stream stream)
         {
-            _machine = new StateMachine.StateMachine();
+            var buffer = new AnalyzerBuffer();
 
-            ICollection<string> errorList = new List<string>();
-
-            _buffer = new AnalyzerBuffer();
-
-            IStateMachine stateMachine = new StateMachine.StateMachine();
+            IStateMachine stateMachine = new StateMachine.StateMachine(buffer);
 
             using (stream)
             {
@@ -60,18 +55,23 @@ namespace Task2.Core.Analyzer
                     }
                     catch (ArgumentException e)
                     {
-                        errorList.Add($"{e.Message} in sentence number {_buffer.Sentences.Count + 1}");
+                        _logger.Log(e.Message);
                     }
                 }
             }
 
-            stateMachine.MoveNext(new NoSymbol()).Invoke(null);
+            try
+            {
+                stateMachine.MoveNext(new NoSymbol()).Invoke(new NoSymbol());
+            }
+            catch (ArgumentException e)
+            {
+                _logger.Log(e.Message);
+            }
 
-            IText text = new Text(_buffer.Sentences);
+            _logger.Log($"Сериализовано {buffer.Sentences.Count} предложений");
 
-            PrintResult(errorList);
-
-            return text;
+            return new Text(buffer.Sentences);
         }
 
         private static ISymbol GetSymbol(char c)
@@ -112,23 +112,6 @@ namespace Task2.Core.Analyzer
             }
 
             return symbol;
-        }
-
-        private void PrintResult(IEnumerable<string> errors)
-        {
-            //var enumerable = errors as string[] ?? errors.ToArray();
-
-            //_logger.Print("Текст сериализован");
-            //_logger.Print($"Количество предложений {_buffer.Sentences.Count}");
-
-            //if (enumerable.Any())
-            //{
-            //    _logger.Print($"Количество ошибок при конвертации - {enumerable.Length}");
-            //    foreach (var error in enumerable)
-            //    {
-            //        _logger.Print(error);
-            //    }
-            //}
         }
     }
 }

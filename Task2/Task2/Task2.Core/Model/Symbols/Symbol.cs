@@ -12,5 +12,8 @@
         public SymbolType Type { get; }
 
         public char SymbolChar => _symbol;
+
+        public override string ToString() => _symbol.ToString();
+
     }
 }

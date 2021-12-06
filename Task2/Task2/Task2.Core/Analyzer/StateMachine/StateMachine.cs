@@ -20,10 +20,10 @@ namespace Task2.Core.Analyzer.StateMachine
 
         private ISymbol _currentSymbol;
 
-        internal StateMachine()
+        internal StateMachine(AnalyzerBuffer buffer)
         {
             _currentSymbol = new NoSymbol();
-            _buffer = new AnalyzerBuffer();
+            _buffer = buffer;
             _transitions = new Dictionary<StateTransition, Action<ISymbol>>
             {
                 {new StateTransition(SymbolType.NoSymbol, SymbolType.LetterOrDigit), AddSymbol},
@@ -92,7 +92,7 @@ namespace Task2.Core.Analyzer.StateMachine
             var transition = new StateTransition(_currentSymbol.Type, nextSymbol);
 
             if (!_transitions.TryGetValue(transition, out var command))
-                throw new ArgumentException("Invalid transition: " + _currentSymbol.Type + " -> " + nextSymbol);
+                throw new ArgumentException($"Invalid transition: {_currentSymbol.Type} -> {nextSymbol} in sentence {_buffer.Sentences.Count + 1}");
 
             return command;
         }
