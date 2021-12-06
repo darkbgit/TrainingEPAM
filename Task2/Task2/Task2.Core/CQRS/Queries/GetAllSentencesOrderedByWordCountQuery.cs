@@ -17,9 +17,9 @@ namespace Task2.Core.CQRS.Queries
             _text = text;
         }
 
-        public IText Execute()
+        public IEnumerable<ISentence> Execute()
         {
-            return new Text(_text.OrderBy(s => s.WordsCount));
+            return _text.OrderBy(s => s.WordsCount);
         }
     }
 }

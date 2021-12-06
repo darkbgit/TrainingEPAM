@@ -29,18 +29,24 @@ namespace Task2.Core.Tasks
             _output.Print("");
             var query = new GetAllSentencesOrderedByWordCountQuery(text);
             var result = query.Execute();
-            _output.Print(result);
+            foreach (var sentence in result)
+            {
+                _output.Print($"{sentence} {sentence.WordsCount} слов");
+            }
         }
 
         public void WordsFromQuestions(int wordLength, IText text)
         {
-            //var result = text.Select(s => s.Last() is Question)
             _output.Print("");
-            _output.Print("Все слова предложения текста в порядке возрастания количества слов в каждом из них");
+            _output.Print("Все слова заданной длины без повторений из вопросительных предложений текста");
             _output.Print("");
-            var query = new GetAllSentencesOrderedByWordCountQuery(text);
-            var result = query.Execute();
-            _output.Print(result);
+            var query = new GetAllWordsFromQuestionsQuery(text);
+            var result = query.Execute(wordLength);
+            foreach (var word in result)
+            {
+                _output.Print(word.ToString());
+            }
+
         }
 
         IText IWorker.DeleteWordsFromText(int wordLength, IText text)

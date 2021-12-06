@@ -42,7 +42,7 @@ namespace Task2
 
             worker.AllSentencesOrderedByWordsCount(text);
 
-            //worker.WordsFromQuestions(5, text);
+            worker.WordsFromQuestions(7, text);
 
             //worker.DeleteWordsFromText(8, text);
 

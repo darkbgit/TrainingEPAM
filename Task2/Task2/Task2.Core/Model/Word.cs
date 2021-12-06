@@ -38,5 +38,15 @@ namespace Task2.Core.Model
         {
             return ((IEnumerable)_symbols).GetEnumerator();
         }
+
+        public override int GetHashCode()
+        {
+            return 17 + 31 * _symbols.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Word other && _symbols == other._symbols;
+        }
     }
 }

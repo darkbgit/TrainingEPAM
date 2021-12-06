@@ -61,12 +61,12 @@ namespace Task2.Core.Analyzer.StateMachine
                 {new StateTransition(SymbolType.Ellipsis, SymbolType.Space), MakePunctuationAndMakeSentenceAndAddSymbol},
                 {new StateTransition(SymbolType.Ellipsis, SymbolType.NoSymbol), EndWithPunctuationEndSentence},
 
-                {new StateTransition(SymbolType.Question, SymbolType.LetterOrDigit), MakePunctuationAndMakeSentenceAndAddSymbol},
-                {new StateTransition(SymbolType.Question, SymbolType.PunctuationMark), MakePunctuationAndMakeSentenceAndAddSymbol},
-                {new StateTransition(SymbolType.Question, SymbolType.Dot), MakePunctuationAndMakeSentenceAndAddSymbol},
+                {new StateTransition(SymbolType.Question, SymbolType.LetterOrDigit), MakeQuestionAndMakeSentenceAndAddSymbol},
+                {new StateTransition(SymbolType.Question, SymbolType.PunctuationMark), MakeQuestionAndMakeSentenceAndAddSymbol},
+                {new StateTransition(SymbolType.Question, SymbolType.Dot), MakeQuestionAndMakeSentenceAndAddSymbol},
                 {new StateTransition(SymbolType.Question, SymbolType.Exclamation), MakeQuestionWithExclamation},
-                {new StateTransition(SymbolType.Question, SymbolType.Space), MakePunctuationAndMakeSentenceAndAddSymbol},
-                {new StateTransition(SymbolType.Question, SymbolType.NoSymbol), EndWithPunctuationEndSentence},
+                {new StateTransition(SymbolType.Question, SymbolType.Space), MakeQuestionAndMakeSentenceAndAddSymbol},
+                {new StateTransition(SymbolType.Question, SymbolType.NoSymbol), MakeQuestionAndMakeSentence},
 
                 {new StateTransition(SymbolType.QuestionWithExclamation, SymbolType.LetterOrDigit), MakePunctuationAndMakeSentenceAndAddSymbol},
                 {new StateTransition(SymbolType.QuestionWithExclamation, SymbolType.PunctuationMark), MakePunctuationAndMakeSentenceAndAddSymbol},
@@ -175,6 +175,24 @@ namespace Task2.Core.Analyzer.StateMachine
             _currentSymbol = new NoSymbol();
         }
 
+
+        private void MakeQuestionAndMakeSentenceAndAddSymbol(ISymbol nextSymbol)
+        {
+            _buffer.SentenceElements.Add(new Question());
+            _buffer.Symbols.Clear();
+            _buffer.Sentences.Add(new Sentence(_buffer.SentenceElements));
+            _buffer.SentenceElements.Clear();
+            _buffer.Symbols.Add(nextSymbol);
+        }
+
+        private void MakeQuestionAndMakeSentence(ISymbol nextSymbol)
+        {
+            _buffer.SentenceElements.Add(new Question());
+            _buffer.Symbols.Clear();
+            _buffer.Sentences.Add(new Sentence(_buffer.SentenceElements));
+            _buffer.SentenceElements.Clear();
+            _currentSymbol = new NoSymbol();
+        }
 
         private void EndWithLetterOrDigit(ISymbol nextSymbol)
         {

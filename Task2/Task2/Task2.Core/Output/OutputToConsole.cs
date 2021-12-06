@@ -18,16 +18,19 @@ namespace Task2.Core.Output
         {
             const char SPACE_CHAR = ' ';
 
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
 
             foreach (var sentence in text)
             {
-                Print(sentence);
-
+                foreach (var element in sentence)
+                {
+                    builder.Append(element);
+                }
                 builder.Append(SPACE_CHAR);
-
                 Console.Write(builder);
+                builder.Clear();
             }
+
             Console.WriteLine();
         }
 

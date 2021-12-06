@@ -2,7 +2,7 @@
 
 namespace Task2.Core.Model.Symbols.ManySigns
 {
-    internal class QuestionWithEllipsis : ISentenceElement
+    public class QuestionWithEllipsis : ISentenceElement
     {
     }
 }
