@@ -54,7 +54,6 @@ namespace Task2.Core.Analyzer
                     }
                     catch (ArgumentOutOfRangeException e)
                     {
-
                         _logger.Log(e.Message);
                     }
                     catch (ArgumentException e)

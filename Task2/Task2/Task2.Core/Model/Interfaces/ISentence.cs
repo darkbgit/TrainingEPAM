@@ -6,6 +6,6 @@ namespace Task2.Core.Model.Interfaces
     {
         int WordsCount { get; }
 
-        void RemoveAllElements(ISentenceElement element);
+        void RemoveAt(int index);
     }
 }

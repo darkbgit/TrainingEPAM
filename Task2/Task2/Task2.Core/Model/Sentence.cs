@@ -30,13 +30,9 @@ namespace Task2.Core.Model
             return builder.ToString();
         }
 
-        public void RemoveAllElements(ISentenceElement element)
+        public void RemoveAt(int index)
         {
-            bool flag = true;
-            while (flag)
-            {
-                flag = _elements.Remove(element);
-            }
+            _elements.RemoveAt(index);
         }
 
         public IEnumerator<ISentenceElement> GetEnumerator()

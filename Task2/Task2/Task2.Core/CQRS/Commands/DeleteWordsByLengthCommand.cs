@@ -26,13 +26,13 @@ namespace Task2.Core.CQRS.Commands
                 .ToList();
 
 
-            foreach (var sentence in _text)
+            for (int i = 0; i < _text.Count(); i++)
             {
-                foreach (var element in sentence)
+                for(int j = 0; j < _text.ElementAt(i).Count(); i++)
                 {
-                    if (q.Contains(element))
+                    if (q.Contains(_text.ElementAt(i).ElementAt(j)))
                     {
-                        sentence.RemoveAllElements(element);
+                        _text.ElementAt(i).RemoveAt(j);
                     }
                 }
             }
