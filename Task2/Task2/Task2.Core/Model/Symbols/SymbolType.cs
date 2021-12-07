@@ -2,7 +2,6 @@
 {
     public enum SymbolType
     {
-        NoSymbol,
         Begin,
         LetterOrDigit,
         PunctuationMark,

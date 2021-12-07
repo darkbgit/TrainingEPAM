@@ -7,11 +7,11 @@ using Task2.Core.Model.Interfaces;
 
 namespace Task2.Core.Model.Symbols
 {
-    public class NoSymbol : ISymbol
+    internal class EndSymbol : ISymbol
     {
-        public NoSymbol()
+        public EndSymbol()
         {
-            Type = SymbolType.NoSymbol;
+            Type = SymbolType.End;
         }
         public SymbolType Type { get; }
     }

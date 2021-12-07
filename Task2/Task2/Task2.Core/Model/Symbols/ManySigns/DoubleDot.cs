@@ -12,7 +12,5 @@ namespace Task2.Core.Model.Symbols.ManySigns
 
 
         public SymbolType Type { get; }
-
-
     }
 }

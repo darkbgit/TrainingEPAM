@@ -10,7 +10,6 @@ namespace Task2.Core.Model.Symbols.ManySigns
             Type = SymbolType.Ellipsis;
         }
 
-
         public SymbolType Type { get; }
 
         public override string ToString() => ELLIPSIS_WRITING;

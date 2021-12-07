@@ -14,9 +14,9 @@ namespace Task2.Core.Tasks
 
         void WordsFromQuestions(int wordLength, IText text);
 
-        IText DeleteWordsFromText(int wordLength, IText text);
+        void DeleteWordsFromText(int wordLength, IText text);
 
-        IText ExchangeWordsInSentence(int sentenceNumber, int wordLength, string substring, IText text);
+        void ExchangeWordsInSentence(int sentenceNumber, int wordLength, string substring, IText text);
 
     }
 }

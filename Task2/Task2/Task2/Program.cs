@@ -44,7 +44,7 @@ namespace Task2
 
             worker.WordsFromQuestions(7, text);
 
-            //worker.DeleteWordsFromText(8, text);
+            worker.DeleteWordsFromText(8, text);
 
             //worker.ExchangeWordsInSentence(8, 7);
 

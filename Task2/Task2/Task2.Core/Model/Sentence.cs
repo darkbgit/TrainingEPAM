@@ -11,14 +11,8 @@ namespace Task2.Core.Model
     {
         private readonly IList<ISentenceElement> _elements;
 
-        private const int MAX_SENTENCE_ELEMENTS = 1000;
-
         public Sentence(IEnumerable<ISentenceElement> elements)
         {
-            if (elements.Count() > MAX_SENTENCE_ELEMENTS)
-            {
-                throw new ApplicationException("Sentence too big");
-            }
             _elements = elements.ToList();
         }
 
@@ -34,6 +28,15 @@ namespace Task2.Core.Model
             }
 
             return builder.ToString();
+        }
+
+        public void RemoveAllElements(ISentenceElement element)
+        {
+            bool flag = true;
+            while (flag)
+            {
+                flag = _elements.Remove(element);
+            }
         }
 
         public IEnumerator<ISentenceElement> GetEnumerator()

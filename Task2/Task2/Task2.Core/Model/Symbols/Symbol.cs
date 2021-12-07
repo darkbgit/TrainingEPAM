@@ -15,5 +15,15 @@
 
         public override string ToString() => _symbol.ToString();
 
+        public override int GetHashCode()
+        {
+            return 17 + 37 * _symbol.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Symbol other && _symbol == other._symbol;
+        }
+
     }
 }

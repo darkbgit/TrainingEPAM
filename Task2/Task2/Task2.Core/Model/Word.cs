@@ -41,12 +41,15 @@ namespace Task2.Core.Model
 
         public override int GetHashCode()
         {
-            return 17 + 31 * _symbols.GetHashCode();
+            unchecked
+            {
+                return _symbols.Aggregate(17, (current, symbol) => current * 31 + symbol.GetHashCode());
+            }
         }
 
         public override bool Equals(object obj)
         {
-            return obj is Word other && _symbols == other._symbols;
+            return obj is Word other && _symbols.SequenceEqual(other._symbols);
         }
     }
 }

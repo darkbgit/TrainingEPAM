@@ -21,7 +21,8 @@ namespace Task2.Core.CQRS.Queries
 
         public IEnumerable<Word> Execute(int wordLength)
         {
-            var result = _text.Where(s => s.LastOrDefault() is Question or QuestionWithExclamation)
+            var result = _text
+                .Where(s => s.LastOrDefault() is Question or QuestionWithExclamation)
                 .SelectMany(s => s.OfType<Word>())
                 .Where(w => w.Length() == wordLength)
                 .Distinct()

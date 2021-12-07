@@ -30,7 +30,6 @@ namespace Task2.Core.Analyzer
         public Stream GetStream(string filePath)
         {
             return new FileStream(filePath, FileMode.Open, FileAccess.Read);
-
         }
 
         public IText Analyze(Stream stream)
@@ -53,7 +52,16 @@ namespace Task2.Core.Analyzer
                     {
                         stateMachine.MoveNext(nextSymbol)?.Invoke(nextSymbol);
                     }
+                    catch (ArgumentOutOfRangeException e)
+                    {
+
+                        _logger.Log(e.Message);
+                    }
                     catch (ArgumentException e)
+                    {
+                        _logger.Log(e.Message);
+                    }
+                    catch (ApplicationException e)
                     {
                         _logger.Log(e.Message);
                     }
@@ -62,9 +70,17 @@ namespace Task2.Core.Analyzer
 
             try
             {
-                stateMachine.MoveNext(new NoSymbol()).Invoke(new NoSymbol());
+                stateMachine.MoveNext(new EndSymbol()).Invoke(new EndSymbol());
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                _logger.Log(e.Message);
             }
             catch (ArgumentException e)
+            {
+                _logger.Log(e.Message);
+            }
+            catch (ApplicationException e)
             {
                 _logger.Log(e.Message);
             }
