@@ -2,7 +2,9 @@
 using System.Configuration;
 using System.IO;
 using Task2.Core.Analyzer;
+using Task2.Core.IO;
 using Task2.Core.Loggers;
+using Task2.Core.Model.Interfaces;
 using Task2.Core.Output;
 using Task2.Core.Tasks;
 
@@ -21,32 +23,26 @@ namespace Task2
                 ?? throw new ArgumentException("Couldn't get file path from app.settings");
 
 
-            if (!File.Exists(filePath))
-            {
-                throw new FileNotFoundException($"File {filePath} don't find");
-            }
-
             IOutput output = new OutputToConsole();
 
-            
+            IText text;
 
-            IAnalyzer analyzer = new TextAnalyzer(logger);
+            using (var file = new FileAssist(filePath))
+            {
+                IAnalyzer analyzer = new StreamAnalyzer(file.FileStream, logger);
 
-            var fs = analyzer.GetStream(filePath);
+                text = analyzer.Analyze();
+            }
 
-            var text = analyzer.Analyze(fs);
+            IWorker worker = new TasksWorker(text, output);
 
-            //logger.Output(text);
+            worker.AllSentencesOrderedByWordsCount();
 
-            IWorker worker = new TasksWorker(output);
+            worker.WordsFromQuestions(7);
 
-            worker.AllSentencesOrderedByWordsCount(text);
+            worker.DeleteWordsFromText(8);
 
-            worker.WordsFromQuestions(7, text);
-
-            worker.DeleteWordsFromText(8, text);
-
-            //worker.ExchangeWordsInSentence(8, 7);
+            worker.ExchangeWordsInSentence(2, 7, "hello, duck");
 
         }
 

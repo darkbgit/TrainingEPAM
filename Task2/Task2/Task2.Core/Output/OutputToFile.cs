@@ -15,17 +15,12 @@ namespace Task2.Core.Output
             throw new NotImplementedException();
         }
 
-        public void Print(IText text)
-        {
-            throw new NotImplementedException();
-        }
-
         public void Print(ISentence sentence)
         {
             throw new NotImplementedException();
         }
 
-        public void Output(IText text)
+        public void Print(IText text)
         {
             const char SPACE_CHAR = ' ';
             var outputPath = "";

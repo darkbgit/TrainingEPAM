@@ -9,14 +9,12 @@ namespace Task2.Core.Tasks
 {
     public interface IWorker
     {
+        void AllSentencesOrderedByWordsCount();
 
-        void AllSentencesOrderedByWordsCount(IText text);
+        void WordsFromQuestions(int wordLength);
 
-        void WordsFromQuestions(int wordLength, IText text);
+        void DeleteWordsFromText(int wordLength);
 
-        void DeleteWordsFromText(int wordLength, IText text);
-
-        void ExchangeWordsInSentence(int sentenceNumber, int wordLength, string substring, IText text);
-
+        void ExchangeWordsInSentence(int sentenceNumber, int wordLength, string substring);
     }
 }

@@ -7,5 +7,7 @@ namespace Task2.Core.Model.Interfaces
         int WordsCount { get; }
 
         void RemoveAt(int index);
+
+        void AddRangeAt(int index, IEnumerable<ISentenceElement> elements);
     }
 }

@@ -16,31 +16,33 @@ using Task2.Core.Model.Symbols.OneSign;
 
 namespace Task2.Core.Analyzer
 {
-    public class TextAnalyzer : IAnalyzer
+    public class StreamAnalyzer : IAnalyzer
     {
         private readonly ILogger _logger;
+        private readonly Stream _stream;
 
 
-        public TextAnalyzer(ILogger logger)
+        public StreamAnalyzer(Stream stream, ILogger logger)
         {
             _logger = logger;
+            _stream = stream;
         }
 
-
-        public Stream GetStream(string filePath)
+        public StreamAnalyzer(Stream stream)
         {
-            return new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            _logger = null;
+            _stream = stream;
         }
 
-        public IText Analyze(Stream stream)
+        public IText Analyze()
         {
             var buffer = new AnalyzerBuffer();
 
             IStateMachine stateMachine = new StateMachine.StateMachine(buffer);
 
-            using (stream)
+            using (_stream)
             {
-                var reader = new StreamReader(stream);
+                var reader = new StreamReader(_stream);
 
                 while (reader.Peek() != -1)
                 {
@@ -54,15 +56,15 @@ namespace Task2.Core.Analyzer
                     }
                     catch (ArgumentOutOfRangeException e)
                     {
-                        _logger.Log(e.Message);
+                        _logger?.Log(e.Message);
                     }
                     catch (ArgumentException e)
                     {
-                        _logger.Log(e.Message);
+                        _logger?.Log(e.Message);
                     }
                     catch (ApplicationException e)
                     {
-                        _logger.Log(e.Message);
+                        _logger?.Log(e.Message);
                     }
                 }
             }
@@ -73,18 +75,18 @@ namespace Task2.Core.Analyzer
             }
             catch (ArgumentOutOfRangeException e)
             {
-                _logger.Log(e.Message);
+                _logger?.Log(e.Message);
             }
             catch (ArgumentException e)
             {
-                _logger.Log(e.Message);
+                _logger?.Log(e.Message);
             }
             catch (ApplicationException e)
             {
-                _logger.Log(e.Message);
+                _logger?.Log(e.Message);
             }
 
-            _logger.Log($"Сериализовано {buffer.Sentences.Count} предложений");
+            _logger?.Log($"Сериализовано {buffer.Sentences.Count} предложений");
 
             return new Text(buffer.Sentences);
         }

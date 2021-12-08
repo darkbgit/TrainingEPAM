@@ -35,6 +35,16 @@ namespace Task2.Core.Model
             _elements.RemoveAt(index);
         }
 
+        public void AddRangeAt(int index, IEnumerable<ISentenceElement> elements)
+        {
+            var sentenceElements = elements.ToList();
+
+            for (int i = 0; i < sentenceElements.Count; i++)
+            {
+                _elements.Insert(index + i, sentenceElements[i]);
+            }
+        }
+
         public IEnumerator<ISentenceElement> GetEnumerator()
         {
             return ((IEnumerable<ISentenceElement>)_elements).GetEnumerator();
