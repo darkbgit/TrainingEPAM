@@ -22,8 +22,8 @@ namespace Task2.Core.Tasks.Queries
                 .Where(s => s.LastOrDefault() is Question or QuestionWithExclamation)
                 .SelectMany(s => s.OfType<Word>())
                 .Where(w => w.Length() == wordLength)
-                .Distinct()
-                .ToList();
+                .Distinct();
+                //.ToList();
             return result;
         }
     }

@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Task2.Core.IO
+namespace Task2.Core.IO.Files
 {
     public class FileAssist : IDisposable
     {

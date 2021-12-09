@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Task2.Core.Analyzer;
+using Task2.Core.IO;
 using Task2.Core.Model;
 using Task2.Core.Model.Interfaces;
-using Task2.Core.Output;
 using Task2.Core.Tasks.Commands;
 using Task2.Core.Tasks.Queries;
 
@@ -41,9 +41,19 @@ namespace Task2.Core.Tasks
             _output.Print("");
             var query = new GetAllWordsFromQuestionsQuery(_text);
             var result = query.Execute(wordLength);
-            foreach (var word in result)
+
+            var words = result as Word[] ?? result.ToArray();
+
+            if (words.Any())
             {
-                _output.Print(word.ToString());
+                foreach (var word in words)
+                {
+                    _output.Print(word.ToString());
+                }
+            }
+            else
+            {
+                _output.Print("Слова не найдены");
             }
         }
 

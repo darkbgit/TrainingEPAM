@@ -86,9 +86,13 @@ namespace Task2.Core.Analyzer
                 _logger?.Log(e.Message);
             }
 
-            _logger?.Log($"Сериализовано {buffer.Sentences.Count} предложений");
+            if (buffer.Sentences.Any())
+            {
+                _logger?.Log($"Сериализовано {buffer.Sentences.Count} предложений");
+                return new Text(buffer.Sentences);
+            }
 
-            return new Text(buffer.Sentences);
+            throw new ArgumentException("Stream didn't serialized");
         }
 
         private static ISymbol GetSymbol(char c)
