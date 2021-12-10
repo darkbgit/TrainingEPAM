@@ -6,11 +6,13 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Task2.Core.Model;
 
 namespace Task2.Core.IO.Consoles
 {
     public class CommandLine : ICommandLine
     {
+
 
         public CommandLineCommand CommandLineArgumentParser(string[] args)
         {
@@ -31,11 +33,11 @@ namespace Task2.Core.IO.Consoles
                     switch (args[0])
                     {
                         case CommandLineArguments.PrintDistinctWordsFromQuestionByWordLength:
-                            CheckNumeric(args[1]);
+                            CheckNumeric(args[1], Params.MaxSymbolsInWord);
                             command = CommandLineCommand.PrintDistinctWordsFromQuestionByWordLength;
                             break;
                         case CommandLineArguments.DeleteWordsByWordLength:
-                            CheckNumeric(args[1]);
+                            CheckNumeric(args[1], Params.MaxSymbolsInWord);
                             command = CommandLineCommand.DeleteWordsByWordLength;
                             break;
                         case CommandLineArguments.SaveToFile:
@@ -53,7 +55,7 @@ namespace Task2.Core.IO.Consoles
                     {
                         case CommandLineArguments.ExchangeWordsInSentenceBySubstring:
                             CheckNumeric(args[1]);
-                            CheckNumeric(args[2]);
+                            CheckNumeric(args[2], Params.MaxSymbolsInWord);
                             CheckSubstring(args[3]);
                             return CommandLineCommand.ExchangeWordsInSentenceBySubstring;
                         default:
@@ -66,27 +68,67 @@ namespace Task2.Core.IO.Consoles
         
         public string[] GetArguments()
         {
+            const char QUOTATION = '"';
+            const char SEPARATOR = ' ';
 
-            return Console.ReadLine()?.Split(' ').ToArray() 
-                   ?? Array.Empty<string>();
+            var line = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                return Array.Empty<string>();
+            }
+
+            if (line.Count(ch => ch == QUOTATION) % 2 != 0)
+            {
+                throw new ArgumentException("Неверный формат командной строки");
+            }
+
+            var arguments = line.Split(SEPARATOR).ToList();
+
+            int index = arguments.FindIndex(s => s.First() == QUOTATION);
+
+            while (index != -1)
+            {
+                int nextIndex = arguments.FindIndex(index, s => s.Last() == QUOTATION);
+
+                if (nextIndex == -1)
+                {
+                    throw new ArgumentException("Неверная расстановка кавычек");
+                }
+
+                arguments[index] = arguments[index][1..];
+                for (int i = index; i < nextIndex; i++)
+                {
+                    arguments[index] += ' ' + arguments[index + 1];
+                    arguments.RemoveAt(index + 1);
+                }
+
+                arguments[index] = arguments[index][..^1];
+
+                index = arguments.FindIndex(index + 1, s => s.First() == QUOTATION);
+            }
+            
+            return arguments.ToArray();
         }
 
-        private void CheckNumeric(string str)
+        private static void CheckNumeric(string str, int maxValue = int.MaxValue)
         {
-            if(!uint.TryParse(str, NumberStyles.Integer, CultureInfo.InvariantCulture, out _))
+            const int MIN_VALUE = 1;
+
+            if (!int.TryParse(str, NumberStyles.Integer, CultureInfo.InvariantCulture, out var number) ||
+                number < MIN_VALUE || number > maxValue)
             {
-                throw new ArgumentException($"\"{str}\" не целое положительное число");
+                throw new ArgumentException($"\"{str}\" Длина слова должна быть в диапазоне {MIN_VALUE}-{maxValue}");
             }
         }
 
         private void CheckPath(string str)
         {
-            if (string.IsNullOrWhiteSpace(str))
+            if (string.IsNullOrWhiteSpace(str) || str.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
             {
                 throw new ArgumentException("Строка не должна быть пустой или состоять из одних пробелов");
             }
 
-            _ = Path.GetFullPath(str);
+            _ = new FileInfo(str);
         }
 
         private void CheckSubstring(string str)
@@ -101,7 +143,7 @@ namespace Task2.Core.IO.Consoles
             var index = str.IndexOfAny(endOfSentenceChar);
             if (index != -1)
             {
-                throw new ArgumentException($"под строка не должна содержать символ конца предложения \"{str[index]}\"");
+                throw new ArgumentException($"подстрока не должна содержать символ конца предложения \"{str[index]}\"");
             }
         }
 

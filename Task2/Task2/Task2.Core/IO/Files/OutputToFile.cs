@@ -7,6 +7,13 @@ namespace Task2.Core.IO.Files
 {
     internal class OutputToFile : IOutput
     {
+        private readonly string _filePath;
+
+        public OutputToFile(string filePath)
+        {
+            _filePath = filePath;
+        }
+
         public void Print(string str)
         {
             throw new NotImplementedException();
@@ -20,29 +27,22 @@ namespace Task2.Core.IO.Files
         public void Print(IText text)
         {
             const char SPACE_CHAR = ' ';
-            var outputPath = "";
 
-            if (!File.Exists(outputPath))
+            using var file = new FileAssist(_filePath, FileMode.Create, FileAccess.Write);
+
+            using var sw = new StreamWriter(file.FileStream, Encoding.Default);
+
+            var builder = new StringBuilder();
+
+            foreach (var sentence in text)
             {
-                File.Delete(outputPath);
-            }
-
-            using (FileStream fs = new FileStream(outputPath, FileMode.CreateNew))
-            {
-                StreamWriter sw = new StreamWriter(fs, Encoding.Default);
-
-                StringBuilder builder = new StringBuilder();
-
-                foreach (var sentence in text)
+                foreach (var element in sentence)
                 {
-                    builder.Clear();
-                    builder.Append(SPACE_CHAR);
-                    foreach (var element in sentence)
-                    {
-                        builder.Append(element);
-                    }
-                    sw.Write(builder);
+                    builder.Append(element);
                 }
+                builder.Append(SPACE_CHAR);
+                sw.Write(builder);
+                builder.Clear();
             }
         }
     }

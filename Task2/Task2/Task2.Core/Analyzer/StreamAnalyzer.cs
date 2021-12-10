@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
-using System.Threading.Tasks;
 using Task2.Core.Analyzer.StateMachine;
 using Task2.Core.Loggers;
 using Task2.Core.Model;

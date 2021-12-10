@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Task2.Core.Analyzer;
@@ -18,6 +19,14 @@ namespace Task2.Core.Tasks.Commands
 
         public void Execute(int sentenceNumber, int wordLength, string substring)
         {
+            var textLength = _text.Count();
+            if (sentenceNumber > textLength)
+            {
+                throw new ArgumentException(
+                    $"Номер предложения слишком большой. Количество предложений в тексте {textLength}");
+            }
+
+
             var stream = StrToStream(substring);
 
             IAnalyzer analyzer = new StreamAnalyzer(stream);

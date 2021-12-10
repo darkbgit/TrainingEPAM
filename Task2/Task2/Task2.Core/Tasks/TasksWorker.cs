@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Task2.Core.Analyzer;
 using Task2.Core.IO;
+using Task2.Core.IO.Files;
 using Task2.Core.Model;
 using Task2.Core.Model.Interfaces;
 using Task2.Core.Tasks.Commands;
@@ -23,10 +25,10 @@ namespace Task2.Core.Tasks
 
         public void AllSentencesOrderedByWordsCount()
         {
+            var query = new GetAllSentencesOrderedByWordCountQuery(_text);
             _output.Print("");
             _output.Print("Все предложения текста в порядке возрастания количества слов в каждом из них");
             _output.Print("");
-            var query = new GetAllSentencesOrderedByWordCountQuery(_text);
             var result = query.Execute();
             foreach (var sentence in result)
             {
@@ -36,11 +38,11 @@ namespace Task2.Core.Tasks
 
         public void WordsFromQuestions(int wordLength)
         {
+            var query = new GetAllWordsFromQuestionsQuery(_text);
+            var result = query.Execute(wordLength);
             _output.Print("");
             _output.Print("Все слова заданной длины без повторений из вопросительных предложений текста");
             _output.Print("");
-            var query = new GetAllWordsFromQuestionsQuery(_text);
-            var result = query.Execute(wordLength);
 
             var words = result as Word[] ?? result.ToArray();
 
@@ -59,27 +61,30 @@ namespace Task2.Core.Tasks
 
         public void DeleteWordsFromText(int wordLength)
         {
+            var command = new DeleteWordsByLengthCommand(_text);
+            command.Execute(wordLength);
             _output.Print("");
             _output.Print("Удалить все слова заданной длины, начинающихся на согласную букву");
             _output.Print("");
 
-            var command = new DeleteWordsByLengthCommand(_text);
-            command.Execute(wordLength);
-
             _output.Print(_text);
-
         }
 
         public void ExchangeWordsInSentence(int sentenceNumber, int wordLength, string substring)
         {
+            var command = new ExchangeWordsBySubstring(_text);
+            command.Execute(sentenceNumber, wordLength, substring);
             _output.Print("");
             _output.Print("Все слова заданной длины заменить указанной подстрокой");
             _output.Print("");
-
-            var command = new ExchangeWordsBySubstring(_text);
-            command.Execute(sentenceNumber, wordLength, substring);
-
             _output.Print(_text);
+        }
+
+        public void SaveToFile(string filePath)
+        {
+            IOutput output = new OutputToFile(filePath);
+
+            output.Print(_text);
         }
     }
 }

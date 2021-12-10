@@ -16,5 +16,7 @@ namespace Task2.Core.Tasks
         void DeleteWordsFromText(int wordLength);
 
         void ExchangeWordsInSentence(int sentenceNumber, int wordLength, string substring);
+
+        void SaveToFile(string filePath);
     }
 }

@@ -6,7 +6,7 @@ using Task2.Core.Model.Interfaces;
 
 namespace Task2.Core.IO
 {
-    public class Terminal : ITerminal //: IOutput, IInput
+    public class Terminal : ITerminal
 
     {
     private readonly string _helpString;

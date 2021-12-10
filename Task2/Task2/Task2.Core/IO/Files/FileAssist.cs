@@ -5,14 +5,12 @@ namespace Task2.Core.IO.Files
 {
     public class FileAssist : IDisposable
     {
-        public FileStream FileStream { get; set; }
-
-        public FileAssist(string filePath)
+        public FileAssist(string filePath, FileMode fileMode, FileAccess fileAccess)
         {
-            FileStream = File.Exists(filePath)
-                ? new FileStream(filePath, FileMode.Open, FileAccess.Read)
-                : throw new FileNotFoundException($"File {filePath} don't find");
+            FileStream = new FileStream(filePath, fileMode, fileAccess);
         }
+
+        public FileStream FileStream { get; set; }
 
         private void Dispose(bool disposing)
         {
