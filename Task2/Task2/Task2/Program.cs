@@ -2,7 +2,13 @@
 using System.Configuration;
 using System.IO;
 using Task2.Core.Analyzer;
-using Task2.Output;
+using Task2.Core.IO;
+using Task2.Core.IO.Consoles;
+using Task2.Core.IO.Files;
+using Task2.Core.Loggers;
+using Task2.Core.Model.Interfaces;
+using Task2.Core.Tasks;
+
 
 namespace Task2
 {
@@ -10,35 +16,85 @@ namespace Task2
     {
         static void Main(string[] args)
         {
+            ILogger logger = new ConsoleLogger();
+
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
             var filePath = ConfigurationManager.AppSettings["TextFileForParsing"]
                 ?? throw new ArgumentException("Couldn't get file path from app.settings");
 
+            IText text;
 
-            if (!File.Exists(filePath))
+            using (var file = new FileAssist(filePath, FileMode.Open, FileAccess.Read))
             {
-                throw new FileNotFoundException($"File {filePath} don't find");
+                IAnalyzer analyzer = new StreamAnalyzer(file.FileStream, logger);
+
+                text = analyzer.Analyze();
             }
 
-            ILogger logger = new ConsoleLogger();
+            ICommandLine commandLine = new CommandLine();
+            IOutput output = new OutputToConsole();
 
-            IAnalyzer analyzer = new TextAnalyzer(logger);
+            ITerminal terminal = new Terminal(commandLine, output);
+            
+            IWorker worker = new TasksWorker(text, output);
 
-            var text = analyzer.Analyze(filePath);
+            bool breakFlag = true;
+            while (breakFlag)
+            {
+                CommandLineCommand command;
+                try
+                {
+                    command = commandLine.CommandLineArgumentParser(args);
 
-            logger.Print(text.ToString());
+                    switch (command)
+                    {
+                        case CommandLineCommand.PrintData:
+                            terminal.Print(text);
+                            break;
+                        case CommandLineCommand.PrintAllSentencesOrderedByWordsCount:
+                            worker.AllSentencesOrderedByWordsCount();
+                            break;
+                        case CommandLineCommand.PrintDistinctWordsFromQuestionByWordLength:
+                            worker.WordsFromQuestions(Convert.ToInt32(args[1]));
+                            break;
+                        case CommandLineCommand.DeleteWordsByWordLength:
+                            worker.DeleteWordsFromText(Convert.ToInt32(args[1]));
+                            break;
+                        case CommandLineCommand.ExchangeWordsInSentenceBySubstring:
+                            worker.ExchangeWordsInSentence(Convert.ToInt32(args[1]),
+                                Convert.ToInt32(args[2]),
+                                args[3]);
+                            break;
+                        case CommandLineCommand.SaveToFile:
+                            worker.SaveToFile(args[1]);
+                            break;
+                        case CommandLineCommand.Exit:
+                            breakFlag = false;
+                            continue;
+                        case CommandLineCommand.UndefinedCommand:
+                        case CommandLineCommand.Base:
+                        default:
+                            terminal.PrintHelp();
+                            break;
+                    }
+                }
+                catch (ArgumentException e)
+                {
+                    terminal.Print(e.Message);
+                    command = CommandLineCommand.Base;
+                }
 
-            TasksWorker worker = new TasksWorker(logger);
-
-            worker.AllSentencesOrderedByWordsCount(text);
-
-            //    worker.WordsFromQuestions(5);
-
-            //    worker.DeleteWordsFromText(8);
-
-            //    worker.ExchangeWordsInSentence(8, 7);
-
+                try
+                {
+                    args = commandLine.GetArguments();
+                }
+                catch (ArgumentException e)
+                {
+                    terminal.Print(e.Message);
+                    args =  Array.Empty<string>();
+                }
+            }
         }
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
