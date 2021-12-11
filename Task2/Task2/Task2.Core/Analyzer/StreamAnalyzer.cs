@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Task2.Core.Analyzer.StateMachine;
 using Task2.Core.Loggers;
 using Task2.Core.Model;
@@ -38,29 +39,30 @@ namespace Task2.Core.Analyzer
 
             using (_stream)
             {
-                var reader = new StreamReader(_stream);
+                var reader = new StreamReader(_stream, Encoding.Default);
 
                 while (reader.Peek() != -1)
                 {
-                    var character = reader.Read();
+                    var charBuffer = new char[1070];
 
-                    var nextSymbol = GetSymbol((char)character);
+                    var readLength = reader.Read(charBuffer, 0, charBuffer.Length);
 
-                    try
+                    for (var i = 0; i < readLength; i++)
                     {
-                        stateMachine.MoveNext(nextSymbol)?.Invoke(nextSymbol);
-                    }
-                    catch (ArgumentOutOfRangeException e)
-                    {
-                        _logger?.Log(e.Message);
-                    }
-                    catch (ArgumentException e)
-                    {
-                        _logger?.Log(e.Message);
-                    }
-                    catch (ApplicationException e)
-                    {
-                        _logger?.Log(e.Message);
+                        var nextSymbol = GetSymbol(charBuffer[i]);
+
+                        try
+                        {
+                            stateMachine.MoveNext(nextSymbol)?.Invoke(nextSymbol);
+                        }
+                        catch (ArgumentOutOfRangeException e)
+                        {
+                            _logger?.Log(e.Message);
+                        }
+                        catch (StateMachineException e)
+                        {
+                            _logger?.Log(e.Message);
+                        }
                     }
                 }
             }
@@ -73,11 +75,7 @@ namespace Task2.Core.Analyzer
             {
                 _logger?.Log(e.Message);
             }
-            catch (ArgumentException e)
-            {
-                _logger?.Log(e.Message);
-            }
-            catch (ApplicationException e)
+            catch (StateMachineException e)
             {
                 _logger?.Log(e.Message);
             }
@@ -129,6 +127,11 @@ namespace Task2.Core.Analyzer
             }
 
             return symbol;
+        }
+
+        public void Dispose()
+        {
+            _stream?.Dispose();
         }
     }
 }

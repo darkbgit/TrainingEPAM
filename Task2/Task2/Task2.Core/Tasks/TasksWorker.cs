@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
-using Task2.Core.Analyzer;
 using Task2.Core.IO;
 using Task2.Core.IO.Files;
 using Task2.Core.Model;
@@ -26,10 +23,12 @@ namespace Task2.Core.Tasks
         public void AllSentencesOrderedByWordsCount()
         {
             var query = new GetAllSentencesOrderedByWordCountQuery(_text);
+            var result = query.Execute();
+
             _output.Print("");
             _output.Print("Все предложения текста в порядке возрастания количества слов в каждом из них");
             _output.Print("");
-            var result = query.Execute();
+
             foreach (var sentence in result)
             {
                 _output.Print($"{sentence} {sentence.WordsCount} слов");
@@ -40,6 +39,7 @@ namespace Task2.Core.Tasks
         {
             var query = new GetAllWordsFromQuestionsQuery(_text);
             var result = query.Execute(wordLength);
+
             _output.Print("");
             _output.Print("Все слова заданной длины без повторений из вопросительных предложений текста");
             _output.Print("");
@@ -63,6 +63,7 @@ namespace Task2.Core.Tasks
         {
             var command = new DeleteWordsByLengthCommand(_text);
             command.Execute(wordLength);
+
             _output.Print("");
             _output.Print("Удалить все слова заданной длины, начинающихся на согласную букву");
             _output.Print("");
@@ -74,6 +75,7 @@ namespace Task2.Core.Tasks
         {
             var command = new ExchangeWordsBySubstring(_text);
             command.Execute(sentenceNumber, wordLength, substring);
+
             _output.Print("");
             _output.Print("Все слова заданной длины заменить указанной подстрокой");
             _output.Print("");
@@ -82,9 +84,13 @@ namespace Task2.Core.Tasks
 
         public void SaveToFile(string filePath)
         {
-            IOutput output = new OutputToFile(filePath);
+            IOutput outputFile = new OutputToFile(filePath);
 
-            output.Print(_text);
+            outputFile.Print(_text);
+
+            var fullFilePath = Path.GetFullPath(filePath);
+            _output.Print($"Файл {fullFilePath} сохранен");
+
         }
     }
 }

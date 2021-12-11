@@ -7,7 +7,19 @@ namespace Task2.Core.IO.Files
     {
         public FileAssist(string filePath, FileMode fileMode, FileAccess fileAccess)
         {
-            FileStream = new FileStream(filePath, fileMode, fileAccess);
+            try
+            {
+                FileStream = new FileStream(filePath, fileMode, fileAccess);
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                throw new ArgumentException(e.Message);
+            }
+            catch (DirectoryNotFoundException e)
+            {
+                throw new ArgumentException(e.Message);
+            }
+
         }
 
         public FileStream FileStream { get; set; }

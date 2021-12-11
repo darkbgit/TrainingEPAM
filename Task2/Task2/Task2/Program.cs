@@ -27,26 +27,33 @@ namespace Task2
 
             using (var file = new FileAssist(filePath, FileMode.Open, FileAccess.Read))
             {
-                IAnalyzer analyzer = new StreamAnalyzer(file.FileStream, logger);
+                using IAnalyzer analyzer = new StreamAnalyzer(file.FileStream, logger);
 
                 text = analyzer.Analyze();
             }
 
-            ICommandLine commandLine = new CommandLine();
             IOutput output = new OutputToConsole();
 
-            ITerminal terminal = new Terminal(commandLine, output);
+            ITerminal terminal = new Terminal(new CommandLine(), output);
             
             IWorker worker = new TasksWorker(text, output);
+
+            CommandLineCommand command;
+            try
+            {
+                command = terminal.CommandLineArgumentParser(args);
+            }
+            catch (ArgumentException e)
+            {
+                terminal.Print(e.Message);
+                command = CommandLineCommand.Base;
+            }
 
             bool breakFlag = true;
             while (breakFlag)
             {
-                CommandLineCommand command;
                 try
                 {
-                    command = commandLine.CommandLineArgumentParser(args);
-
                     switch (command)
                     {
                         case CommandLineCommand.PrintData:
@@ -82,17 +89,16 @@ namespace Task2
                 catch (ArgumentException e)
                 {
                     terminal.Print(e.Message);
-                    command = CommandLineCommand.Base;
                 }
 
                 try
                 {
-                    args = commandLine.GetArguments();
+                    (command, args) = terminal.CommandLineArgumentParser();
                 }
                 catch (ArgumentException e)
                 {
                     terminal.Print(e.Message);
-                    args =  Array.Empty<string>();
+                    command = CommandLineCommand.Base;
                 }
             }
         }

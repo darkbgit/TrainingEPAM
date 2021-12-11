@@ -37,6 +37,19 @@ namespace Task2.Core.IO
         _output.Print(sentence);
     }
 
+    public CommandLineCommand CommandLineArgumentParser(string[] args)
+    {
+        return _commandLine.CommandLineArgumentParser(args);
+    }
+
+    public (CommandLineCommand command, string[] args) CommandLineArgumentParser()
+    {
+        var args = _commandLine.GetArguments();
+        var command = _commandLine.CommandLineArgumentParser(args);
+
+        return (command, args);
+    }
+
 
     public void PrintHelp()
     {

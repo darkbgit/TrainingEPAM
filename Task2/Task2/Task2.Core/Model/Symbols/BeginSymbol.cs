@@ -7,7 +7,7 @@ using Task2.Core.Model.Interfaces;
 
 namespace Task2.Core.Model.Symbols
 {
-    public class BeginSymbol : ISymbol
+    internal class BeginSymbol : ISymbol
     {
         public BeginSymbol()
         {

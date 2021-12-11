@@ -28,22 +28,28 @@ namespace Task2.Core.IO.Files
         {
             const char SPACE_CHAR = ' ';
 
-            using var file = new FileAssist(_filePath, FileMode.Create, FileAccess.Write);
-
-            using var sw = new StreamWriter(file.FileStream, Encoding.Default);
-
-            var builder = new StringBuilder();
-
-            foreach (var sentence in text)
+            using (var file = new FileAssist(_filePath, FileMode.Create, FileAccess.Write))
             {
-                foreach (var element in sentence)
+                using (var sw = new StreamWriter(file.FileStream, Encoding.Default))
                 {
-                    builder.Append(element);
+
+                    var builder = new StringBuilder();
+
+                    foreach (var sentence in text)
+                    {
+                        foreach (var element in sentence)
+                        {
+                            builder.Append(element);
+                        }
+
+                        builder.Append(SPACE_CHAR);
+                        sw.Write(builder);
+                        builder.Clear();
+                    }
                 }
-                builder.Append(SPACE_CHAR);
-                sw.Write(builder);
-                builder.Clear();
             }
+
+
         }
     }
 }

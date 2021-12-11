@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Task2.Core.Model;
 using Task2.Core.Model.Interfaces;
+using Task2.Core.Model.Symbols.OneSign;
 
 namespace Task2.Core.Tasks.Commands
 {
@@ -15,7 +16,7 @@ namespace Task2.Core.Tasks.Commands
 
         public void Execute(int wordLength)
         {
-            var q = _text
+            var wordsForDeleting = _text
                 .SelectMany(s => s.OfType<Word>())
                 .Where(w => w.Length() == wordLength && Consonant.IsConsonantChar(w.FirstOrDefault()?.ToString()?[0]))
                 .ToList();
@@ -25,9 +26,13 @@ namespace Task2.Core.Tasks.Commands
             {
                 for(int j = 0; j < _text.ElementAt(i).Count(); j++)
                 {
-                    if (q.Contains(_text.ElementAt(i).ElementAt(j)))
+                    if (wordsForDeleting.Contains(_text.ElementAt(i).ElementAt(j)))
                     {
                         _text.ElementAt(i).RemoveAt(j);
+                        if (j > 1 && _text.ElementAt(i).ElementAt(j - 1) is Space)
+                        {
+                            _text.ElementAt(i).RemoveAt(j - 1);
+                        }
                     }
                 }
             }

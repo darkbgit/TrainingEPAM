@@ -2,7 +2,7 @@
 
 namespace Task2.Core.Model.Symbols.ManySigns
 {
-    public class DoubleDot : ISymbol
+    internal class DoubleDot : ISymbol
     {
 
         public DoubleDot()

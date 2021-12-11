@@ -2,10 +2,6 @@
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text.RegularExpressions;
-using System.Threading;
 using Task2.Core.Model;
 
 namespace Task2.Core.IO.Consoles
@@ -48,7 +44,7 @@ namespace Task2.Core.IO.Consoles
                             throw new ArgumentException($"команды \"{args[0]}\" c одним параметром не существует");
                     }
 
-                   
+
                     return command;
                 case 4:
                     switch (args[0])
@@ -65,7 +61,7 @@ namespace Task2.Core.IO.Consoles
                     throw new ArgumentException("Недопустимое количество аргументов");
             }
         }
-        
+
         public string[] GetArguments()
         {
             const char QUOTATION = '"';
@@ -106,7 +102,7 @@ namespace Task2.Core.IO.Consoles
 
                 index = arguments.FindIndex(index + 1, s => s.First() == QUOTATION);
             }
-            
+
             return arguments.ToArray();
         }
 
@@ -123,9 +119,14 @@ namespace Task2.Core.IO.Consoles
 
         private void CheckPath(string str)
         {
-            if (string.IsNullOrWhiteSpace(str) || str.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
+            if (string.IsNullOrWhiteSpace(str) || str.IndexOfAny(Path.GetInvalidPathChars()) != -1)
             {
-                throw new ArgumentException("Строка не должна быть пустой или состоять из одних пробелов");
+                throw new ArgumentException("Неверный путь файла");
+            }
+
+            if (Path.GetFileNameWithoutExtension(str).IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
+            {
+                throw new ArgumentException("Неверное имя файла");
             }
 
             _ = new FileInfo(str);
@@ -133,7 +134,7 @@ namespace Task2.Core.IO.Consoles
 
         private void CheckSubstring(string str)
         {
-            char[] endOfSentenceChar = {'.', '!', '?'};
+            char[] endOfSentenceChar = { '.', '!', '?' };
 
             if (string.IsNullOrWhiteSpace(str))
             {
