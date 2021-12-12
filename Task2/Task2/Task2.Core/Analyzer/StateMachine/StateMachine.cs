@@ -5,7 +5,6 @@ using Task2.Core.Model;
 using Task2.Core.Model.Interfaces;
 using Task2.Core.Model.Symbols;
 using Task2.Core.Model.Symbols.ManySigns;
-using Task2.Core.Model.Symbols.OneSign;
 
 namespace Task2.Core.Analyzer.StateMachine
 {

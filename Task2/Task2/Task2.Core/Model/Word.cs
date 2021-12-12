@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Task2.Core.Model.Interfaces;
-using Task2.Core.Model.Symbols;
 
 namespace Task2.Core.Model
 {

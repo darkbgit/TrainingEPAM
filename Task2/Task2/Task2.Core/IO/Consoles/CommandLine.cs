@@ -12,53 +12,51 @@ namespace Task2.Core.IO.Consoles
 
         public CommandLineCommand CommandLineArgumentParser(string[] args)
         {
-            switch (args.Length)
+            if (args.Length == 0)
             {
-                case 0:
-                    return CommandLineCommand.Base;
-                case 1:
-                    return args[0] switch
-                    {
-                        CommandLineArguments.PrintData => CommandLineCommand.PrintData,
-                        CommandLineArguments.PrintAllSentencesOrderedByWordsCount => CommandLineCommand.PrintAllSentencesOrderedByWordsCount,
-                        CommandLineArguments.Exit => CommandLineCommand.Exit,
-                        _ => throw new ArgumentException($"команды \"{args[0]}\" не существует")
-                    };
-                case 2:
-                    CommandLineCommand command;
-                    switch (args[0])
-                    {
-                        case CommandLineArguments.PrintDistinctWordsFromQuestionByWordLength:
-                            CheckNumeric(args[1], Params.MaxSymbolsInWord);
-                            command = CommandLineCommand.PrintDistinctWordsFromQuestionByWordLength;
-                            break;
-                        case CommandLineArguments.DeleteWordsByWordLength:
-                            CheckNumeric(args[1], Params.MaxSymbolsInWord);
-                            command = CommandLineCommand.DeleteWordsByWordLength;
-                            break;
-                        case CommandLineArguments.SaveToFile:
-                            CheckPath(args[1]);
-                            command = CommandLineCommand.SaveToFile;
-                            break;
-                        default:
-                            throw new ArgumentException($"команды \"{args[0]}\" c одним параметром не существует");
-                    }
+                return CommandLineCommand.Base;
+            }
 
-
-                    return command;
-                case 4:
-                    switch (args[0])
+            switch (args.FirstOrDefault())
+            {
+                case CommandLineArguments.PrintData:
+                    return CommandLineCommand.PrintData;
+                case CommandLineArguments.PrintAllSentencesOrderedByWordsCount:
+                    return CommandLineCommand.PrintAllSentencesOrderedByWordsCount;
+                case CommandLineArguments.Exit:
+                    return CommandLineCommand.Exit;
+                case CommandLineArguments.PrintDistinctWordsFromQuestionByWordLength:
+                    if (args.Length != 2)
                     {
-                        case CommandLineArguments.ExchangeWordsInSentenceBySubstring:
-                            CheckNumeric(args[1]);
-                            CheckNumeric(args[2], Params.MaxSymbolsInWord);
-                            CheckSubstring(args[3]);
-                            return CommandLineCommand.ExchangeWordsInSentenceBySubstring;
-                        default:
-                            throw new ArgumentException($"команды \"{args[0]}\" c тремя параметром не существует");
+                        throw new ArgumentException("Недопустимое количество аргументов");
                     }
+                    CheckNumeric(args[1], Params.MaxSymbolsInWord);
+                    return CommandLineCommand.PrintDistinctWordsFromQuestionByWordLength;
+                case CommandLineArguments.DeleteWordsByWordLength:
+                    if (args.Length != 2)
+                    {
+                        throw new ArgumentException("Недопустимое количество аргументов");
+                    }
+                    CheckNumeric(args[1], Params.MaxSymbolsInWord);
+                    return CommandLineCommand.DeleteWordsByWordLength;
+                case CommandLineArguments.SaveToFile:
+                    if (args.Length != 2)
+                    {
+                        throw new ArgumentException("Недопустимое количество аргументов");
+                    }
+                    CheckPath(args[1]);
+                    return CommandLineCommand.SaveToFile;
+                case CommandLineArguments.ExchangeWordsInSentenceBySubstring:
+                    if (args.Length != 4)
+                    {
+                        throw new ArgumentException("Недопустимое количество аргументов");
+                    }
+                    CheckNumeric(args[1]);
+                    CheckNumeric(args[2], Params.MaxSymbolsInWord);
+                    CheckSubstring(args[3]);
+                    return CommandLineCommand.ExchangeWordsInSentenceBySubstring;
                 default:
-                    throw new ArgumentException("Недопустимое количество аргументов");
+                    throw new ArgumentException($"команды \"{args[0]}\" не существует");
             }
         }
 

@@ -37,13 +37,11 @@ namespace Task2.Core.Analyzer
 
             IStateMachine stateMachine = new StateMachine.StateMachine(buffer);
 
-            using (_stream)
+            using (var reader = new StreamReader(_stream, Encoding.Default))
             {
-                var reader = new StreamReader(_stream, Encoding.Default);
-
                 while (reader.Peek() != -1)
                 {
-                    var charBuffer = new char[1070];
+                    var charBuffer = new char[4096];
 
                     var readLength = reader.Read(charBuffer, 0, charBuffer.Length);
 

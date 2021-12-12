@@ -13,16 +13,15 @@ namespace Task2.Core.IO.Files
             }
             catch (UnauthorizedAccessException e)
             {
-                throw new ArgumentException(e.Message);
+                throw new ArgumentException(e.Message, e);
             }
             catch (DirectoryNotFoundException e)
             {
-                throw new ArgumentException(e.Message);
+                throw new ArgumentException(e.Message, e);
             }
-
         }
 
-        public FileStream FileStream { get; set; }
+        public FileStream FileStream { get; }
 
         private void Dispose(bool disposing)
         {
