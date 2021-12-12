@@ -16,40 +16,48 @@ namespace Task2.Core.IO.Files
 
         public void Print(string str)
         {
-            throw new NotImplementedException();
+            using var file = new FileAssist(_filePath, FileMode.OpenOrCreate, FileAccess.Write);
+            using var sw = new StreamWriter(file.FileStream, Encoding.Default);
+
+            sw.WriteLine(str);
         }
 
         public void Print(ISentence sentence)
         {
-            throw new NotImplementedException();
+            using var file = new FileAssist(_filePath, FileMode.OpenOrCreate, FileAccess.Write);
+            using var sw = new StreamWriter(file.FileStream, Encoding.Default);
+
+            var builder = new StringBuilder();
+
+            foreach (var element in sentence)
+            {
+                builder.Append(element);
+            }
+
+            builder.Append(Environment.NewLine);
+            sw.Write(builder);
         }
 
         public void Print(IText text)
         {
             const char SPACE_CHAR = ' ';
 
-            using (var file = new FileAssist(_filePath, FileMode.Create, FileAccess.Write))
+            using var file = new FileAssist(_filePath, FileMode.Create, FileAccess.Write);
+            using var sw = new StreamWriter(file.FileStream, Encoding.Default);
+
+            var builder = new StringBuilder();
+
+            foreach (var sentence in text)
             {
-                using (var sw = new StreamWriter(file.FileStream, Encoding.Default))
+                foreach (var element in sentence)
                 {
-
-                    var builder = new StringBuilder();
-
-                    foreach (var sentence in text)
-                    {
-                        foreach (var element in sentence)
-                        {
-                            builder.Append(element);
-                        }
-
-                        builder.Append(SPACE_CHAR);
-                        sw.Write(builder);
-                        builder.Clear();
-                    }
+                    builder.Append(element);
                 }
+
+                builder.Append(SPACE_CHAR);
+                sw.Write(builder);
+                builder.Clear();
             }
-
-
         }
     }
 }
