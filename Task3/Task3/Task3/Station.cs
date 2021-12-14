@@ -11,10 +11,19 @@ namespace Task3
     {
         public event EventHandler<SendRequestEventsArgs> SendRequest;
 
+        private List<Port> _initializedPorts = new List<Port>();
+
+        private List<Port> _portsInCall = new List<Port>();
 
         public void OnCall(object sender, PortStartCallEventsArgs e)
         {
-            if (ChekPhoneNumber(e.Called))
+            if (sender is Port port)
+            {
+                _initializedPorts.Add(port);
+            }
+            
+
+            if (CheckPhoneNumber(e.Called))
             {
                 SendRequest?.Invoke(this, new SendRequestEventsArgs(2, e.Caller));
             }
@@ -29,7 +38,7 @@ namespace Task3
             return 0;
         }
 
-        public bool ChekPhoneNumber(PhoneNumber phoneNumber)
+        public bool CheckPhoneNumber(PhoneNumber phoneNumber)
         {
             return true;
         }

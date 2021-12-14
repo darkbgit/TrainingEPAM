@@ -51,13 +51,13 @@ namespace Task3
             switch (PortState)
             {
                 case PortState.Disconnected:
-                    throw new PortException("Вызываемый аббонент отключен");
+                    throw new PortException("Вызываемый абонент отключен");
                 case PortState.Connected:
                     PortState = PortState.Calling;
                     SendRequest?.Invoke(this, e);
                     break;
                 case PortState.Calling:
-                    throw new PortException("Вызываемый аббонент занят");
+                    throw new PortException("Вызываемый абонент занят");
             }
         }
     }

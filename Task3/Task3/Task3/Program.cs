@@ -8,31 +8,56 @@ namespace Task3
     {
         static void Main(string[] args)
         {
-            Ats ats = new Ats();
+            //Ats ats = new Ats();
 
+            Contracts contracts = new Contracts();
+
+            var ports = new[]
+            {
+                new Port(1),
+                new Port(2),
+                new Port(3),
+                new Port(4),
+                new Port(5),
+                new Port(6),
+                new Port(7),
+                new Port(8),
+                new Port(9),
+                new Port(10)
+            };
+
+            MobileCompany company = new MobileCompany(contracts, ports);
 
             User user1 = new User
             {
+                Id = 1,
                 FirstName = "Ivan",
                 LastName = "Ivanov"
             };
-            UserService userService1 = new UserService(user1, ats.MakeUserContract(user1));
 
-            PortListener portListener = new PortListener(userService1.Contract.Port, ats.Billing);
+            company.MakeContract(user1);
+
+            UserService userService1 = new UserService(user1, company.GetTerminalByUser(user1));
+
+
 
             User user2 = new User
             {
                 FirstName = "Petr",
                 LastName = "Petrov"
             };
-            UserService userService2 = new UserService(user2, ats.MakeUserContract(user2));
+            company.MakeContract(user2);
+
+            UserService userService2 = new UserService(user2, company.GetTerminalByUser(user2));
 
             User user3 = new User
             {
                 FirstName = "Dmitry",
                 LastName = "Dmitriev"
             };
-            UserService userService3 = new UserService(user3, ats.MakeUserContract(user3));
+            company.MakeContract(user3);
+
+            UserService userService3 = new UserService(user3, company.GetTerminalByUser(user3));
 
 
 

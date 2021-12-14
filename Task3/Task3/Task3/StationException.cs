@@ -8,8 +8,8 @@ namespace Task3
 {
     public class StationException : Exception
     {
-        public StationException(string messege):
-            base(messege)
+        public StationException(string message):
+            base(message)
         {
         }
     }

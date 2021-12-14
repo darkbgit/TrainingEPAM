@@ -11,48 +11,48 @@ namespace Task3
     {
         private readonly User _user;
 
-        private readonly Contract _contract;
+        private readonly Terminal _terminal;
 
-        public UserService(User user, Contract contract)
+        public UserService(User user, Terminal terminal)
         {
             _user = user;
-            _contract = contract;
+            _terminal = terminal;
         }
 
-        public Contract Contract => _contract;
+        public Terminal Terminal => _terminal;
 
-        //public void ConnectToPort()
-        //{
-        //    if (_contract.Port.PortState is PortState.Disconnected)
-        //    {
-        //        _contract.Port.PortState = PortState.Connected;
-        //    }
+        public void ConnectToPort()
+        {
+            //if (_contract.Port.PortState is PortState.Disconnected)
+            //{
+            //    _contract.Port.PortState = PortState.Connected;
+            //}
 
-        //}
+        }
 
-        //public void DisconnectFromPort()
-        //{
-        //    if (_contract.Port.PortState is PortState.Connected)
-        //    {
-        //        _contract.Port.PortState = PortState.Disconnected;
-        //    }
-        //}
+        public void DisconnectFromPort()
+        {
+            //if (_contract.Port.PortState is PortState.Connected)
+            //{
+            //    _contract.Port.PortState = PortState.Disconnected;
+            //}
+        }
 
-        //public void CallTo(User user)
-        //{
-        //    if (_contract.Port.PortState is PortState.Connected)
-        //    {
-        //        _contract.Port.CallBegin(_user, user);
-        //    }
-        //}
+        public void CallTo(User calledUser)
+        {
+            //if (_contract.Port.PortState is PortState.Connected)
+            //{
+            //    _contract.Port.CallBegin(_user, user);
+            //}
+        }
 
-        //public void EndCall()
-        //{
-        //    if (_contract.Port.PortState is PortState.Calling)
-        //    {
-        //        _contract.Port.CallEnd(_user);
-        //    }
-        //}
+        public void EndCall()
+        {
+            //if (_contract.Port.PortState is PortState.Calling)
+            //{
+            //    _contract.Port.CallEnd(_user);
+            //}
+        }
 
     }
 }

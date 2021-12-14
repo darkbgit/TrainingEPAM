@@ -8,8 +8,8 @@ namespace Task3
 {
     internal class PortException : Exception
     {
-        public PortException(string messege) :
-            base(messege)
+        public PortException(string message) :
+            base(message)
         {
 
         }
