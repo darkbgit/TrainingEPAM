@@ -7,21 +7,15 @@ using Task3.EventsArgs;
 
 namespace Task3
 {
-    public class Terminal
+    public class Terminal : ITerminal
     {
-        private const string PHONE_CODE = "+37529";
 
-        private const int MIN_PHONE_NUMBER = 1;
-
-        private const int MAX_PHONE_NUMBER = 9999999;
-        
-        public event EventHandler<StartCallEventArgs> StartCalling;
+        public event EventHandler<StartCallEventArgs> StartCall;
 
         public Terminal()
         {
             Id = Guid.NewGuid();
-            var phone = new Random().Next(MIN_PHONE_NUMBER, MAX_PHONE_NUMBER);
-            PhoneNumber =  new PhoneNumber("22-22-85");
+            PhoneNumber = GeneratePhoneNumber();
         }
         public Guid Id { get; set; }
 
@@ -30,14 +24,30 @@ namespace Task3
         public PhoneNumber PhoneNumber { get; set; }
 
 
-        public void StartCall(PhoneNumber called)
+        public void Call(PhoneNumber targetNumber)
         {
-            StartCalling?.Invoke(this, new StartCallEventArgs(called));
+            OnStartCall(this, new StartCallEventArgs(targetNumber));
         }
 
-        public void OnRequest(object sender, SendRequestEventsArgs e)
+        public void OnRequest(object sender, StationSendRequestEventsArgs e)
         {
             Console.WriteLine($"Входящий вызов от {e.Caller.Number}");
+        }
+
+        protected virtual void OnStartCall(object sender, StartCallEventArgs e)
+        {
+            StartCall?.Invoke(sender, e);
+        }
+
+        private PhoneNumber GeneratePhoneNumber()
+        {
+            const string PHONE_CODE = "+37529";
+            const int MIN_PHONE_NUMBER = 1;
+            const int MAX_PHONE_NUMBER = 9999999;
+
+            var phone = new Random().Next(MIN_PHONE_NUMBER, MAX_PHONE_NUMBER);
+
+            return new PhoneNumber(PHONE_CODE + $"{phone:d7}");
         }
     }
 }

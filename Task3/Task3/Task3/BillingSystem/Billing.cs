@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Task3.BillingSystem
 {
-    internal class Billing : IBilling
+    public class Billing : IBilling
     {
         private readonly List<Record> _records;
 

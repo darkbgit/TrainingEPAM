@@ -9,29 +9,25 @@ namespace Task3
 {
     public class Station
     {
-        public event EventHandler<SendRequestEventsArgs> SendRequest;
+        private readonly Contracts _contracts;
+
+        public Station(Contracts contracts)
+        {
+            _contracts = contracts;
+        }
 
 
         public void OnCall(object sender, PortStartCallEventsArgs e)
         {
-            if (ChekPhoneNumber(e.Called))
-            {
-                SendRequest?.Invoke(this, new SendRequestEventsArgs(2, e.Caller));
-            }
-            //SendRequest?.Invoke(this, new SendRequestEventsArgs(2, e.Caller));
+            GetPortByPhoneNumber(e.Called).OnRequest(this, new StationSendRequestEventsArgs(e.Caller));
         }
 
         //public void OnRequestAnswer(object sender,)
 
 
-        public int GetPortNumberByPhoneNumber(PhoneNumber phoneNumber)
-        {
-            return 0;
-        }
+        private Port GetPortByPhoneNumber(PhoneNumber phoneNumber) => _contracts.GetPortByPhoneNumber(phoneNumber)
+                ?? throw new StationException($"Для номера телефона \"{phoneNumber}\" нет привяззанного порта");
 
-        public bool ChekPhoneNumber(PhoneNumber phoneNumber)
-        {
-            return true;
-        }
+
     }
 }

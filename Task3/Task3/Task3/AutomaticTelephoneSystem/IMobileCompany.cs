@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Task3.BillingSystem
+namespace Task3.AutomaticTelephoneSystem
 {
-    public interface IBilling : IEnumerable<Record>
+    public interface IMobileCompany
     {
-        void AddCall(Record record);
+        Contract MakeUserContract(User user);
     }
 }

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Task3.BillingSystem
+namespace Task3
 {
-    public interface IBilling : IEnumerable<Record>
+    internal interface ITerminal
     {
-        void AddCall(Record record);
+        void Call(PhoneNumber targetNumber);
     }
 }

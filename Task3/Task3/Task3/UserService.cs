@@ -19,16 +19,22 @@ namespace Task3
             _contract = contract;
         }
 
-        public Contract Contract => _contract;
+        public PhoneNumber PhoneNumber => _contract.Terminal.PhoneNumber;
 
-        //public void ConnectToPort()
-        //{
-        //    if (_contract.Port.PortState is PortState.Disconnected)
-        //    {
-        //        _contract.Port.PortState = PortState.Connected;
-        //    }
+        public void Call(PhoneNumber targetNumber)
+        {
+            _contract.Terminal.Call(targetNumber);
+        }
 
-        //}
+
+
+
+        //public Contract Contract => _contract;
+
+        public void ConnectToPort()
+        {
+
+        }
 
         //public void DisconnectFromPort()
         //{

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Task3.EventsArgs;
 using Task3.States;
 
@@ -10,22 +6,20 @@ namespace Task3
 {
     public class Port
     {
-
-        public Port(int portNumber)
+        public Port()
         {
-            PortNumber = portNumber;
+            Id = Guid.NewGuid();
+            PortState = PortState.Disconnected;
         }
 
-        //public delegate void PortHandler(object sender, PortStateChangedEventsArgs e);
 
-        public event EventHandler<PortStartCallEventsArgs> Calling;
+        public event EventHandler<PortStartCallEventsArgs> StartCall;
 
-        public event EventHandler<SendRequestEventsArgs> SendRequest;
+        public event EventHandler<StationSendRequestEventsArgs> Request;
 
-        public int PortNumber { get; set; }
+        public Guid Id { get; set; }
 
         public PortState PortState { get; set; }
-
 
         public void OnCall(object sender, StartCallEventArgs e)
         {
@@ -36,29 +30,36 @@ namespace Task3
                 case PortState.Connected:
                     var caller = (sender as Terminal).PhoneNumber;
                     PortState = PortState.Calling;
-                    Calling?.Invoke(this, new PortStartCallEventsArgs(caller, e.Called));
+                    OnStartCall(this, new PortStartCallEventsArgs(caller, e.Called));
                     break;
                 case PortState.Calling:
                     throw new PortException("Порт занят");
             }
         }
 
-
-        public void OnRequest(object sender, SendRequestEventsArgs e)
+        public void OnRequest(object sender, StationSendRequestEventsArgs e)
         {
-            if (PortNumber != e.PortDefenition) return;
-
             switch (PortState)
             {
                 case PortState.Disconnected:
                     throw new PortException("Вызываемый аббонент отключен");
                 case PortState.Connected:
                     PortState = PortState.Calling;
-                    SendRequest?.Invoke(this, e);
+                    OnRquest(this, e);
                     break;
                 case PortState.Calling:
                     throw new PortException("Вызываемый аббонент занят");
             }
+        }
+
+        protected virtual void OnStartCall(object sender, PortStartCallEventsArgs e)
+        {
+            StartCall?.Invoke(sender, e);
+        }
+
+        protected virtual void OnRquest(object sender, StationSendRequestEventsArgs e)
+        {
+            Request?.Invoke(sender, e);
         }
     }
 }

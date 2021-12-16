@@ -6,17 +6,16 @@ using System.Threading.Tasks;
 
 namespace Task3.EventsArgs
 {
-    public class SendRequestEventsArgs
+    public class StationSendRequestEventsArgs
     {
-        public SendRequestEventsArgs(int portDefenition, PhoneNumber caller)
+        public StationSendRequestEventsArgs(PhoneNumber caller)
         {
             Caller = caller;
-            PortDefenition = portDefenition;
         }
 
         public PhoneNumber Caller { get; set; }
 
-        public int PortDefenition { get; set; }
+        //public int PortDefenition { get; set; }
 
 
         //public PhoneNumber Called { get; set; }

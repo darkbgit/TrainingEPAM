@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Task3
 {
-    internal class Contract
+    public class Contract
     {
         public Contract()
         {
@@ -21,5 +21,6 @@ namespace Task3
 
         public Port Port { get; set; }
 
+        public Tarrif Tarrif { get; set; }
     }
 }

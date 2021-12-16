@@ -14,34 +14,5 @@ namespace Task3
         public string FirstName { get; set; }
 
         public string LastName { get; set; }
-
-        public PortState PortState { get; set; }
-
-        public PhoneNumber PhoneNumber { get; set; }
-
-        public void ConnectToPort()
-        {
-            if (PortState is PortState.Disconnected)
-            {
-                PortState = PortState.Connected;
-            }
-            
-        }
-
-        public void DisconnectFromPort()
-        {
-            if (PortState is PortState.Connected)
-            {
-                PortState = PortState.Disconnected;
-            }
-        }
-
-        public void CallTo(User user)
-        {
-            if (PortState is PortState.Connected)
-            {
-                PortState = PortState.Calling;
-            }
-        }
     }
 }
