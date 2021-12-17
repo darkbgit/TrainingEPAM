@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Task3.AutomaticTelephoneSystem;
 using Task3.BillingSystem;
+using Task3.Loggers;
 
 namespace Task3
 {
@@ -10,107 +11,75 @@ namespace Task3
         static void Main(string[] args)
         {
 
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+
+
             IMobileCompany mobileCompany = new MobileCompany();
+
+            ILogger logger = new ConsoleLogger();
 
 
             User user1 = new User
             {
-                FirstName = "Ivan",
-                LastName = "Ivanov"
+                FirstName = "A",
+                LastName = "AA"
             };
             UserService userService1 = new UserService(user1,
-                mobileCompany.MakeUserContract(user1));
+                mobileCompany.MakeUserContract(user1), logger);
 
 
 
             User user2 = new User
             {
-                FirstName = "Petr",
-                LastName = "Petrov"
+                FirstName = "B",
+                LastName = "BB"
             };
             UserService userService2 = new UserService(user2,
-                mobileCompany.MakeUserContract(user2));
+                mobileCompany.MakeUserContract(user2), logger);
 
             User user3 = new User
             {
-                FirstName = "Dmitry",
-                LastName = "Dmitriev"
+                FirstName = "C",
+                LastName = "CC"
             };
             UserService userService3 = new UserService(user3,
-                mobileCompany.MakeUserContract(user3));
+                mobileCompany.MakeUserContract(user3), logger);
 
 
-            //Terminal terminal1 = new Terminal();
-            //PhoneNumber ph1 = terminal1.PhoneNumber;
-
-            //Terminal terminal2 = new Terminal();
-            //PhoneNumber ph2 = terminal1.PhoneNumber;
-
-            //Terminal terminal3 = new Terminal();
-            //PhoneNumber ph3 = terminal1.PhoneNumber;
-
-            //Port port1 = new Port(1);
-            //Port port2 = new Port(2);
-            //Port port3 = new Port(3);
-
-
-            //PortController portController = new PortController(new List<Port>(new Port[] { port1, port2, port3 }));
-
-
-
-            //Station station = new Station(contracts);
-
-            //terminal1.StartCall += port1.OnCall;
-            //terminal2.StartCall += port2.OnCall;
-
-            //port1.StartCall += station.OnCall;
-            //port2.StartCall += station.OnCall;
-
-            //port1.Request += terminal1.OnRequest;
-            //port2.Request += terminal2.OnRequest;
-
-            //port2.PortState = States.PortState.Disconnected;
-
-            try
+            User user4 = new User
             {
-                //terminal1.Call(terminal2.PhoneNumber);
-                userService1.Call(userService2.PhoneNumber);
-            }
-            catch (PortException ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            catch (StationException ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+                FirstName = "D",
+                LastName = "DD"
+            };
+            UserService userService4 = new UserService(user4,
+                mobileCompany.MakeUserContract(user4), logger);
 
 
-            try
-            {
-                userService2.Call(userService3.PhoneNumber);
-            }
-            catch (PortException ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            catch (StationException ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+            userService1.ConnectToPort();
+            userService2.ConnectToPort();
+            userService3.ConnectToPort();
+            
+            userService1.Call(userService2.PhoneNumber);
 
-            try
-            {
-                userService3.Call(userService2.PhoneNumber);
-            }
-            catch (PortException ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            catch (StationException ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+            userService2.Answer(true);
+
+            userService2.Call(userService3.PhoneNumber);
+
+            userService3.Call(userService2.PhoneNumber);
+
+            userService3.DisconnectFromPort();
+            userService4.Call(userService3.PhoneNumber);
+
         }
+
+
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Console.WriteLine("Error " + (e.ExceptionObject as Exception)?.Message);
+            Console.WriteLine("Application will be terminated. Press any key...");
+            Console.ReadKey();
+        }
+
+        
     }
 }

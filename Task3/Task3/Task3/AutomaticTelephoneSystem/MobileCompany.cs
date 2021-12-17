@@ -33,11 +33,10 @@ namespace Task3.AutomaticTelephoneSystem
 
             var port = new Port();
 
-            terminal.StartCall += port.OnCall;
-
             port.StartCall += _station.OnCall;
 
-            port.Request += terminal.OnRequest;
+            port.AnswerCall += _station.OnRequestAnswer;
+
 
 
             var result = new Contract

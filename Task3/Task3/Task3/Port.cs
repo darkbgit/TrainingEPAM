@@ -17,6 +17,8 @@ namespace Task3
 
         public event EventHandler<StationSendRequestEventsArgs> Request;
 
+        public event EventHandler<AnswerCallEventArgs> AnswerCall;
+
         public Guid Id { get; set; }
 
         public PortState PortState { get; set; }
@@ -36,30 +38,51 @@ namespace Task3
                     throw new PortException("Порт занят");
             }
         }
-
-        public void OnRequest(object sender, StationSendRequestEventsArgs e)
-        {
-            switch (PortState)
-            {
-                case PortState.Disconnected:
-                    throw new PortException("Вызываемый аббонент отключен");
-                case PortState.Connected:
-                    PortState = PortState.Calling;
-                    OnRquest(this, e);
-                    break;
-                case PortState.Calling:
-                    throw new PortException("Вызываемый аббонент занят");
-            }
-        }
-
         protected virtual void OnStartCall(object sender, PortStartCallEventsArgs e)
         {
             StartCall?.Invoke(sender, e);
         }
 
-        protected virtual void OnRquest(object sender, StationSendRequestEventsArgs e)
+        public void OnRequestFromStation(object sender, StationSendRequestEventsArgs e)
+        {
+            switch (PortState)
+            {
+                case PortState.Disconnected:
+                    throw new PortException("Вызываемый абонент отключен");
+                case PortState.Connected:
+                    PortState = PortState.Calling;
+                    OnRequest(this, e);
+                    break;
+                case PortState.Calling:
+                    throw new PortException("Вызываемый абонент занят");
+            }
+        }
+
+        
+        protected virtual void OnRequest(object sender, StationSendRequestEventsArgs e)
         {
             Request?.Invoke(sender, e);
+        }
+
+        public void OnAnswerFromTerminal(object sender, AnswerCallEventArgs e)
+        {
+            switch (PortState)
+            {
+                case PortState.Disconnected:
+                    throw new PortException("Вызываемый абонент отключен");
+                case PortState.Connected:
+                    //PortState = PortState.Calling;
+                    throw new PortException("Вызываемый абонент занят");
+                case PortState.Calling:
+                    OnAnswer(this, e);
+                    break;
+            }
+        }
+
+
+        protected virtual void OnAnswer(object sender, AnswerCallEventArgs e)
+        {
+            AnswerCall?.Invoke(sender, e);
         }
     }
 }

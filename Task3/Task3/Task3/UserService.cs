@@ -13,17 +13,31 @@ namespace Task3
 
         private readonly Contract _contract;
 
-        public UserService(User user, Contract contract)
+        private readonly ILogger _logger;
+
+        public UserService(User user, Contract contract, ILogger logger)
         {
             _user = user;
             _contract = contract;
+            _logger = logger;
         }
 
         public PhoneNumber PhoneNumber => _contract.Terminal.PhoneNumber;
 
         public void Call(PhoneNumber targetNumber)
         {
-            _contract.Terminal.Call(targetNumber);
+            try
+            {
+                _contract.Terminal.Call(targetNumber);
+            }
+            catch (PortException ex)
+            {
+                _logger.Log(ex.Message);
+            }
+            catch (StationException ex)
+            {
+                _logger.Log(ex.Message);
+            }
         }
 
 
@@ -33,24 +47,51 @@ namespace Task3
 
         public void ConnectToPort()
         {
-
+            try
+            {
+                _contract.Terminal.ConnectToPort(_contract.Port);
+            }
+            catch (PortException ex)
+            {
+                _logger.Log(ex.Message);
+            }
         }
 
-        //public void DisconnectFromPort()
-        //{
-        //    if (_contract.Port.PortState is PortState.Connected)
-        //    {
-        //        _contract.Port.PortState = PortState.Disconnected;
-        //    }
-        //}
 
-        //public void CallTo(User user)
-        //{
-        //    if (_contract.Port.PortState is PortState.Connected)
-        //    {
-        //        _contract.Port.CallBegin(_user, user);
-        //    }
-        //}
+        public void DisconnectFromPort()
+        {
+            try
+            {
+                _contract.Terminal.DisconnectFromPort(_contract.Port);
+            }
+            catch (PortException ex)
+            {
+                _logger.Log(ex.Message);
+            }
+        }
+
+
+        public void Answer(bool answerTheCall)
+        {
+            try
+            {
+                _contract.Terminal.Answer(answerTheCall);
+            }
+            catch (PortException ex)
+            {
+                _logger.Log(ex.Message);
+            }
+            catch (StationException ex)
+            {
+                _logger.Log(ex.Message);
+            }
+        }
+
+
+        public void Reject()
+        {
+
+        }
 
         //public void EndCall()
         //{

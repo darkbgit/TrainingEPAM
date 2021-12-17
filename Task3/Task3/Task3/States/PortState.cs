@@ -8,8 +8,9 @@ namespace Task3.States
 {
     public enum PortState
     {
-        Connected,
         Disconnected,
+        Connected,
+        Waiting,
         Calling
     }
 }

@@ -19,14 +19,24 @@ namespace Task3
 
         public void OnCall(object sender, PortStartCallEventsArgs e)
         {
-            GetPortByPhoneNumber(e.Called).OnRequest(this, new StationSendRequestEventsArgs(e.Caller));
+            GetPortByPhoneNumber(e.Called).OnRequestFromStation(this, new StationSendRequestEventsArgs(e.Caller));
         }
 
-        //public void OnRequestAnswer(object sender,)
+        public void OnRequestAnswer(object sender, AnswerCallEventArgs e)
+        {
+            if (e.AnswerTheCall)
+            {
+                Console.WriteLine($"Звонок между {e.Caller} и {e.Called} начался");
+            }
+            else
+            {
+                Console.WriteLine($"Абонент {e.Called} сбросил звонок от {e.Caller}");
+            }
+        }
 
 
         private Port GetPortByPhoneNumber(PhoneNumber phoneNumber) => _contracts.GetPortByPhoneNumber(phoneNumber)
-                ?? throw new StationException($"Для номера телефона \"{phoneNumber}\" нет привяззанного порта");
+                ?? throw new StationException($"Для номера телефона \"{phoneNumber}\" нет привязанного порта");
 
 
     }
