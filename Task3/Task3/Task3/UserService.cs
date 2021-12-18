@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Task3.AutomaticTelephoneSystem;
+using Task3.AutomaticTelephoneSystem.Ports;
+using Task3.AutomaticTelephoneSystem.Stations;
 using Task3.States;
 
 namespace Task3
@@ -71,11 +74,11 @@ namespace Task3
         }
 
 
-        public void Answer(bool answerTheCall)
+        public void Answer(bool isAccept)
         {
             try
             {
-                _contract.Terminal.Answer(answerTheCall);
+                _contract.Terminal.AnswerRequest(isAccept);
             }
             catch (PortException ex)
             {
@@ -88,12 +91,23 @@ namespace Task3
         }
 
 
-        public void Reject()
+        public void EndCall()
         {
-
+            try
+            {
+                _contract.Terminal.End();
+            }
+            catch (PortException ex)
+            {
+                _logger.Log(ex.Message);
+            }
+            catch (StationException ex)
+            {
+                _logger.Log(ex.Message);
+            }
         }
 
-        //public void EndCall()
+        //public void EndCallTerminal()
         //{
         //    if (_contract.Port.PortState is PortState.Calling)
         //    {

@@ -4,21 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Task3.AutomaticTelephoneSystem;
-using Task3.AutomaticTelephoneSystem.Terminals;
-using Task3.States;
 
 namespace Task3.EventsArgs
 {
-    public class PortStartCallEventsArgs : EventArgs
+    public class StationStartCallAnswerEventsArgs : EventArgs
     {
-        public PortStartCallEventsArgs(Terminal caller, PhoneNumber called)
+        public StationStartCallAnswerEventsArgs(bool isAccept, PhoneNumber called)
         {
-            Caller = caller;
+            IsAccept = isAccept;
             Called = called;
         }
 
-        public Terminal Caller { get; set; }
+        public bool IsAccept { get; set; }
 
         public PhoneNumber Called { get; set; }
+
     }
 }

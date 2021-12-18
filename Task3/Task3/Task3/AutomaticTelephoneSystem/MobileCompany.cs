@@ -4,26 +4,36 @@ using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
+using Task3.AutomaticTelephoneSystem.Ports;
+using Task3.AutomaticTelephoneSystem.Stations;
+using Task3.AutomaticTelephoneSystem.Terminals;
 using Task3.BillingSystem;
 
 namespace Task3.AutomaticTelephoneSystem
 {
     public class MobileCompany : IMobileCompany
     {
-        private readonly IBilling _billing;
+        private readonly Billing _billing;
 
         private readonly Station _station;
 
         private readonly Contracts _contracts;
 
+        private readonly ILogger _logger;
 
-        public MobileCompany()
+
+        public MobileCompany(ILogger logger)
         {
+            _logger = logger;
+
             _contracts = new Contracts();
 
             _station = new Station(_contracts);
 
-            _billing = new Billing();
+            _billing = new Billing(_logger);
+
+            _station.StationBilling += _billing.OnStation;
+
         }
 
 
@@ -33,9 +43,11 @@ namespace Task3.AutomaticTelephoneSystem
 
             var port = new Port();
 
-            port.StartCall += _station.OnCall;
+            port.StartCall += _station.OnPortStartCall;
 
-            port.AnswerCall += _station.OnRequestAnswer;
+            port.AnswerRequest += _station.OnPortAnswer;
+
+            port.EndCallTerminal += _station.OnEndCall;
 
 
 

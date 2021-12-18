@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Task3.AutomaticTelephoneSystem.Ports;
 
-namespace Task3
+namespace Task3.AutomaticTelephoneSystem
 {
     public class Contracts : IEnumerable<Contract>
     {

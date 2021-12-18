@@ -13,10 +13,11 @@ namespace Task3
 
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
-
-            IMobileCompany mobileCompany = new MobileCompany();
-
             ILogger logger = new ConsoleLogger();
+            
+            IMobileCompany mobileCompany = new MobileCompany(logger);
+
+            
 
 
             User user1 = new User
@@ -58,14 +59,22 @@ namespace Task3
             userService1.ConnectToPort();
             userService2.ConnectToPort();
             userService3.ConnectToPort();
+            userService4.ConnectToPort();
             
             userService1.Call(userService2.PhoneNumber);
 
             userService2.Answer(true);
 
-            userService2.Call(userService3.PhoneNumber);
+            userService1.EndCall();
+
+            userService2.EndCall();
 
             userService3.Call(userService2.PhoneNumber);
+
+            userService3.DisconnectFromPort();
+            userService2.Answer(false);
+
+
 
             userService3.DisconnectFromPort();
             userService4.Call(userService3.PhoneNumber);

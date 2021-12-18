@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Task3.AutomaticTelephoneSystem.Ports;
+using Task3.AutomaticTelephoneSystem.Tariffs;
+using Task3.AutomaticTelephoneSystem.Terminals;
 
-namespace Task3
+namespace Task3.AutomaticTelephoneSystem
 {
     public class Contract
     {
@@ -21,6 +20,6 @@ namespace Task3
 
         public Port Port { get; set; }
 
-        public Tarrif Tarrif { get; set; }
+        public Tariff Tariff { get; set; }
     }
 }

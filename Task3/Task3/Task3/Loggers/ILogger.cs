@@ -1,6 +1,6 @@
 ﻿namespace Task3
 {
-    internal interface ILogger
+    public interface ILogger
     {
         void Log(string message);
     }
