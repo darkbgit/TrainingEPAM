@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Task3.BillingSystem
 {
-    public interface IBilling : IEnumerable<Record>
+    public interface IBilling : IEnumerable<BillingRecord>
     {
 
     }

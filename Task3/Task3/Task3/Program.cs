@@ -13,6 +13,8 @@ namespace Task3
 
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
+
+
             ILogger logger = new ConsoleLogger();
             
             IMobileCompany mobileCompany = new MobileCompany(logger);
@@ -20,40 +22,36 @@ namespace Task3
             
 
 
-            User user1 = new User
+            Client user1 = new Client
             {
                 FirstName = "A",
                 LastName = "AA"
             };
-            UserService userService1 = new UserService(user1,
-                mobileCompany.MakeUserContract(user1), logger);
+            ClintService userService1 = new ClintService(mobileCompany.MakeUserContract(user1), logger);
 
 
 
-            User user2 = new User
+            Client user2 = new Client
             {
                 FirstName = "B",
                 LastName = "BB"
             };
-            UserService userService2 = new UserService(user2,
-                mobileCompany.MakeUserContract(user2), logger);
+            ClintService userService2 = new ClintService(mobileCompany.MakeUserContract(user2), logger);
 
-            User user3 = new User
+            Client user3 = new Client
             {
                 FirstName = "C",
                 LastName = "CC"
             };
-            UserService userService3 = new UserService(user3,
-                mobileCompany.MakeUserContract(user3), logger);
+            ClintService userService3 = new ClintService(mobileCompany.MakeUserContract(user3), logger);
 
 
-            User user4 = new User
+            Client user4 = new Client
             {
                 FirstName = "D",
                 LastName = "DD"
             };
-            UserService userService4 = new UserService(user4,
-                mobileCompany.MakeUserContract(user4), logger);
+            ClintService userService4 = new ClintService(mobileCompany.MakeUserContract(user4), logger);
 
 
             userService1.ConnectToPort();

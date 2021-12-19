@@ -19,11 +19,11 @@ namespace Task3.AutomaticTelephoneSystem
             _contracts = contracts;
         }
 
-        public Port GetPortByPhoneNumber(PhoneNumber phoneNumber)
-        {
-            return _contracts
-                .FirstOrDefault(c => c.Terminal.PhoneNumber.Equals(phoneNumber))?.Port;
-        }
+        //public Port GetPortByPhoneNumber(PhoneNumber phoneNumber)
+        //{
+        //    return _contracts
+        //        .FirstOrDefault(c => c.Terminal.PhoneNumber.Equals(phoneNumber))?.Port;
+        //}
 
         public void Add(Contract contract)
         {

@@ -14,11 +14,9 @@ namespace Task3.AutomaticTelephoneSystem
 
         public Guid Id { get; }
 
-        public User User { get; set; }
+        public Client User { get; set; }
 
         public Terminal Terminal { get; set; }
-
-        public Port Port { get; set; }
 
         public Tariff Tariff { get; set; }
     }

@@ -7,9 +7,9 @@ namespace Task3.AutomaticTelephoneSystem.Ports
 {
     public class Port
     {
-        public Port()
+        public Port(int id)
         {
-            Id = Guid.NewGuid();
+            Id = id;
             PortState = PortState.Disconnected;
         }
 
@@ -26,11 +26,11 @@ namespace Task3.AutomaticTelephoneSystem.Ports
 
         public event EventHandler<StationEndCallEventArgs> EndCallStation;
 
-        public Guid Id { get; set; }
+        public int Id { get; }
 
         public PortState PortState { get; set; }
 
-        public void PortStartCall(object sender, StartCallEventArgs e)
+        public void PortStartCall(object sender, TerminalStartCallEventArgs e)
         {
             switch (PortState)
             {
@@ -38,17 +38,14 @@ namespace Task3.AutomaticTelephoneSystem.Ports
                     throw new PortException("Порт отключен");
                 case PortState.Connected:
                     PortState = PortState.Waiting;
-                    OnPortStartCall(this, new PortStartCallEventsArgs(sender as Terminal, e.Called));
+                    OnPortStartCall(this, new PortStartCallEventsArgs(((Terminal)sender).PhoneNumber, e.TargetPhoneNumber));
                     break;
                 case PortState.Waiting:
                 case PortState.Calling:
                     throw new PortException("Порт занят");
             }
         }
-        protected virtual void OnPortStartCall(object sender, PortStartCallEventsArgs e)
-        {
-            StartCall?.Invoke(sender, e);
-        }
+        
 
         public void PortStartCallRequest(object sender, StationStartCallRequestEventsArgs e)
         {
@@ -66,10 +63,7 @@ namespace Task3.AutomaticTelephoneSystem.Ports
             }
         }
         
-        protected virtual void OnPortStartCallRequest(object sender, StationStartCallRequestEventsArgs e)
-        {
-            SendRequest?.Invoke(sender, e);
-        }
+        
 
 
 
@@ -142,6 +136,19 @@ namespace Task3.AutomaticTelephoneSystem.Ports
                     throw new PortException("Ошибка состояния порта. Порт будет отключен");
             }
         }
+
+
+        protected virtual void OnPortStartCallRequest(object sender, StationStartCallRequestEventsArgs e)
+        {
+            SendRequest?.Invoke(sender, e);
+        }
+
+        protected virtual void OnPortStartCall(object sender, PortStartCallEventsArgs e)
+        {
+            StartCall?.Invoke(sender, e);
+        }
+
+
         protected virtual void OnPortEndCallStation(object sender, StationEndCallEventArgs e)
         {
             EndCallStation?.Invoke(sender, e);

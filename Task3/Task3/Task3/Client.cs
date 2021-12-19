@@ -7,7 +7,7 @@ using Task3.States;
 
 namespace Task3
 {
-    public class User
+    public class Client
     {
         public Guid Id { get; set; }
 

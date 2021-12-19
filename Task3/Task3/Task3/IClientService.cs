@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Task3
 {
-    internal class IUserService
+    internal class IClientService
     {
     }
 }

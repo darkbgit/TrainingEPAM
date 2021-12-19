@@ -7,9 +7,9 @@ using Task3.AutomaticTelephoneSystem.Terminals;
 
 namespace Task3.BillingSystem
 {
-    public class Record
+    public class BillingRecord
     {
-        public Record(int id)
+        public BillingRecord(int id)
         {
             Id = id;
             IsCompleted = false;

@@ -28,26 +28,30 @@ namespace Task3.AutomaticTelephoneSystem
 
             _contracts = new Contracts();
 
-            _station = new Station(_contracts);
+            _station = new Station();
 
             _billing = new Billing(_logger);
 
-            _station.StationBilling += _billing.OnStation;
+            _station.StationStartCall += _billing.OnStation;
 
         }
 
 
-        public Contract MakeUserContract(User user)
+        public Contract MakeUserContract(Client user)
         {
             var terminal = new Terminal();
 
-            var port = new Port();
+            terminal.TerminalConnectToPort += _station.ConnectTerminalToPort;
 
-            port.StartCall += _station.OnPortStartCall;
+            terminal.TerminalDisconnectFromPort += _station.DisconnectTerminalFromPort;
 
-            port.AnswerRequest += _station.OnPortAnswer;
+            //var port = new Port();
 
-            port.EndCallTerminal += _station.OnEndCall;
+            //port.StartCall += _station.OnPortStartCall;
+
+            //port.AnswerRequest += _station.OnPortAnswer;
+
+            //port.EndCallTerminal += _station.OnEndCall;
 
 
 
@@ -55,7 +59,7 @@ namespace Task3.AutomaticTelephoneSystem
             {
                 User = user,
                 Terminal = terminal,
-                Port = port
+                //Port = port
             };
 
             

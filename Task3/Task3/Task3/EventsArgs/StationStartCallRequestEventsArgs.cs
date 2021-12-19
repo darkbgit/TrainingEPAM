@@ -9,15 +9,11 @@ namespace Task3.EventsArgs
 {
     public class StationStartCallRequestEventsArgs : EventArgs
     {
-        public StationStartCallRequestEventsArgs(PhoneNumber caller, Guid callerTerminalId)
+        public StationStartCallRequestEventsArgs(PhoneNumber sourcePhoneNumber)
         {
-            Caller = caller;
-            CallerTerminalId = callerTerminalId;
+            SourcePhoneNumber = sourcePhoneNumber;
         }
 
-        public Guid CallerTerminalId { get; set; }
-
-        public PhoneNumber Caller { get; set; }
-
+        public PhoneNumber SourcePhoneNumber { get; }
     }
 }

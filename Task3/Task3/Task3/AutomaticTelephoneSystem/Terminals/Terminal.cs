@@ -8,40 +8,40 @@ namespace Task3.AutomaticTelephoneSystem.Terminals
     public class Terminal : ITerminal
     {
         private StationStartCallRequestEventsArgs _incomingStationSendRequestEventsArgs;
-
-        public event EventHandler<StartCallEventArgs> StartCall;
-
-        public event EventHandler<TerminalAnswerRequestEventArgs> AnswerCall;
-
-        public event EventHandler EndCall;
-
+        
         public Terminal()
         {
             Id = Guid.NewGuid();
             PhoneNumber = GeneratePhoneNumber();
         }
-        public Guid Id { get; set; }
 
-        public PhoneNumber PhoneNumber { get; set; }
+        public event EventHandler<TerminalStartCallEventArgs> StartCall;
 
+        public event EventHandler<TerminalAnswerRequestEventArgs> AnswerCall;
+
+        public event EventHandler EndCall;
+
+        public event EventHandler TerminalConnectToPort;
+
+        public event EventHandler TerminalDisconnectFromPort;
+
+        
+        public Guid Id { get; }
+
+        public PhoneNumber PhoneNumber { get; }
 
 
         public void Call(PhoneNumber targetNumber)
         {
             Console.WriteLine($"Терминал {Id}: Вызов абонента {targetNumber}");
-            OnCall(this, new StartCallEventArgs(targetNumber));
+            OnCall(this, new TerminalStartCallEventArgs(targetNumber));
         }
         
-        protected virtual void OnCall(object sender, StartCallEventArgs e)
-        {
-            if (StartCall == null) throw new PortException("Терминал не подключен к какому либо порту");
-            StartCall?.Invoke(sender, e);
-        }
 
-        public void OnSendRequest(object sender, StationStartCallRequestEventsArgs e)
+        public void OnRequest(object sender, StationStartCallRequestEventsArgs e)
         {
             _incomingStationSendRequestEventsArgs = e;
-            Console.WriteLine($"Терминал {Id}: Входящий вызов от {e.Caller}");
+            Console.WriteLine($"Терминал {Id}: Входящий вызов от {e.SourcePhoneNumber}");
         }
     
         public void AnswerRequest(bool isAccept)
@@ -49,11 +49,7 @@ namespace Task3.AutomaticTelephoneSystem.Terminals
             OnAnswerRequest(this, new TerminalAnswerRequestEventArgs(isAccept, _incomingStationSendRequestEventsArgs.CallerTerminalId));
         }
 
-        protected virtual void OnAnswerRequest(object sender, TerminalAnswerRequestEventArgs e)
-        {
-            if (AnswerCall == null) throw new PortException("Терминал не подключен к какому либо порту");
-            AnswerCall?.Invoke(sender, e);
-        }
+        
 
         public void GetAnswer(object sender, StationStartCallAnswerEventsArgs e)
         {
@@ -73,11 +69,7 @@ namespace Task3.AutomaticTelephoneSystem.Terminals
             OnEnd(this, EventArgs.Empty);
         }
 
-        protected virtual void OnEnd(object sender, EventArgs e)
-        {
-            if (EndCall == null) throw new PortException("Ошибка подключения терминала к порту");
-            EndCall?.Invoke(sender, e);
-        }
+        
 
 
         public void OnPortEndCallByStation(object sender, StationEndCallEventArgs e)
@@ -86,44 +78,45 @@ namespace Task3.AutomaticTelephoneSystem.Terminals
         }
 
 
-        public void ConnectToPort(Port port)
+        public void ConnectToPort()
         {
-            if (port.PortState != PortState.Disconnected) throw new PortException("Порт уже используется");
-
-            StartCall += port.PortStartCall;
-            port.SendRequest += OnSendRequest;
-            AnswerCall += port.PortStartCallAnswer;
-            port.AnswerCall += GetAnswer;
-            EndCall += port.PortEndCallTerminal;
-            port.EndCallStation += OnPortEndCallByStation;
-
-            port.PortState = PortState.Connected;
+            OnConnectTerminalToPort(this, EventArgs.Empty);
         }
 
-        public void DisconnectFromPort(Port port)
+        public void DisconnectFromPort()
         {
-            switch (port.PortState)
-            {
-                case PortState.Waiting:
-                case PortState.Calling:
-                    throw new PortException("Не возможно отключиться от порта во время звонка");
-                case PortState.Connected:
-                    StartCall -= port.PortStartCall;
-                    port.SendRequest -= OnSendRequest;
-                    AnswerCall -= port.PortStartCallAnswer;
-                    port.AnswerCall -= GetAnswer;
-                    EndCall -= port.PortEndCallTerminal;
-                    port.EndCallStation -= OnPortEndCallByStation;
-
-                    port.PortState = PortState.Disconnected;
-                    break;
-                case PortState.Disconnected:
-                    throw new PortException("Порт не подключен");
-            }
+            OnDisconnectTerminalFromPort(this, EventArgs.Empty);
         }
 
 
 
+        protected virtual void OnAnswerRequest(object sender, TerminalAnswerRequestEventArgs e)
+        {
+            if (AnswerCall == null) throw new PortException("Терминал не подключен к какому либо порту");
+            AnswerCall?.Invoke(sender, e);
+        }
+
+        protected virtual void OnEnd(object sender, EventArgs e)
+        {
+            if (EndCall == null) throw new PortException("Ошибка подключения терминала к порту");
+            EndCall?.Invoke(sender, e);
+        }
+
+        protected virtual void OnCall(object sender, TerminalStartCallEventArgs e)
+        {
+            if (StartCall == null) throw new PortException("Терминал не подключен к какому либо порту");
+            StartCall?.Invoke(sender, e);
+        }
+
+        protected virtual void OnConnectTerminalToPort(object sender, EventArgs e)
+        {
+            TerminalConnectToPort?.Invoke(sender, e);
+        }
+
+        protected virtual void OnDisconnectTerminalFromPort(object sender, EventArgs e)
+        {
+            TerminalDisconnectFromPort?.Invoke(sender, e);
+        }
 
         private PhoneNumber GeneratePhoneNumber()
         {

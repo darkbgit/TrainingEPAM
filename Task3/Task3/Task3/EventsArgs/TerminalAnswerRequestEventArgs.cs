@@ -10,13 +10,13 @@ namespace Task3.EventsArgs
         {
             IsAccept = isAccept;
             CallerTerminalId = callerTerminalId;
-            //Called = calledTerminal;
+            //TargetPhoneNumber = calledTerminal;
         }
 
         public bool IsAccept { get; set; }
 
         public Guid CallerTerminalId { get; set; }
 
-        //public Terminal Called { get; set; }
+        //public Terminal TargetPhoneNumber { get; set; }
     }
 }

@@ -12,7 +12,7 @@ namespace Task3.BillingSystem
 {
     public class Billing : IBilling
     {
-        private readonly List<Record> _records;
+        private readonly List<BillingRecord> _records;
 
         private readonly ILogger _logger;
 
@@ -20,7 +20,7 @@ namespace Task3.BillingSystem
         public Billing(ILogger logger)
         {
             _logger = logger;
-            _records = new List<Record>();
+            _records = new List<BillingRecord>();
         }
 
 
@@ -39,7 +39,7 @@ namespace Task3.BillingSystem
 
         public void BeginAddRecord(Terminal callerTerminal, Terminal calledTerminal)
         {
-            _records.Add(new Record(_records.Count + 1)
+            _records.Add(new BillingRecord(_records.Count + 1)
             {
                 CallerTerminal = callerTerminal,
                 CalledTerminal = calledTerminal,
@@ -60,7 +60,7 @@ namespace Task3.BillingSystem
             _logger.Log(_records.Last().EndCall.ToLocalTime().ToString());
         }
 
-        public IEnumerator<Record> GetEnumerator()
+        public IEnumerator<BillingRecord> GetEnumerator()
         {
             return _records.GetEnumerator();
         }

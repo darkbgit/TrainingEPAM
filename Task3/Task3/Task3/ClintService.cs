@@ -6,26 +6,31 @@ using System.Threading.Tasks;
 using Task3.AutomaticTelephoneSystem;
 using Task3.AutomaticTelephoneSystem.Ports;
 using Task3.AutomaticTelephoneSystem.Stations;
+using Task3.AutomaticTelephoneSystem.Terminals;
 using Task3.States;
 
 namespace Task3
 {
-    internal class UserService
+    internal class ClintService
     {
-        private readonly User _user;
+        //private readonly Client _user;
 
         private readonly Contract _contract;
 
         private readonly ILogger _logger;
 
-        public UserService(User user, Contract contract, ILogger logger)
+        //private readonly ITerminal _terminal;
+
+        public ClintService(Contract contract, ILogger logger)
         {
-            _user = user;
+            //_user = user;
             _contract = contract;
             _logger = logger;
+            //_terminal = terminal;
         }
 
         public PhoneNumber PhoneNumber => _contract.Terminal.PhoneNumber;
+
 
         public void Call(PhoneNumber targetNumber)
         {
@@ -52,7 +57,7 @@ namespace Task3
         {
             try
             {
-                _contract.Terminal.ConnectToPort(_contract.Port);
+                _contract.Terminal.ConnectToPort();
             }
             catch (PortException ex)
             {
@@ -65,7 +70,7 @@ namespace Task3
         {
             try
             {
-                _contract.Terminal.DisconnectFromPort(_contract.Port);
+                _contract.Terminal.DisconnectFromPort();
             }
             catch (PortException ex)
             {
@@ -106,14 +111,5 @@ namespace Task3
                 _logger.Log(ex.Message);
             }
         }
-
-        //public void EndCallTerminal()
-        //{
-        //    if (_contract.Port.PortState is PortState.Calling)
-        //    {
-        //        _contract.Port.CallEnd(_user);
-        //    }
-        //}
-
     }
 }

@@ -11,14 +11,14 @@ namespace Task3.EventsArgs
 {
     public class PortStartCallEventsArgs : EventArgs
     {
-        public PortStartCallEventsArgs(Terminal caller, PhoneNumber called)
+        public PortStartCallEventsArgs(PhoneNumber sourcePhoneNumber, PhoneNumber targetPhoneNumber)
         {
-            Caller = caller;
-            Called = called;
+            SourcePhoneNumber = sourcePhoneNumber;
+            TargetPhoneNumber = targetPhoneNumber;
         }
 
-        public Terminal Caller { get; set; }
+        public PhoneNumber SourcePhoneNumber { get; }
 
-        public PhoneNumber Called { get; set; }
+        public PhoneNumber TargetPhoneNumber { get; }
     }
 }
