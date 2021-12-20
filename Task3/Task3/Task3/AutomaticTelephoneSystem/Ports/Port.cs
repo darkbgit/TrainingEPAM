@@ -14,15 +14,15 @@ namespace Task3.AutomaticTelephoneSystem.Ports
         }
 
 
-        public event EventHandler<PortStartCallEventsArgs> StartCall;
+        public event EventHandler<PortStartCallEventArgs> StartCall;
 
-        public event EventHandler<StationStartCallRequestEventsArgs> SendRequest;
+        public event EventHandler<StationStartCallRequestEventArgs> SendRequest;
 
         public event EventHandler<PortAnswerRequestEventArgs> AnswerRequest;
 
-        public event EventHandler<StationStartCallAnswerEventsArgs> AnswerCall;
+        public event EventHandler<StationStartCallAfterAnswerEventArgs> AnswerCall;
 
-        public event EventHandler<PortEndCallEventsArgs> EndCallTerminal;
+        public event EventHandler<PortEndCallEventArgs> EndCallTerminal;
 
         public event EventHandler<StationEndCallEventArgs> EndCallStation;
 
@@ -38,7 +38,7 @@ namespace Task3.AutomaticTelephoneSystem.Ports
                     throw new PortException("Порт отключен");
                 case PortState.Connected:
                     PortState = PortState.Waiting;
-                    OnPortStartCall(this, new PortStartCallEventsArgs(((Terminal)sender).PhoneNumber, e.TargetPhoneNumber));
+                    OnPortStartCall(this, new PortStartCallEventArgs(((Terminal)sender).PhoneNumber, e.TargetPhoneNumber, ((Terminal)sender).Id));
                     break;
                 case PortState.Waiting:
                 case PortState.Calling:
@@ -47,7 +47,7 @@ namespace Task3.AutomaticTelephoneSystem.Ports
         }
         
 
-        public void PortStartCallRequest(object sender, StationStartCallRequestEventsArgs e)
+        public void PortStartCallRequest(object sender, StationStartCallRequestEventArgs e)
         {
             switch (PortState)
             {
@@ -63,9 +63,6 @@ namespace Task3.AutomaticTelephoneSystem.Ports
             }
         }
         
-        
-
-
 
         public void PortStartCallAnswer(object sender, TerminalAnswerRequestEventArgs e)
         {
@@ -73,7 +70,7 @@ namespace Task3.AutomaticTelephoneSystem.Ports
             {
                 case PortState.Waiting:
                     PortState = e.IsAccept ? PortState.Calling : PortState.Connected;
-                    OnPortStartCallAnswer(this, new PortAnswerRequestEventArgs(e.IsAccept, e.CallerTerminalId, sender as Terminal));
+                    OnPortStartCallAnswer(this, new PortAnswerRequestEventArgs(e.IsAccept, e.SourceTerminalId, ((Terminal)sender).Id));
                     break;
                 default:
                     PortState = PortState.Disconnected;
@@ -86,7 +83,7 @@ namespace Task3.AutomaticTelephoneSystem.Ports
             AnswerRequest?.Invoke(sender, e);
         }
 
-        public void PortAnswerCall(object sender, StationStartCallAnswerEventsArgs e)
+        public void PortAnswerCall(object sender, StationStartCallAfterAnswerEventArgs e)
         {
             switch (PortState)
             {
@@ -99,7 +96,7 @@ namespace Task3.AutomaticTelephoneSystem.Ports
                     throw new PortException("Ошибка состояния порта. Порт будет отключен");
             }
         }
-        protected virtual void OnPortAnswerCall(object sender, StationStartCallAnswerEventsArgs e)
+        protected virtual void OnPortAnswerCall(object sender, StationStartCallAfterAnswerEventArgs e)
         {
             AnswerCall?.Invoke(sender, e);
         }
@@ -111,14 +108,14 @@ namespace Task3.AutomaticTelephoneSystem.Ports
             {
                 case PortState.Calling:
                     PortState = PortState.Connected;
-                    OnPortEndCallTerminal(this, new PortEndCallEventsArgs((sender as Terminal).Id));
+                    OnPortEndCallTerminal(this, new PortEndCallEventArgs((sender as Terminal).Id));
                     break;
                 default:
                     //PortState = PortState.Disconnected;
                     throw new PortException("Ошибка завершения звонка. Порт не находится в состоянии звонка");
             }
         }
-        protected virtual void OnPortEndCallTerminal(object sender, PortEndCallEventsArgs e)
+        protected virtual void OnPortEndCallTerminal(object sender, PortEndCallEventArgs e)
         {
             EndCallTerminal?.Invoke(sender, e);
         }
@@ -138,12 +135,12 @@ namespace Task3.AutomaticTelephoneSystem.Ports
         }
 
 
-        protected virtual void OnPortStartCallRequest(object sender, StationStartCallRequestEventsArgs e)
+        protected virtual void OnPortStartCallRequest(object sender, StationStartCallRequestEventArgs e)
         {
             SendRequest?.Invoke(sender, e);
         }
 
-        protected virtual void OnPortStartCall(object sender, PortStartCallEventsArgs e)
+        protected virtual void OnPortStartCall(object sender, PortStartCallEventArgs e)
         {
             StartCall?.Invoke(sender, e);
         }

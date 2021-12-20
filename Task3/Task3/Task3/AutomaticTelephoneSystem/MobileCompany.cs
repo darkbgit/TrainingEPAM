@@ -37,7 +37,7 @@ namespace Task3.AutomaticTelephoneSystem
         }
 
 
-        public Contract MakeUserContract(Client user)
+        public Contract SingClientContract(Client client)
         {
             var terminal = new Terminal();
 
@@ -57,7 +57,7 @@ namespace Task3.AutomaticTelephoneSystem
 
             var result = new Contract
             {
-                User = user,
+                Client = client,
                 Terminal = terminal,
                 //Port = port
             };
@@ -66,6 +66,11 @@ namespace Task3.AutomaticTelephoneSystem
             _contracts.Add(result);
 
             return result;
+        }
+
+        public void CancelClientContract(Client client)
+        {
+
         }
 
         public IBilling Billing => _billing;

@@ -7,13 +7,15 @@ using Task3.AutomaticTelephoneSystem;
 
 namespace Task3.EventsArgs
 {
-    public class StationStartCallRequestEventsArgs : EventArgs
+    public class StationStartCallRequestEventArgs : EventArgs
     {
-        public StationStartCallRequestEventsArgs(PhoneNumber sourcePhoneNumber)
+        public StationStartCallRequestEventArgs(PhoneNumber sourcePhoneNumber, Guid sourceTerminalId)
         {
             SourcePhoneNumber = sourcePhoneNumber;
+            SourceTerminalId = sourceTerminalId;
         }
 
+        public Guid SourceTerminalId { get; }
         public PhoneNumber SourcePhoneNumber { get; }
     }
 }

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Task3.EventsArgs
 {
-    public class PortEndCallEventsArgs : EventArgs
+    public class PortEndCallEventArgs : EventArgs
     {
-        public PortEndCallEventsArgs(Guid endCallTerminalId)
+        public PortEndCallEventArgs(Guid endCallTerminalId)
         {
             EndCallTerminalId = endCallTerminalId;
         }

@@ -9,9 +9,9 @@ namespace Task3.AutomaticTelephoneSystem.Stations
 {
     public interface IStation
     {
-        event EventHandler<StationForBillingEventArgs> StationBilling;
-        void OnPortStartCall(object sender, PortStartCallEventsArgs e);
+        event EventHandler<StationStartCallAfterAnswerEventArgs> StationBilling;
+        void OnPortStartCall(object sender, PortStartCallEventArgs e);
         void OnPortAnswer(object sender, PortAnswerRequestEventArgs e);
-        void OnEndCall(object sender, PortEndCallEventsArgs e);
+        void OnEndCall(object sender, PortEndCallEventArgs e);
     }
 }

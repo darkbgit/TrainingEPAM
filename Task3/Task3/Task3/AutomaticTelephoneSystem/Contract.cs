@@ -14,7 +14,7 @@ namespace Task3.AutomaticTelephoneSystem
 
         public Guid Id { get; }
 
-        public Client User { get; set; }
+        public Client Client { get; set; }
 
         public Terminal Terminal { get; set; }
 

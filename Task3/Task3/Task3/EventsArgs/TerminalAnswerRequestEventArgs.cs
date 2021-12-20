@@ -6,17 +6,15 @@ namespace Task3.EventsArgs
 {
     public class TerminalAnswerRequestEventArgs : EventArgs
     {
-        public TerminalAnswerRequestEventArgs(bool isAccept, Guid callerTerminalId)//, Terminal calledTerminal)
+        public TerminalAnswerRequestEventArgs(bool isAccept, Guid sourceTerminalId)
         {
             IsAccept = isAccept;
-            CallerTerminalId = callerTerminalId;
-            //TargetPhoneNumber = calledTerminal;
+            SourceTerminalId = sourceTerminalId;
         }
 
         public bool IsAccept { get; set; }
 
-        public Guid CallerTerminalId { get; set; }
+        public Guid SourceTerminalId { get; set; }
 
-        //public Terminal TargetPhoneNumber { get; set; }
     }
 }

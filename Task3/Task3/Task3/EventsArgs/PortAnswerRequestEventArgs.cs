@@ -6,17 +6,17 @@ namespace Task3.EventsArgs
 {
     public class PortAnswerRequestEventArgs : EventArgs
     {
-        public PortAnswerRequestEventArgs(bool isAccept, Guid callerTerminalId, Terminal called)
+        public PortAnswerRequestEventArgs(bool isAccept, Guid sourceTerminalId, Guid targetTerminalId)
         {
             IsAccept = isAccept;
-            CallerTerminalId = callerTerminalId;
-            Called = called;
+            SourceTerminalId = sourceTerminalId;
+            TargetTerminalId = targetTerminalId;
         }
 
         public bool IsAccept { get; set; }
 
-        public Guid CallerTerminalId { get; set; }
+        public Guid SourceTerminalId { get; set; }
 
-        public Terminal Called { get; set; }
+        public Guid TargetTerminalId { get; set; }
     }
 }

@@ -9,7 +9,7 @@ using Task3.States;
 
 namespace Task3.AutomaticTelephoneSystem.Stations
 {
-    internal class PortController : IPortController
+    internal class PortController : IPortController, IDisposable
     {
         private readonly Port[] _ports;
 
@@ -30,6 +30,7 @@ namespace Task3.AutomaticTelephoneSystem.Stations
                 new Port(9),
                 new Port(10)
             };
+
 
             _portIdTerminalDictionary = new Dictionary<int, Terminal>();
         }
@@ -95,7 +96,44 @@ namespace Task3.AutomaticTelephoneSystem.Stations
             return port;
         }
 
+        public Port GetPortByTerminalId(Guid id)
+        {
+            var port = _ports.FirstOrDefault(p =>
+                p.Id == _portIdTerminalDictionary.FirstOrDefault(v => Equals(v.Value.Id, id)).Key);
+
+            if (port == null)
+            {
+                throw new StationException(
+                    $"Для терминала \"{id}\" нет привязанного порта");
+            }
+
+            return port;
+        }
+
+        public void ConnectPortsToStation(IStation station)
+        {
+            foreach (var port in _ports)
+            {
+                port.StartCall += station.OnPortStartCall;
+            }
+        }
 
         private Port GetFreePort() => _ports.FirstOrDefault(p => p.PortState == PortState.Disconnected);
+
+        private void ReleaseUnmanagedResources()
+        {
+            // TODO release unmanaged resources here
+        }
+
+        public void Dispose()
+        {
+            ReleaseUnmanagedResources();
+            GC.SuppressFinalize(this);
+        }
+
+        ~PortController()
+        {
+            ReleaseUnmanagedResources();
+        }
     }
 }

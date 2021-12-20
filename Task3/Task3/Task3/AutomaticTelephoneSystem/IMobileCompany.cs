@@ -8,6 +8,6 @@ namespace Task3.AutomaticTelephoneSystem
 {
     public interface IMobileCompany
     {
-        Contract MakeUserContract(Client user);
+        Contract SingClientContract(Client client);
     }
 }

@@ -9,13 +9,16 @@ using Task3.States;
 
 namespace Task3.EventsArgs
 {
-    public class PortStartCallEventsArgs : EventArgs
+    public class PortStartCallEventArgs : EventArgs
     {
-        public PortStartCallEventsArgs(PhoneNumber sourcePhoneNumber, PhoneNumber targetPhoneNumber)
+        public PortStartCallEventArgs(PhoneNumber sourcePhoneNumber, PhoneNumber targetPhoneNumber, Guid sourceTerminalId)
         {
             SourcePhoneNumber = sourcePhoneNumber;
             TargetPhoneNumber = targetPhoneNumber;
+            SourceTerminalId = sourceTerminalId;
         }
+
+        public Guid SourceTerminalId { get; }
 
         public PhoneNumber SourcePhoneNumber { get; }
 

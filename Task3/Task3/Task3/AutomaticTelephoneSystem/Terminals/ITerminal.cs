@@ -17,8 +17,8 @@ namespace Task3.AutomaticTelephoneSystem.Terminals
         void ConnectToPort();
         void DisconnectFromPort();
         void End();
-        void GetAnswer(object sender, StationStartCallAnswerEventsArgs e);
+        void GetAnswer(object sender, StationStartCallAfterAnswerEventArgs e);
         void OnPortEndCallByStation(object sender, StationEndCallEventArgs e);
-        void OnRequest(object sender, StationStartCallRequestEventsArgs e);
+        void OnRequest(object sender, StationStartCallRequestEventArgs e);
     }
 }

@@ -27,7 +27,7 @@ namespace Task3
                 FirstName = "A",
                 LastName = "AA"
             };
-            ClintService userService1 = new ClintService(mobileCompany.MakeUserContract(user1), logger);
+            ClintService userService1 = new ClintService(mobileCompany.SingClientContract(user1), logger);
 
 
 
@@ -36,14 +36,14 @@ namespace Task3
                 FirstName = "B",
                 LastName = "BB"
             };
-            ClintService userService2 = new ClintService(mobileCompany.MakeUserContract(user2), logger);
+            ClintService userService2 = new ClintService(mobileCompany.SingClientContract(user2), logger);
 
             Client user3 = new Client
             {
                 FirstName = "C",
                 LastName = "CC"
             };
-            ClintService userService3 = new ClintService(mobileCompany.MakeUserContract(user3), logger);
+            ClintService userService3 = new ClintService(mobileCompany.SingClientContract(user3), logger);
 
 
             Client user4 = new Client
@@ -51,7 +51,7 @@ namespace Task3
                 FirstName = "D",
                 LastName = "DD"
             };
-            ClintService userService4 = new ClintService(mobileCompany.MakeUserContract(user4), logger);
+            ClintService userService4 = new ClintService(mobileCompany.SingClientContract(user4), logger);
 
 
             userService1.ConnectToPort();

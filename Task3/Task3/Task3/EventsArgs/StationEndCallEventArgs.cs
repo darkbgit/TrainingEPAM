@@ -9,11 +9,11 @@ namespace Task3.EventsArgs
 {
     public class StationEndCallEventArgs : EventArgs
     {
-        public StationEndCallEventArgs(PhoneNumber endCallPhoneNumber)
+        public StationEndCallEventArgs(Guid endCallTerminalId)
         {
-            EndCallPhoneNumber = endCallPhoneNumber;
+            EndCallTerminalId = endCallTerminalId;
         }
 
-        public PhoneNumber EndCallPhoneNumber { get; set; }
+        public Guid EndCallTerminalId { get; set; }
     }
 }

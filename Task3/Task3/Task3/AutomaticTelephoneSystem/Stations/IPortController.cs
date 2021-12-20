@@ -13,5 +13,6 @@ namespace Task3.AutomaticTelephoneSystem.Stations
         Port GetPortByPhoneNumber(PhoneNumber phone);
         void ConnectTerminalToPort(Terminal terminal);
         void DisconnectTerminalFromPort(Terminal terminal);
+        Port GetPortByTerminalId(Guid id);
     }
 }

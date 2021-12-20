@@ -10,102 +10,106 @@ namespace Task3.AutomaticTelephoneSystem.Stations
 {
     public class Station
     {
-        private readonly ICollection<CallingTerminalsPour> _callingTerminalsIdPairs;
+        private readonly ICollection<CallingTerminalsPair> _callingTerminalsIdPairs;
 
-        private readonly ICollection<PhoneNumber> _waitingPhonesNumbers;
+        //private readonly ICollection<PhoneNumber> _waitingPhonesNumbers;
 
-        private readonly ICollection<Terminal> _callingTerminals;
+        private readonly ICollection<Guid> _waitingTerminalsIds;
+
+        private readonly ICollection<Guid> _callingTerminalsIds;
 
         private readonly IPortController _portController;
 
         public Station()
         {
             _portController = new PortController();
-            _callingTerminalsIdPairs = new List<CallingTerminalsPour>();
-            _waitingPhonesNumbers = new List<Guid>();
-            _callingTerminals = new List<Terminal>();
 
-            
+
+            _callingTerminalsIdPairs = new List<CallingTerminalsPair>();
+            //_waitingPhonesNumbers = new List<PhoneNumber>();
+            _callingTerminalsIds = new List<Guid>();
+            _waitingTerminalsIds = new List<Guid>();
         }
 
 
-        public event EventHandler<StationForBillingEventArgs> StationStartCall;
+        public event EventHandler<StationStartCallAfterAnswerEventArgs> StationStartCall;
 
-        public event EventHandler<StationForBillingEventArgs> StationEndCall;
+        public event EventHandler<StationEndCallEventArgs> StationEndCall;
 
-        public void OnPortStartCall(object sender, PortStartCallEventsArgs e)
+        public void OnPortStartCall(object sender, PortStartCallEventArgs e)
         {
-            _waitingPhonesNumbers.Add(e.SourcePhoneNumber);
+            _waitingTerminalsIds.Add(e.SourceTerminalId);
+            //_waitingPhonesNumbers.Add(e.SourcePhoneNumber);
             _portController.GetPortByPhoneNumber(e.TargetPhoneNumber)
-                .PortStartCallRequest(this, new StationStartCallRequestEventsArgs(e.SourcePhoneNumber));
+                .PortStartCallRequest(this, new StationStartCallRequestEventArgs(e.SourcePhoneNumber, e.SourceTerminalId));
         }
 
         public void OnPortAnswer(object sender, PortAnswerRequestEventArgs e)
         {
-            var callerTerminal = _waitingPhonesNumbers.FirstOrDefault(t => t.Id.Equals(e.CallerTerminalId));
-
-            if (callerTerminal == null)
-            {
-                throw new StationException();
-            }
+            //var sourceTerminalId = _waitingTerminalsIds.First(t => t.Equals(e.SourceTerminalId));
 
             if (e.IsAccept)
             {
-                _waitingPhonesNumbers.Remove(callerTerminal);
-                _callingTerminals.Add(callerTerminal);
+                _waitingTerminalsIds.Remove(e.SourceTerminalId);
 
-                _callingTerminals.Add(e.Called);
+                _callingTerminalsIds.Add(e.SourceTerminalId);
 
-                _callingTerminalsIdPairs.Add(new CallingTerminalsPour(callerTerminal.Id, e.Called.Id));
+                _callingTerminalsIds.Add(e.TargetTerminalId);
 
-                OnStationStarCall(this, new StationForBillingEventArgs(callerTerminal, e.Called, true));
+                _callingTerminalsIdPairs.Add(new CallingTerminalsPair(e.SourceTerminalId, e.TargetTerminalId));
+
+                OnStationStarCall(this, new StationStartCallAfterAnswerEventArgs(e.SourceTerminalId, e.TargetTerminalId, e.IsAccept));
             }
 
-            _portController.GetPortByPhoneNumber(callerTerminal.PhoneNumber)
-                .PortAnswerCall(this, new StationStartCallAnswerEventsArgs(e.IsAccept, e.Called.PhoneNumber));
+            var port = _portController.GetPortByTerminalId(e.SourceTerminalId);
+
+            if (port.PortState != PortState.Waiting)
+            {
+
+            }
+
+            port.PortAnswerCall(this, new StationStartCallAfterAnswerEventArgs(e.SourceTerminalId, e.TargetTerminalId, e.IsAccept));
         }
 
-        public void OnEndCall(object sender, PortEndCallEventsArgs e)
+        public void OnEndCall(object sender, PortEndCallEventArgs e)
         {
             var terminalsIdsPair = _callingTerminalsIdPairs
-                .FirstOrDefault(p => p.CallerTerminalId.Equals(e.EndCallTerminalId) ||
-                                     p.CalledTerminalId.Equals(e.EndCallTerminalId));
+                .FirstOrDefault(p => p.SourceTerminalId.Equals(e.EndCallTerminalId) && p.TargetTerminalId.Equals(e.EndCallTerminalId));
 
-            var callerTerminal = _callingTerminals
-                .FirstOrDefault(t => t.Id.Equals(terminalsIdsPair.CallerTerminalId));
+            //var callerTerminal = _callingTerminals
+            //    .FirstOrDefault(t => t.Id.Equals(terminalsIdsPair.SourceTerminalId));
 
-            var calledTerminal = _callingTerminals
-                .FirstOrDefault(t => t.Id.Equals(terminalsIdsPair.CalledTerminalId));
+            //var calledTerminal = _callingTerminals
+            //    .FirstOrDefault(t => t.Id.Equals(terminalsIdsPair.TargetTerminalId));
 
             if (terminalsIdsPair == null)
             {
                 throw new StationException("Ошибка порта завершения звонка");
             }
 
-            var endCallPhoneNumber = _callingTerminals
-                .FirstOrDefault(t => t.Id.Equals(e.EndCallTerminalId))?.PhoneNumber;
+            //var endCallPhoneNumber = _callingTerminals
+            //    .FirstOrDefault(t => t.Id.Equals(e.EndCallTerminalId))?.PhoneNumber;
 
 
-            var ph = _callingTerminals
-                .FirstOrDefault(t => t.Id == terminalsIdsPair.GetAnotherTerminalId(e.EndCallTerminalId));
+            //var ph = _callingTerminals
+            //    .FirstOrDefault(t => t.Id == terminalsIdsPair.GetAnotherTerminalId(e.EndCallTerminalId));
 
 
-            var port = _portController.GetPortByPhoneNumber(_callingTerminals
-                .FirstOrDefault(t => t.Id == terminalsIdsPair.GetAnotherTerminalId(e.EndCallTerminalId))
-                ?.PhoneNumber);
+            var port = _portController.GetPortByTerminalId(_callingTerminalsIds
+                .FirstOrDefault(t => t == terminalsIdsPair.GetAnotherTerminalId(e.EndCallTerminalId)));
             
-            OnStationStarCall(this, new StationForBillingEventArgs(callerTerminal, calledTerminal, false));
+            OnStationEndCall(this, new StationEndCallEventArgs(e.EndCallTerminalId));
 
-            _callingTerminals.Remove(
-                _callingTerminals.FirstOrDefault(t => t.Id.Equals(terminalsIdsPair.CalledTerminalId)));
-            _callingTerminals.Remove(
-                _callingTerminals.FirstOrDefault(t => t.Id.Equals(terminalsIdsPair.CallerTerminalId)));
+            _callingTerminalsIds.Remove(
+                _callingTerminalsIds.FirstOrDefault(t => t.Equals(terminalsIdsPair.TargetTerminalId)));
+            _callingTerminalsIds.Remove(
+                _callingTerminalsIds.FirstOrDefault(t => t.Equals(terminalsIdsPair.SourceTerminalId)));
 
             _callingTerminalsIdPairs.Remove(terminalsIdsPair);
 
             
 
-            port.PortEndCallStation(this, new StationEndCallEventArgs(endCallPhoneNumber));
+            port.PortEndCallStation(this, new StationEndCallEventArgs(e.EndCallTerminalId));
 
         }
 
@@ -125,12 +129,16 @@ namespace Task3.AutomaticTelephoneSystem.Stations
             }
         }
 
-        protected virtual void OnStationStarCall(object sender, StationForBillingEventArgs e)
+        protected virtual void OnStationStarCall(object sender, StationStartCallAfterAnswerEventArgs e)
         {
             StationStartCall?.Invoke(sender, e);
         }
 
-             
+
+        protected virtual void OnStationEndCall(object sender, StationEndCallEventArgs e)
+        {
+            StationEndCall?.Invoke(sender, e);
+        }
 
 
     }

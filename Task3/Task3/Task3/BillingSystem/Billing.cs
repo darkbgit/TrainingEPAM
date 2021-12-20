@@ -24,34 +24,34 @@ namespace Task3.BillingSystem
         }
 
 
-        public void OnStation(object sender, StationForBillingEventArgs e)
+        public void OnStation(object sender, StationStartCallAfterAnswerEventArgs e)
         {
-            if (e.IsStart)
+            if (e.IsAccept)
             {
-                BeginAddRecord(e.Caller, e.Called);
+                BeginAddRecord(e.SourceTerminalId, e.TargetTerminalId);
             }
             else
             {
-                FinishAddRecord(e.Caller, e.Called);
+                FinishAddRecord(e.SourceTerminalId, e.TargetTerminalId);
             }
             
         }
 
-        public void BeginAddRecord(Terminal callerTerminal, Terminal calledTerminal)
+        public void BeginAddRecord(Guid sourceTerminalId, Guid targetTerminalId)
         {
             _records.Add(new BillingRecord(_records.Count + 1)
             {
-                CallerTerminal = callerTerminal,
-                CalledTerminal = calledTerminal,
+                SourceTerminalId = sourceTerminalId,
+                TargetTerminalId = targetTerminalId,
                 BeginCall = DateTime.Now.ToUniversalTime()
             });
             _logger.Log(_records.Last().BeginCall.ToLocalTime().ToString());
         }
 
-        public void FinishAddRecord(Terminal callerTerminal, Terminal calledTerminal)
+        public void FinishAddRecord(Guid sourceTerminalId, Guid targetTerminalId)
         {
             var record = _records
-                .FirstOrDefault(r => r.IsCompleted == false && r.CallerTerminal == callerTerminal || r.CalledTerminal == calledTerminal);
+                .FirstOrDefault(r => r.IsCompleted == false && r.SourceTerminalId == sourceTerminalId && r.TargetTerminalId == targetTerminalId);
             if (record == null) throw new BillingException("Ошибка биллинговой системы при завершении звонка");
 
             record.EndCall = DateTime.Now.ToUniversalTime();

@@ -7,7 +7,8 @@ namespace Task3.AutomaticTelephoneSystem.Terminals
 {
     public class Terminal : ITerminal
     {
-        private StationStartCallRequestEventsArgs _incomingStationSendRequestEventsArgs;
+
+        private Guid _currentCallingTerminalId;
         
         public Terminal()
         {
@@ -38,28 +39,28 @@ namespace Task3.AutomaticTelephoneSystem.Terminals
         }
         
 
-        public void OnRequest(object sender, StationStartCallRequestEventsArgs e)
+        public void OnRequest(object sender, StationStartCallRequestEventArgs e)
         {
-            _incomingStationSendRequestEventsArgs = e;
+            _currentCallingTerminalId = e.SourceTerminalId;
             Console.WriteLine($"Терминал {Id}: Входящий вызов от {e.SourcePhoneNumber}");
         }
     
         public void AnswerRequest(bool isAccept)
         {
-            OnAnswerRequest(this, new TerminalAnswerRequestEventArgs(isAccept, _incomingStationSendRequestEventsArgs.CallerTerminalId));
+            OnAnswerRequest(this, new TerminalAnswerRequestEventArgs(isAccept, _currentCallingTerminalId));
         }
 
         
 
-        public void GetAnswer(object sender, StationStartCallAnswerEventsArgs e)
+        public void GetAnswer(object sender, StationStartCallAfterAnswerEventArgs e)
         {
             if (e.IsAccept)
             {
-                Console.WriteLine($"Терминал {Id}: Абонент {e.Called} ответил на звонок. Звонок начался");
+                Console.WriteLine($"Терминал {Id}: Абонент ответил на звонок. Звонок начался");
             }
             else
             {
-                Console.WriteLine($"Терминал {Id}: Абонент {e.Called} отклонил звонок. Звонок завершен");
+                Console.WriteLine($"Терминал {Id}: Абонент отклонил звонок. Звонок завершен");
             }
         }
 
@@ -74,7 +75,7 @@ namespace Task3.AutomaticTelephoneSystem.Terminals
 
         public void OnPortEndCallByStation(object sender, StationEndCallEventArgs e)
         {
-            Console.WriteLine($"Терминал {Id}: Вызов завершен абонентом {e.EndCallPhoneNumber}");
+            Console.WriteLine($"Терминал {Id}: Вызов завершен абонентом {e.EndCallTerminalId}");
         }
 
 
