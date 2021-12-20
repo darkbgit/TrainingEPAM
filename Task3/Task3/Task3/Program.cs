@@ -1,8 +1,8 @@
-﻿using System;
+﻿using ATS.Core.MobileCompanies;
+using System;
 using System.Collections.Generic;
-using Task3.AutomaticTelephoneSystem;
-using Task3.BillingSystem;
-using Task3.Loggers;
+using ATS.Core.ClientsService;
+using Logging.Loggers;
 
 namespace Task3
 {
@@ -15,9 +15,9 @@ namespace Task3
 
 
 
-            ILogger logger = new ConsoleLogger();
+
             
-            IMobileCompany mobileCompany = new MobileCompany(logger);
+            IMobileCompany mobileCompany = new MobileCompany();
 
             
 
@@ -27,7 +27,7 @@ namespace Task3
                 FirstName = "A",
                 LastName = "AA"
             };
-            ClintService userService1 = new ClintService(mobileCompany.SingClientContract(user1), logger);
+            IClientService clientService1 = new ClientService(mobileCompany.SingClientContract(user1));
 
 
 
@@ -36,14 +36,14 @@ namespace Task3
                 FirstName = "B",
                 LastName = "BB"
             };
-            ClintService userService2 = new ClintService(mobileCompany.SingClientContract(user2), logger);
+            IClientService clientService2 = new ClientService(mobileCompany.SingClientContract(user2));
 
             Client user3 = new Client
             {
                 FirstName = "C",
                 LastName = "CC"
             };
-            ClintService userService3 = new ClintService(mobileCompany.SingClientContract(user3), logger);
+            IClientService clientService3 = new ClientService(mobileCompany.SingClientContract(user3));
 
 
             Client user4 = new Client
@@ -51,31 +51,31 @@ namespace Task3
                 FirstName = "D",
                 LastName = "DD"
             };
-            ClintService userService4 = new ClintService(mobileCompany.SingClientContract(user4), logger);
+            IClientService clientService4 = new ClientService(mobileCompany.SingClientContract(user4));
 
 
-            userService1.ConnectToPort();
-            userService2.ConnectToPort();
-            userService3.ConnectToPort();
-            userService4.ConnectToPort();
+            clientService1.ConnectToPort();
+            clientService2.ConnectToPort();
+            clientService3.ConnectToPort();
+            clientService4.ConnectToPort();
             
-            userService1.Call(userService2.PhoneNumber);
+            clientService1.Call(clientService1.PhoneNumber);
 
-            userService2.Answer(true);
+            clientService2.Answer(true);
 
-            userService1.EndCall();
+            clientService2.EndCall();
 
-            userService2.EndCall();
+            clientService1.EndCall();
 
-            userService3.Call(userService2.PhoneNumber);
+            clientService2.Call(clientService3.PhoneNumber);
 
-            userService3.DisconnectFromPort();
-            userService2.Answer(false);
+            clientService2.DisconnectFromPort();
+            clientService3.Answer(false);
 
 
 
-            userService3.DisconnectFromPort();
-            userService4.Call(userService3.PhoneNumber);
+            clientService3.DisconnectFromPort();
+            clientService4.Call(clientService3.PhoneNumber);
 
         }
 
