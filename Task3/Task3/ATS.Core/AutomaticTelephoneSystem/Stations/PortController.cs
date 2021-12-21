@@ -49,8 +49,8 @@ namespace ATS.Core.AutomaticTelephoneSystem.Stations
             port.SendRequest += terminal.OnRequest;
             terminal.AnswerCall += port.PortStartCallAnswer;
             port.AnswerCall += terminal.GetAnswer;
-            terminal.EndCall += port.PortEndCallTerminal;
-            port.EndCallStation += terminal.OnPortEndCallByStation;
+            terminal.EndCall += port.PortEndCallSource;
+            port.EndCallTarget += terminal.OnEndCallByTarget;
 
             port.PortState = PortState.Connected;
 
@@ -74,8 +74,8 @@ namespace ATS.Core.AutomaticTelephoneSystem.Stations
             port.SendRequest -= terminal.OnRequest;
             terminal.AnswerCall -= port.PortStartCallAnswer;
             port.AnswerCall -= terminal.GetAnswer;
-            terminal.EndCall -= port.PortEndCallTerminal;
-            port.EndCallStation -= terminal.OnPortEndCallByStation;
+            terminal.EndCall -= port.PortEndCallSource;
+            port.EndCallTarget -= terminal.OnEndCallByTarget;
 
             port.PortState = PortState.Disconnected;
 

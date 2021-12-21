@@ -4,7 +4,7 @@ using ATS.Core.EventsArgs;
 
 namespace ATS.Core.AutomaticTelephoneSystem.Terminals
 {
-    public class Terminal : ITerminal
+    public class Terminal : ITerminal, ITerminalService
     {
 
         private Guid _currentCallingTerminalId;
@@ -33,6 +33,11 @@ namespace ATS.Core.AutomaticTelephoneSystem.Terminals
 
         public void Call(PhoneNumber targetNumber)
         {
+            //if (Equals(PhoneNumber, targetNumber))
+            //{
+            //    Console.WriteLine($"");
+
+            //}
             Console.WriteLine($"Терминал {Id}: Вызов абонента {targetNumber}");
             OnCall(this, new TerminalStartCallEventArgs(targetNumber));
         }
@@ -70,9 +75,7 @@ namespace ATS.Core.AutomaticTelephoneSystem.Terminals
         }
 
         
-
-
-        public void OnPortEndCallByStation(object sender, StationEndCallEventArgs e)
+        public void OnEndCallByTarget(object sender, StationEndCallEventArgs e)
         {
             Console.WriteLine($"Терминал {Id}: Вызов завершен другим абонентом");
         }

@@ -1,4 +1,5 @@
-﻿using ATS.Core.AutomaticTelephoneSystem;
+﻿using System;
+using ATS.Core.AutomaticTelephoneSystem;
 
 namespace ATS.Core.ClientsService
 {
@@ -10,5 +11,7 @@ namespace ATS.Core.ClientsService
         void DisconnectFromPort();
         void Answer(bool isAccept);
         void EndCall();
+
+        void GetReport(DateTime startDate, DateTime endDate);
     }
 }

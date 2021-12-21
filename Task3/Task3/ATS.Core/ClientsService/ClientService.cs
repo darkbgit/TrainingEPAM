@@ -1,7 +1,10 @@
-﻿using ATS.Core.AutomaticTelephoneSystem;
+﻿using System;
+using ATS.Core.AutomaticTelephoneSystem;
 using ATS.Core.AutomaticTelephoneSystem.Ports;
 using ATS.Core.AutomaticTelephoneSystem.Stations;
+using ATS.Core.AutomaticTelephoneSystem.Terminals;
 using ATS.Core.BillingSystem;
+using ATS.Core.Reports;
 using Logging.Loggers;
 
 
@@ -9,24 +12,27 @@ namespace ATS.Core.ClientsService
 {
     public class ClientService : IClientService
     {
-        //private readonly Client _user;
+        private readonly Client _client;
 
-        private readonly Contract _contract;
+        private readonly ITerminal _terminal;
 
-        public ClientService(Contract contract)
+        private readonly IReportService _reportService;
+
+        public ClientService(ITerminal terminal, IReportService reportService, Client client)
         {
-            //_user = user;
-            _contract = contract;
+            _terminal = terminal;
+            _reportService = reportService;
+            _client = client;
         }
 
-        public PhoneNumber PhoneNumber => _contract.Terminal.PhoneNumber;
+        public PhoneNumber PhoneNumber => _terminal.PhoneNumber;
 
 
         public void Call(PhoneNumber targetNumber)
         {
             try
             {
-                _contract.Terminal.Call(targetNumber);
+                _terminal.Call(targetNumber);
             }
             catch (PortException ex)
             {
@@ -38,13 +44,12 @@ namespace ATS.Core.ClientsService
             }
         }
 
-        //public Contract Contract => _contract;
 
         public void ConnectToPort()
         {
             try
             {
-                _contract.Terminal.ConnectToPort();
+                _terminal.ConnectToPort();
             }
             catch (PortException ex)
             {
@@ -61,7 +66,7 @@ namespace ATS.Core.ClientsService
         {
             try
             {
-                _contract.Terminal.DisconnectFromPort();
+                _terminal.DisconnectFromPort();
             }
             catch (PortException ex)
             {
@@ -78,7 +83,7 @@ namespace ATS.Core.ClientsService
         {
             try
             {
-                _contract.Terminal.AnswerRequest(isAccept);
+                _terminal.AnswerRequest(isAccept);
             }
             catch (PortException ex)
             {
@@ -95,7 +100,7 @@ namespace ATS.Core.ClientsService
         {
             try
             {
-                _contract.Terminal.End();
+                _terminal.End();
             }
             catch (PortException ex)
             {
@@ -105,6 +110,11 @@ namespace ATS.Core.ClientsService
             {
                 Log.LogMessage(ex.Message);
             }
+        }
+
+        public void GetReport(DateTime startDate, DateTime endDate)
+        {
+            _reportService.CreateReportForClient(startDate, endDate, _client.Id, _terminal.PhoneNumber);
         }
     }
 }

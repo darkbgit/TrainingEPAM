@@ -1,8 +1,12 @@
-﻿using ATS.Core.AutomaticTelephoneSystem;
+﻿using System.Collections.Generic;
+using System.Linq;
+using ATS.Core.AutomaticTelephoneSystem;
 using ATS.Core.AutomaticTelephoneSystem.Stations;
 using ATS.Core.AutomaticTelephoneSystem.Terminals;
 using ATS.Core.BillingSystem;
 using ATS.Core.ClientsService;
+using ATS.Core.Tariffs;
+using Logging.Loggers;
 
 
 namespace ATS.Core.MobileCompanies
@@ -13,54 +17,83 @@ namespace ATS.Core.MobileCompanies
 
         private readonly IStation _station;
 
-        private readonly Contracts _contracts;
+        private readonly ICollection<Contract> _contracts;
 
+        private readonly ICollection<ITerminal> _terminals;
 
-
-
-        public MobileCompany()
+        public MobileCompany(IEnumerable<ITariff> tariffs)
         {
-            _contracts = new Contracts();
+           _contracts = new List<Contract>();
+           _terminals = new List<ITerminal>();
+           _billing = new Billing(_contracts, tariffs, _terminals);
+           _station = new Station();
 
-            _station = new Station();
-
-            _billing = new Billing();
-
-            _station.StationStartCall += _billing.OnStation;
+            _station.StationStartCall += _billing.StartCall;
+            _station.StationEndCall += _billing.EndCall;
         }
 
 
-        public Contract SingClientContract(Client client)
+        //public Contract SingClientContract(Client client)
+        //{
+        //    var terminal = new Terminal();
+
+        //    terminal.TerminalConnectToPort += _station.ConnectTerminalToPort;
+
+        //    terminal.TerminalDisconnectFromPort += _station.DisconnectTerminalFromPort;
+
+        //    var result = new Contract
+        //    {
+        //        ClientId = client.Id,
+        //        TerminalId = terminal.Id,
+        //    };
+
+            
+        //    _contracts.Add(result);
+
+        //    return result;
+        //}
+
+        public ITerminal SingClientContract(Client client, ITariff tariff)
         {
-            var terminal = new Terminal();
+            ITerminal terminal = new Terminal();
+
+            _terminals.Add(terminal);
 
             terminal.TerminalConnectToPort += _station.ConnectTerminalToPort;
 
             terminal.TerminalDisconnectFromPort += _station.DisconnectTerminalFromPort;
 
-            //var port = new Port();
-
-            //port.StartCall += _station.OnPortStartCall;
-
-            //port.AnswerRequest += _station.OnPortAnswer;
-
-            //port.EndCallTerminal += _station.OnEndCall;
-
-
-            var result = new Contract
+            var contract = new Contract
             {
-                Client = client,
-                Terminal = terminal,
+                ClientId = client.Id,
+                TerminalId = terminal.Id,
+                TariffId = tariff.Id
             };
 
-            
-            _contracts.Add(result);
+            _contracts.Add(contract);
 
-            return result;
+            return terminal;
         }
 
         public void CancelClientContract(Client client)
         {
+            var contract = _contracts.FirstOrDefault(c => c.ClientId.Equals(client.Id));
+
+            if (contract == null)
+            {
+                Log.LogMessage($"Клиент {client.FirstName} {client.LastName} не найден");
+                return;
+            }
+
+            var terminal = _terminals.First(t => t.Id.Equals(contract.TerminalId));
+
+            terminal.TerminalConnectToPort -= _station.ConnectTerminalToPort;
+
+            terminal.TerminalDisconnectFromPort -= _station.DisconnectTerminalFromPort;
+
+            _terminals.Remove(terminal);
+
+            _contracts.Remove(contract);
 
         }
 

@@ -37,7 +37,23 @@ namespace ATS.Core.AutomaticTelephoneSystem.Stations
 
         public event EventHandler<StationEndCallEventArgs> StationEndCall;
 
-        private void OnPortStartCall(object sender, PortStartCallEventArgs e)
+        public void ConnectTerminalToPort(object sender, EventArgs e)
+        {
+            if (sender is Terminal terminal)
+            {
+                _portController.ConnectTerminalToPort(terminal);
+            }
+        }
+
+        public void DisconnectTerminalFromPort(object sender, EventArgs e)
+        {
+            if (sender is Terminal terminal)
+            {
+                _portController.DisconnectTerminalFromPort(terminal);
+            }
+        }
+
+        private void OnStartCall(object sender, PortStartCallEventArgs e)
         {
             _waitingTerminalsIds.Add(e.SourceTerminalId);
             //_waitingPhonesNumbers.Add(e.SourcePhoneNumber);
@@ -45,7 +61,7 @@ namespace ATS.Core.AutomaticTelephoneSystem.Stations
                 .PortStartCallRequest(this, new StationStartCallRequestEventArgs(e.SourcePhoneNumber, e.SourceTerminalId));
         }
 
-        private void OnPortAnswer(object sender, PortAnswerRequestEventArgs e)
+        private void OnAnswer(object sender, PortAnswerRequestEventArgs e)
         {
             //var sourceTerminalId = _waitingTerminalsIds.First(t => t.Equals(e.SourceTerminalId));
 
@@ -101,25 +117,11 @@ namespace ATS.Core.AutomaticTelephoneSystem.Stations
             _callingTerminalsIdPairs.Remove(terminalsIdsPair);
             
 
-            port.PortEndCallStation(this, new StationEndCallEventArgs(e.EndCallTerminalId));
+            port.PortEndCallTarget(this, new StationEndCallEventArgs(e.EndCallTerminalId));
 
         }
 
-        public void ConnectTerminalToPort(object sender, EventArgs e)
-        {
-            if (sender is Terminal terminal)
-            {
-                _portController.ConnectTerminalToPort(terminal);
-            }
-        }
-
-        public void DisconnectTerminalFromPort(object sender, EventArgs e)
-        {
-            if (sender is Terminal terminal)
-            {
-                _portController.DisconnectTerminalFromPort(terminal);
-            }
-        }
+        
 
         protected virtual void OnStationStarCall(object sender, StationStartCallAfterAnswerEventArgs e)
         {
@@ -136,10 +138,10 @@ namespace ATS.Core.AutomaticTelephoneSystem.Stations
         {
             foreach (var port in ports)
             {
-                port.StartCall += OnPortStartCall;
-                port.AnswerRequest += OnPortAnswer;
+                port.StartCall += OnStartCall;
+                port.AnswerRequest += OnAnswer;
                 //StationStartCall += port.
-                port.EndCallTerminal += OnEndCall;
+                port.EndCallSource += OnEndCall;
             }
         }
     }

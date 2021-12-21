@@ -22,9 +22,9 @@ namespace ATS.Core.AutomaticTelephoneSystem.Ports
 
         public event EventHandler<StationStartCallAfterAnswerEventArgs> AnswerCall;
 
-        public event EventHandler<PortEndCallEventArgs> EndCallTerminal;
+        public event EventHandler<PortEndCallEventArgs> EndCallSource;
 
-        public event EventHandler<StationEndCallEventArgs> EndCallStation;
+        public event EventHandler<StationEndCallEventArgs> EndCallTarget;
 
         public int Id { get; }
 
@@ -78,11 +78,7 @@ namespace ATS.Core.AutomaticTelephoneSystem.Ports
             }
         }
 
-        protected virtual void OnPortStartCallAnswer(object sender, PortAnswerRequestEventArgs e)
-        {
-            AnswerRequest?.Invoke(sender, e);
-        }
-
+       
         public void PortAnswerCall(object sender, StationStartCallAfterAnswerEventArgs e)
         {
             switch (PortState)
@@ -96,37 +92,30 @@ namespace ATS.Core.AutomaticTelephoneSystem.Ports
                     throw new PortException("Ошибка состояния порта. Порт будет отключен");
             }
         }
-        protected virtual void OnPortAnswerCall(object sender, StationStartCallAfterAnswerEventArgs e)
-        {
-            AnswerCall?.Invoke(sender, e);
-        }
+        
 
-
-        public void PortEndCallTerminal(object sender, EventArgs e)
+        public void PortEndCallSource(object sender, EventArgs e)
         {
             switch (PortState)
             {
                 case PortState.Calling:
                     PortState = PortState.Connected;
-                    OnPortEndCallTerminal(this, new PortEndCallEventArgs((sender as Terminal).Id));
+                    OnPortEndCallSource(this, new PortEndCallEventArgs((sender as Terminal).Id));
                     break;
                 default:
                     //PortState = PortState.Disconnected;
                     throw new PortException("Ошибка завершения звонка. Порт не находится в состоянии звонка");
             }
         }
-        protected virtual void OnPortEndCallTerminal(object sender, PortEndCallEventArgs e)
-        {
-            EndCallTerminal?.Invoke(sender, e);
-        }
+        
 
-        public void PortEndCallStation(object sender, StationEndCallEventArgs e)
+        public void PortEndCallTarget(object sender, StationEndCallEventArgs e)
         {
             switch (PortState)
             {
                 case PortState.Calling:
                     PortState = PortState.Connected;
-                    OnPortEndCallStation(this, e);
+                    OnPortEndCallTarget(this, e);
                     break;
                 default:
                     PortState = PortState.Disconnected;
@@ -134,6 +123,16 @@ namespace ATS.Core.AutomaticTelephoneSystem.Ports
             }
         }
 
+
+        protected virtual void OnPortStartCallAnswer(object sender, PortAnswerRequestEventArgs e)
+        {
+            AnswerRequest?.Invoke(sender, e);
+        }
+
+        protected virtual void OnPortAnswerCall(object sender, StationStartCallAfterAnswerEventArgs e)
+        {
+            AnswerCall?.Invoke(sender, e);
+        }
 
         protected virtual void OnPortStartCallRequest(object sender, StationStartCallRequestEventArgs e)
         {
@@ -145,10 +144,14 @@ namespace ATS.Core.AutomaticTelephoneSystem.Ports
             StartCall?.Invoke(sender, e);
         }
 
-
-        protected virtual void OnPortEndCallStation(object sender, StationEndCallEventArgs e)
+        protected virtual void OnPortEndCallSource(object sender, PortEndCallEventArgs e)
         {
-            EndCallStation?.Invoke(sender, e);
+            EndCallSource?.Invoke(sender, e);
+        }
+
+        protected virtual void OnPortEndCallTarget(object sender, StationEndCallEventArgs e)
+        {
+            EndCallTarget?.Invoke(sender, e);
         }
 
     }

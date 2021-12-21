@@ -1,5 +1,4 @@
 ﻿using System;
-using ATS.Core.AutomaticTelephoneSystem.Tariffs;
 using ATS.Core.AutomaticTelephoneSystem.Terminals;
 using ATS.Core.ClientsService;
 
@@ -14,10 +13,10 @@ namespace ATS.Core.BillingSystem
 
         public Guid Id { get; }
 
-        public Client Client { get; set; }
+        public Guid ClientId { get; set; }
 
-        public Terminal Terminal { get; set; }
+        public Guid TerminalId { get; set; }
 
-        public Tariff Tariff { get; set; }
+        public Guid TariffId { get; set; }
     }
 }
