@@ -5,6 +5,7 @@ namespace ATS.Core.Reports
 {
     public interface IReportService
     {
-        void CreateReportForClient(DateTime startDate, DateTime endDate, Guid clientId, PhoneNumber clientPhone);
+        void CreateReportForClient(PhoneNumber clientPhone, Guid clientId, double minCost = 0, double maxCost = double.MaxValue, PhoneNumber interlocutorPhoneNumber = null);
+        void CreateReportForClient(PhoneNumber clientPhone, Guid clientId, DateTime startDate, DateTime endDate, double minCost = 0, double maxCost = double.MaxValue, PhoneNumber interlocutorPhoneNumber = null);
     }
 }

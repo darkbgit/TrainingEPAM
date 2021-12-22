@@ -21,37 +21,22 @@ namespace ATS.Core.MobileCompanies
 
         private readonly ICollection<ITerminal> _terminals;
 
-        public MobileCompany(IEnumerable<ITariff> tariffs)
+        private readonly ICollection<ITariff> _tariffs;
+
+        public MobileCompany()
         {
            _contracts = new List<Contract>();
            _terminals = new List<ITerminal>();
-           _billing = new Billing(_contracts, tariffs, _terminals);
-           _station = new Station();
+           _tariffs = new List<ITariff>();
 
-            _station.StationStartCall += _billing.StartCall;
-            _station.StationEndCall += _billing.EndCall;
+           _billing = CreateBilling();
+           _station = CreateStation();
         }
 
+        public IBilling Billing => _billing;
 
-        //public Contract SingClientContract(Client client)
-        //{
-        //    var terminal = new Terminal();
+        public IEnumerable<ITariff> Tariffs => _tariffs;
 
-        //    terminal.TerminalConnectToPort += _station.ConnectTerminalToPort;
-
-        //    terminal.TerminalDisconnectFromPort += _station.DisconnectTerminalFromPort;
-
-        //    var result = new Contract
-        //    {
-        //        ClientId = client.Id,
-        //        TerminalId = terminal.Id,
-        //    };
-
-            
-        //    _contracts.Add(result);
-
-        //    return result;
-        //}
 
         public ITerminal SingClientContract(Client client, ITariff tariff)
         {
@@ -94,9 +79,26 @@ namespace ATS.Core.MobileCompanies
             _terminals.Remove(terminal);
 
             _contracts.Remove(contract);
-
         }
 
-        public IBilling Billing => _billing;
+        public void AddTariff(ITariff tariff)
+        {
+            _tariffs.Add(tariff);
+        }
+
+        private IBilling CreateBilling()
+        {
+            return new Billing(_contracts, _tariffs, _terminals);
+        }
+
+        private IStation CreateStation()
+        {
+            IStation station = new Station();
+
+            station.StationStartCall += _billing.StartCall;
+            station.StationEndCall += _billing.EndCall;
+
+            return station;
+        }
     }
 }

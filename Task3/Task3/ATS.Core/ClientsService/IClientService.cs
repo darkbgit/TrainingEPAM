@@ -12,6 +12,8 @@ namespace ATS.Core.ClientsService
         void Answer(bool isAccept);
         void EndCall();
 
-        void GetReport(DateTime startDate, DateTime endDate);
+
+        void GetReport(DateTime startDate, DateTime endDate, PhoneNumber interlocutorPhoneNumber = null);
+        void GetReport(PhoneNumber interlocutorPhoneNumber = null);
     }
 }

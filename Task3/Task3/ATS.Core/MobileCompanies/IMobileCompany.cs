@@ -1,4 +1,5 @@
-﻿using ATS.Core.AutomaticTelephoneSystem;
+﻿using System.Collections.Generic;
+using ATS.Core.AutomaticTelephoneSystem;
 using ATS.Core.AutomaticTelephoneSystem.Terminals;
 using ATS.Core.BillingSystem;
 using ATS.Core.ClientsService;
@@ -12,5 +13,8 @@ namespace ATS.Core.MobileCompanies
         ITerminal SingClientContract(Client client, ITariff tariff);
 
         IBilling Billing { get; }
+        IEnumerable<ITariff> Tariffs { get; }
+        void AddTariff(ITariff tariff);
+        void CancelClientContract(Client client);
     }
 }

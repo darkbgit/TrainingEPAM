@@ -1,12 +1,11 @@
-﻿using ATS.Core.MobileCompanies;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using ATS.Core.BillingSystem;
-using ATS.Core.ClientsService;
+﻿using ATS.Core.ClientsService;
+using ATS.Core.MobileCompanies;
 using ATS.Core.Reports;
 using ATS.Core.Tariffs;
 using Logging.Loggers;
+using System;
+using System.Linq;
+using System.Threading;
 
 namespace Task3
 {
@@ -16,54 +15,49 @@ namespace Task3
         {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
-            ITariff tariff = new Tariff();
 
-            //Contracts contracts = new Contracts();
+            IMobileCompany mobileCompany = new MobileCompany();
 
-            //IBilling billing = new Billing();
-            
-            IMobileCompany mobileCompany = new MobileCompany(new List<ITariff>{tariff});
+            mobileCompany.AddTariff(new Tariff());
 
             IReportService reportService = new ReportService(mobileCompany.Billing);
 
-
-            Client client1 = new Client
+            Client client1 = new()
             {
                 FirstName = "A",
                 LastName = "AA"
             };
-            IClientService clientService1 = 
-                new ClientService(mobileCompany.SingClientContract(client1, tariff),
-                reportService, client1);
+            IClientService clientService1 =
+                new ClientService(mobileCompany.SingClientContract(client1,
+                        mobileCompany.Tariffs.First()),
+                    reportService,
+                    client1);
 
-
-
-            Client client2 = new Client
+            Client client2 = new()
             {
                 FirstName = "B",
                 LastName = "BB"
             };
-            IClientService clientService2 = 
-                new ClientService(mobileCompany.SingClientContract(client2, tariff),
+            IClientService clientService2 =
+                new ClientService(mobileCompany.SingClientContract(client2, mobileCompany.Tariffs.First()),
                     reportService, client2);
 
-            Client client3 = new Client
+            Client client3 = new()
             {
                 FirstName = "C",
                 LastName = "CC"
             };
-            IClientService clientService3 = 
-                new ClientService(mobileCompany.SingClientContract(client3, tariff),
+            IClientService clientService3 =
+                new ClientService(mobileCompany.SingClientContract(client3, mobileCompany.Tariffs.First()),
                     reportService, client3);
 
-
-            Client client4 = new Client
+            Client client4 = new()
             {
                 FirstName = "D",
                 LastName = "DD"
             };
             IClientService clientService4 =
-                new ClientService(mobileCompany.SingClientContract(client4, tariff),
+                new ClientService(mobileCompany.SingClientContract(client4, mobileCompany.Tariffs.First()),
                     reportService, client4);
 
             var dt1 = DateTime.Now.ToUniversalTime();
@@ -72,7 +66,7 @@ namespace Task3
             clientService2.ConnectToPort();
             clientService3.ConnectToPort();
             clientService4.ConnectToPort();
-            
+
             clientService1.Call(clientService2.PhoneNumber);
 
             clientService2.Answer(true);
@@ -86,16 +80,21 @@ namespace Task3
             clientService2.Call(clientService3.PhoneNumber);
 
             clientService2.DisconnectFromPort();
-            clientService3.Answer(false);
-
+            clientService3.Answer(true);
+            clientService3.EndCall();
 
 
             clientService3.DisconnectFromPort();
             clientService4.Call(clientService3.PhoneNumber);
 
             clientService1.GetReport(dt1, DateTime.Now.ToUniversalTime());
-            clientService2.GetReport(dt1, DateTime.Now.ToUniversalTime());
+            clientService2.GetReport();
+            clientService2.GetReport(clientService3.PhoneNumber);
             clientService3.GetReport(dt1, DateTime.Now.ToUniversalTime());
+
+            //mobileCompany.CancelClientContract(client3);
+
+            //clientService2.GetReport();
 
         }
 
@@ -106,6 +105,6 @@ namespace Task3
             Log.LogMessage("Application will be terminated. Press any key...");
         }
 
-        
+
     }
 }

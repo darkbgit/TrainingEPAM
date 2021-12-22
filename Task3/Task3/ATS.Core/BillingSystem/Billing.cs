@@ -42,14 +42,18 @@ namespace ATS.Core.BillingSystem
             FinishAddRecord(e.EndCallTerminalId);
         }
 
-        public IEnumerable<ReportRecord> GetReportForClient(Func<BillingRecord, bool> predicate, Guid clientId)
+        public IEnumerable<ReportRecord> GetReportForClient(Func<BillingRecord, bool> predicate, Guid clientId, PhoneNumber interlocutorPhoneNumber)
         {
             var contract = _contracts.First(c => c.ClientId.Equals(clientId));
 
             var tariff = _tariffs.First(t => t.Id.Equals(contract.TariffId));
 
+            var interlocutorTerminalId = GetTerminalIdByPhoneNumber(interlocutorPhoneNumber);
+
             var result = _records.Where(predicate)
                 .Where(r => r.SourceTerminalId.Equals(contract.TerminalId) || r.TargetTerminalId.Equals(contract.TerminalId))
+                .Where(r => interlocutorTerminalId == null || r.SourceTerminalId.Equals(interlocutorTerminalId) ||
+                     r.TargetTerminalId.Equals(interlocutorTerminalId))
                 .Select(r => new ReportRecord
                 {
                     BeginCall = r.BeginCall,
@@ -104,8 +108,15 @@ namespace ATS.Core.BillingSystem
 
         private PhoneNumber GetPhoneNumberByTerminalId(Guid terminalId)
         {
-            var terminal = _terminals.First(t => t.Id.Equals(terminalId));
-            return terminal.PhoneNumber;
+            var terminal = _terminals.FirstOrDefault(t => t.Id.Equals(terminalId));
+
+            return terminal == null ? PhoneNumber.Empty : terminal.PhoneNumber;
+        }
+
+        private Guid? GetTerminalIdByPhoneNumber(PhoneNumber phoneNumber)
+        {
+            var id = _terminals.FirstOrDefault(t => t.PhoneNumber.Equals(phoneNumber))?.Id;
+            return id;
         }
     }
 }

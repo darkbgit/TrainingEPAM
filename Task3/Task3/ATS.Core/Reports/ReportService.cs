@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using ATS.Core.AutomaticTelephoneSystem;
 using ATS.Core.BillingSystem;
-using Logging.Loggers;
+
 
 namespace ATS.Core.Reports
 {
@@ -17,10 +17,18 @@ namespace ATS.Core.Reports
             _billing = billing;
         }
 
-        public void CreateReportForClient(DateTime startDate, DateTime endDate, Guid clientId, PhoneNumber clientPhone)
+        public void CreateReportForClient(PhoneNumber clientPhone, Guid clientId, double minCost = 0, double maxCost = double.MaxValue, PhoneNumber interlocutorPhoneNumber = null)
         {
+            const int MONTHS_OFFSET = -1;
+            DateTime endDate = DateTime.Now.ToUniversalTime();
+
+            DateTime startDate = endDate.AddMonths(MONTHS_OFFSET);
+
             var result = _billing
-                .GetReportForClient(r =>r.IsCompleted && r.BeginCall > startDate && r.EndCall < endDate, clientId)
+                .GetReportForClient(r => r.IsCompleted && 
+                                         r.BeginCall > startDate && 
+                                         r.EndCall < endDate, clientId, interlocutorPhoneNumber)
+                .Where(r => r.Cost >= minCost && r.Cost <= maxCost)
                 .ToList();
 
             Console.WriteLine();
@@ -30,7 +38,22 @@ namespace ATS.Core.Reports
             PrintReport(result);
         }
 
-        private void PrintReport(IEnumerable<ReportRecord> records)
+        public void CreateReportForClient(PhoneNumber clientPhone, Guid clientId, DateTime startDate, DateTime endDate, double minCost = 0, double maxCost = double.MaxValue, PhoneNumber interlocutorPhoneNumber = null)
+        {
+            var result = _billing
+                .GetReportForClient(r =>r.IsCompleted && r.BeginCall > startDate && r.EndCall < endDate,
+                    clientId, interlocutorPhoneNumber)
+                .ToList();
+
+            Console.WriteLine();
+            Console.WriteLine($"Отчет для {clientPhone} c {startDate:G} по {endDate:G}");
+            Console.WriteLine($"{result.Count} зап.");
+
+            PrintReport(result);
+        }
+
+
+        private static void PrintReport(IEnumerable<ReportRecord> records)
         {
             const int COLUMN_COUNT = 6;
             const int CALL_DIRECTION_WIDTH = 5;

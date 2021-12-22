@@ -112,9 +112,14 @@ namespace ATS.Core.ClientsService
             }
         }
 
-        public void GetReport(DateTime startDate, DateTime endDate)
+        public void GetReport(DateTime startDate, DateTime endDate, PhoneNumber interlocutorPhoneNumber = null)
         {
-            _reportService.CreateReportForClient(startDate, endDate, _client.Id, _terminal.PhoneNumber);
+            _reportService.CreateReportForClient(_terminal.PhoneNumber, _client.Id, startDate, endDate, interlocutorPhoneNumber: interlocutorPhoneNumber);
+        }
+
+        public void GetReport(PhoneNumber interlocutorPhoneNumber = null)
+        {
+            _reportService.CreateReportForClient(_terminal.PhoneNumber, _client.Id,  interlocutorPhoneNumber: interlocutorPhoneNumber);
         }
     }
 }
