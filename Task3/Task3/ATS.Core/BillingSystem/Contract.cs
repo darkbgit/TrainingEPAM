@@ -1,6 +1,5 @@
 ﻿using System;
-using ATS.Core.AutomaticTelephoneSystem.Terminals;
-using ATS.Core.ClientsService;
+
 
 namespace ATS.Core.BillingSystem
 {

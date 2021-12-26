@@ -4,14 +4,15 @@ using System.Linq;
 using ATS.Core.AutomaticTelephoneSystem.Ports;
 using ATS.Core.AutomaticTelephoneSystem.Ports.States;
 using ATS.Core.AutomaticTelephoneSystem.Terminals;
+using Logging.Loggers;
 
 namespace ATS.Core.AutomaticTelephoneSystem.Stations
 {
-    internal class PortController : IPortController, IDisposable
+    internal class PortController : IPortController
     {
         private readonly Port[] _ports;
 
-        private readonly Dictionary<int, Terminal> _portIdTerminalDictionary;
+        private readonly Dictionary<int, (Guid, PhoneNumber)> _portTerminalWithPhoneIdsDictionary;
 
         public PortController()
         {
@@ -29,8 +30,7 @@ namespace ATS.Core.AutomaticTelephoneSystem.Stations
                 new Port(10)
             };
 
-
-            _portIdTerminalDictionary = new Dictionary<int, Terminal>();
+            _portTerminalWithPhoneIdsDictionary = new Dictionary<int, (Guid, PhoneNumber)>();
         }
 
         public IEnumerable<Port> Ports => _ports;
@@ -41,8 +41,9 @@ namespace ATS.Core.AutomaticTelephoneSystem.Stations
 
             if (port == null)
             {
-                throw new StationException(
-                    $"Невозможно выдать порт абоненту {terminal.PhoneNumber}. Нет свободных портов.");
+                var message = $"It is impossible connect {terminal.PhoneNumber} to a port. No free ports available.";
+                Log.LogMessage(message);
+                throw new StationException(message);
             }
 
             terminal.StartCall += port.PortStartCall;
@@ -54,20 +55,21 @@ namespace ATS.Core.AutomaticTelephoneSystem.Stations
 
             port.PortState = PortState.Connected;
 
-            _portIdTerminalDictionary.Add(port.Id, terminal);
+            Log.LogMessage($"Terminal {terminal.Id} connected to port {port.Id}");
+
+            _portTerminalWithPhoneIdsDictionary.Add(port.Id, (terminal.Id, terminal.PhoneNumber));
         }
 
         public void DisconnectTerminalFromPort(Terminal terminal)
         {
             var port = _ports.FirstOrDefault(p =>
-                p.Id == _portIdTerminalDictionary.FirstOrDefault(v => v.Value == terminal).Key);
-
-            
+                p.Id == _portTerminalWithPhoneIdsDictionary.FirstOrDefault(v => v.Value.Item1 == terminal.Id).Key);
 
             if (port is not { PortState: PortState.Connected })
             {
-                throw new StationException(
-                    $"Невозможно отключить абонента {terminal.PhoneNumber} от порта.");
+                var message = $"It is impossible disconnect {terminal.PhoneNumber} from port.";
+                Log.LogMessage(message);
+                throw new StationException(message);
             }
 
             terminal.StartCall -= port.PortStartCall;
@@ -79,7 +81,9 @@ namespace ATS.Core.AutomaticTelephoneSystem.Stations
 
             port.PortState = PortState.Disconnected;
 
-            _portIdTerminalDictionary.Remove(port.Id);
+            Log.LogMessage($"Terminal {terminal.Id} disconnected from port {port.Id}");
+
+            _portTerminalWithPhoneIdsDictionary.Remove(port.Id);
         }
 
 
@@ -87,12 +91,13 @@ namespace ATS.Core.AutomaticTelephoneSystem.Stations
         public Port GetPortByPhoneNumber(PhoneNumber phoneNumber)
         {
             var port = _ports.FirstOrDefault(p =>
-                p.Id == _portIdTerminalDictionary.FirstOrDefault(v => Equals(v.Value.PhoneNumber, phoneNumber)).Key);
+                p.Id == _portTerminalWithPhoneIdsDictionary.FirstOrDefault(v => v.Value.Item2 == phoneNumber).Key);
 
             if (port is not { PortState: PortState.Connected })
             {
-                throw new StationException(
-                    $"Для номера телефона \"{phoneNumber}\" нет привязанного порта");
+                var message = $"Phone {phoneNumber} doesn't have connected port";
+                Log.LogMessage(message);
+                throw new StationException(message);
             }
 
             return port;
@@ -101,12 +106,13 @@ namespace ATS.Core.AutomaticTelephoneSystem.Stations
         public Port GetPortByTerminalId(Guid id)
         {
             var port = _ports.FirstOrDefault(p =>
-                p.Id == _portIdTerminalDictionary.FirstOrDefault(v => Equals(v.Value.Id, id)).Key);
+                p.Id == _portTerminalWithPhoneIdsDictionary.FirstOrDefault(v => v.Value.Item1 == id).Key);
 
             if (port == null)
             {
-                throw new StationException(
-                    $"Для терминала \"{id}\" нет привязанного порта");
+                var message = $"Terminal {id} doesn't have connected port";
+                Log.LogMessage(message);
+                throw new StationException(message);
             }
 
             return port;
@@ -115,20 +121,5 @@ namespace ATS.Core.AutomaticTelephoneSystem.Stations
         
         private Port GetFreePort() => _ports.FirstOrDefault(p => p.PortState == PortState.Disconnected);
 
-        private void ReleaseUnmanagedResources()
-        {
-            // TODO release unmanaged resources here
-        }
-
-        public void Dispose()
-        {
-            ReleaseUnmanagedResources();
-            GC.SuppressFinalize(this);
-        }
-
-        ~PortController()
-        {
-            ReleaseUnmanagedResources();
-        }
     }
 }

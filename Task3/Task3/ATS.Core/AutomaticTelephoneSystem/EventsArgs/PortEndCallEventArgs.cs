@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ATS.Core.EventsArgs
+namespace ATS.Core.AutomaticTelephoneSystem.EventsArgs
 {
     public class PortEndCallEventArgs : EventArgs
     {
@@ -9,6 +9,6 @@ namespace ATS.Core.EventsArgs
             EndCallTerminalId = endCallTerminalId;
         }
 
-        public Guid EndCallTerminalId { get; set; }
+        public Guid EndCallTerminalId { get; }
     }
 }

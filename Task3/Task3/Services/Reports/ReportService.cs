@@ -5,14 +5,13 @@ using System.Text;
 using ATS.Core.AutomaticTelephoneSystem;
 using ATS.Core.BillingSystem;
 
-
-namespace ATS.Core.Reports
+namespace Services.Reports
 {
     public class ReportService : IReportService
     {
-        private readonly IBilling _billing;
+        private readonly IBillingReport _billing;
 
-        public ReportService(IBilling billing)
+        public ReportService(IBillingReport billing)
         {
             _billing = billing;
         }
@@ -25,8 +24,7 @@ namespace ATS.Core.Reports
             DateTime startDate = endDate.AddMonths(MONTHS_OFFSET);
 
             var result = _billing
-                .GetReportForClient(r => r.IsCompleted && 
-                                         r.BeginCall > startDate && 
+                .GetReportForClient(r => r.BeginCall > startDate && 
                                          r.EndCall < endDate, clientId, interlocutorPhoneNumber)
                 .Where(r => r.Cost >= minCost && r.Cost <= maxCost)
                 .ToList();
@@ -41,7 +39,7 @@ namespace ATS.Core.Reports
         public void CreateReportForClient(PhoneNumber clientPhone, Guid clientId, DateTime startDate, DateTime endDate, double minCost = 0, double maxCost = double.MaxValue, PhoneNumber interlocutorPhoneNumber = null)
         {
             var result = _billing
-                .GetReportForClient(r =>r.IsCompleted && r.BeginCall > startDate && r.EndCall < endDate,
+                .GetReportForClient(r =>r.BeginCall > startDate && r.EndCall < endDate,
                     clientId, interlocutorPhoneNumber)
                 .ToList();
 

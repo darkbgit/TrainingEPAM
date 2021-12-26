@@ -2,21 +2,21 @@
 
 namespace ATS.Core.AutomaticTelephoneSystem.Ports
 {
-    internal class PortException : Exception
+    public class PortException : Exception
     {
         public PortException()
         {
 
         }
 
-        public PortException(string messege) :
-            base(messege)
+        public PortException(string message) :
+            base(message)
         {
 
         }
 
-        public PortException(string messege, Exception ex) :
-            base(messege, ex)
+        public PortException(string message, Exception ex) :
+            base(message, ex)
         {
 
         }

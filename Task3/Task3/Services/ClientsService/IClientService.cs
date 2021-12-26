@@ -1,7 +1,7 @@
 ﻿using System;
 using ATS.Core.AutomaticTelephoneSystem;
 
-namespace ATS.Core.ClientsService
+namespace Services.ClientsService
 {
     public interface IClientService
     {

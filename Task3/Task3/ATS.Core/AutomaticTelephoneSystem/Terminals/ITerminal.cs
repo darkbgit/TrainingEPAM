@@ -1,5 +1,4 @@
 ﻿using System;
-using ATS.Core.EventsArgs;
 
 namespace ATS.Core.AutomaticTelephoneSystem.Terminals
 {
@@ -16,5 +15,6 @@ namespace ATS.Core.AutomaticTelephoneSystem.Terminals
         void ConnectToPort();
         void DisconnectFromPort();
         void End();
+        void Print(string message);
     }
 }

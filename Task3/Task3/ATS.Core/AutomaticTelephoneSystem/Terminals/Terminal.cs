@@ -1,6 +1,6 @@
 ﻿using System;
+using ATS.Core.AutomaticTelephoneSystem.EventsArgs;
 using ATS.Core.AutomaticTelephoneSystem.Ports;
-using ATS.Core.EventsArgs;
 
 namespace ATS.Core.AutomaticTelephoneSystem.Terminals
 {
@@ -33,11 +33,6 @@ namespace ATS.Core.AutomaticTelephoneSystem.Terminals
 
         public void Call(PhoneNumber targetNumber)
         {
-            //if (Equals(PhoneNumber, targetNumber))
-            //{
-            //    Console.WriteLine($"");
-
-            //}
             Console.WriteLine($"Терминал {Id}: Вызов абонента {targetNumber}");
             OnCall(this, new TerminalStartCallEventArgs(targetNumber));
         }
@@ -93,6 +88,10 @@ namespace ATS.Core.AutomaticTelephoneSystem.Terminals
             OnDisconnectTerminalFromPort(this, EventArgs.Empty);
         }
 
+        public void Print(string message)
+        {
+            Console.WriteLine(message);
+        }
 
 
         protected virtual void OnAnswerRequest(object sender, TerminalAnswerRequestEventArgs e)

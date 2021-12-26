@@ -1,5 +1,5 @@
 ﻿using System;
-using ATS.Core.EventsArgs;
+using ATS.Core.AutomaticTelephoneSystem.EventsArgs;
 
 namespace ATS.Core.AutomaticTelephoneSystem.Terminals
 {

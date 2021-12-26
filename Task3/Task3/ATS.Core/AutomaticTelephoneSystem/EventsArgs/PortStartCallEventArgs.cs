@@ -1,8 +1,6 @@
 ﻿using System;
-using ATS.Core.AutomaticTelephoneSystem;
 
-
-namespace ATS.Core.EventsArgs
+namespace ATS.Core.AutomaticTelephoneSystem.EventsArgs
 {
     public class PortStartCallEventArgs : EventArgs
     {

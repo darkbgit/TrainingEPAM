@@ -1,18 +1,16 @@
-﻿using System;
+﻿using ATS.Core.AutomaticTelephoneSystem;
+using ATS.Core.AutomaticTelephoneSystem.EventsArgs;
+using ATS.Core.AutomaticTelephoneSystem.Terminals;
+using ATS.Core.Tariffs;
+using Logging.Loggers;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using ATS.Core.AutomaticTelephoneSystem;
-using ATS.Core.AutomaticTelephoneSystem.Terminals;
-using ATS.Core.EventsArgs;
-using ATS.Core.Reports;
-using ATS.Core.Tariffs;
-using Logging.Loggers;
 
 namespace ATS.Core.BillingSystem
 {
-    public class Billing : IBilling
+    public class Billing : IBilling, IBillingReport
     {
         private readonly IEnumerable<ITariff> _tariffs;
 
@@ -51,9 +49,9 @@ namespace ATS.Core.BillingSystem
             var interlocutorTerminalId = GetTerminalIdByPhoneNumber(interlocutorPhoneNumber);
 
             var result = _records.Where(predicate)
-                .Where(r => r.SourceTerminalId.Equals(contract.TerminalId) || r.TargetTerminalId.Equals(contract.TerminalId))
-                .Where(r => interlocutorTerminalId == null || r.SourceTerminalId.Equals(interlocutorTerminalId) ||
-                     r.TargetTerminalId.Equals(interlocutorTerminalId))
+                .Where(r => r.IsCompleted &&
+                            (r.SourceTerminalId.Equals(contract.TerminalId) || r.TargetTerminalId.Equals(contract.TerminalId)) &&
+                            (interlocutorTerminalId == null || r.SourceTerminalId.Equals(interlocutorTerminalId) || r.TargetTerminalId.Equals(interlocutorTerminalId)))
                 .Select(r => new ReportRecord
                 {
                     BeginCall = r.BeginCall,
@@ -74,11 +72,11 @@ namespace ATS.Core.BillingSystem
         {
             return _records.GetEnumerator();
         }
-        
+
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IEnumerable) _records).GetEnumerator();
+            return ((IEnumerable)_records).GetEnumerator();
         }
 
         private void BeginAddRecord(Guid sourceTerminalId, Guid targetTerminalId)
@@ -89,7 +87,7 @@ namespace ATS.Core.BillingSystem
                 TargetTerminalId = targetTerminalId,
                 BeginCall = DateTime.Now.ToUniversalTime()
             });
-            Log.LogMessage(_records.Last().BeginCall.ToLocalTime().ToString("G"));
+            Log.LogMessage($"Source terminal {sourceTerminalId} target terminal {targetTerminalId} call start.");
         }
 
         private void FinishAddRecord(Guid endCallTerminalId)
@@ -97,13 +95,12 @@ namespace ATS.Core.BillingSystem
             var record = _records
                 .FirstOrDefault(r => r.IsCompleted == false && r.SourceTerminalId == endCallTerminalId || r.TargetTerminalId == endCallTerminalId);
 
-            if (record == null) throw new BillingException("Ошибка биллинговой системы при завершении звонка");
+            if (record == null) throw new BillingException("Ошибка биллинговой системы при завершении звонка.");
 
             record.EndCall = DateTime.Now.ToUniversalTime();
             record.IsCompleted = true;
 
-            Log.LogMessage(_records.Last().EndCall.ToLocalTime().ToString("G"));
-            Log.LogMessage($"Вызов между и завершен. Продолжительность звонка {record.EndCall - record.BeginCall:hh':'mm':'ss}");
+            Log.LogMessage($"Source terminal {record.SourceTerminalId} target terminal {record.TargetTerminalId} call end, duration {record.EndCall - record.BeginCall:hh':'mm':'ss}.");
         }
 
         private PhoneNumber GetPhoneNumberByTerminalId(Guid terminalId)

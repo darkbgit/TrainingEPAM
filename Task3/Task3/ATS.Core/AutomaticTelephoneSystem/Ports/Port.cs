@@ -1,7 +1,8 @@
 ﻿using System;
+using ATS.Core.AutomaticTelephoneSystem.EventsArgs;
 using ATS.Core.AutomaticTelephoneSystem.Ports.States;
 using ATS.Core.AutomaticTelephoneSystem.Terminals;
-using ATS.Core.EventsArgs;
+using Logging.Loggers;
 
 namespace ATS.Core.AutomaticTelephoneSystem.Ports
 {
@@ -35,6 +36,7 @@ namespace ATS.Core.AutomaticTelephoneSystem.Ports
             switch (PortState)
             {
                 case PortState.Disconnected:
+                    Log.LogMessage($"Port state error. Connect terminal {((Terminal)sender).Id} to port {Id}. Port disconnected.");
                     throw new PortException("Порт отключен");
                 case PortState.Connected:
                     PortState = PortState.Waiting;
@@ -42,6 +44,7 @@ namespace ATS.Core.AutomaticTelephoneSystem.Ports
                     break;
                 case PortState.Waiting:
                 case PortState.Calling:
+                    Log.LogMessage($"Port state error. Connect terminal {((Terminal)sender).Id} to port {Id}. Port busy.");
                     throw new PortException("Порт занят");
             }
         }
@@ -51,15 +54,15 @@ namespace ATS.Core.AutomaticTelephoneSystem.Ports
         {
             switch (PortState)
             {
-                case PortState.Disconnected:
-                    throw new PortException("Вызываемый абонент отключен");
                 case PortState.Connected:
                     PortState = PortState.Waiting;
                     OnPortStartCallRequest(this, e);
                     break;
+                case PortState.Disconnected:
                 case PortState.Waiting:
                 case PortState.Calling:
-                    throw new PortException("Вызываемый абонент занят");
+                    Log.LogMessage($"Port state error. Start call from terminal {e.SourceTerminalId} request to port {Id}. Port state {PortState}.");
+                    throw new PortException();
             }
         }
         
@@ -73,6 +76,7 @@ namespace ATS.Core.AutomaticTelephoneSystem.Ports
                     OnPortStartCallAnswer(this, new PortAnswerRequestEventArgs(e.IsAccept, e.SourceTerminalId, ((Terminal)sender).Id));
                     break;
                 default:
+                    Log.LogMessage($"Port state error. Start call answer - source terminal {e.SourceTerminalId}, port {Id}, port state {PortState}.");
                     PortState = PortState.Disconnected;
                     throw new PortException("Ошибка состояния порта. Порт будет отключен");
             }
@@ -88,6 +92,7 @@ namespace ATS.Core.AutomaticTelephoneSystem.Ports
                     OnPortAnswerCall(this, e);
                     break;
                 default:
+                    Log.LogMessage($"Port state error. Answer call - source terminal {e.SourceTerminalId}, target terminal {e.TargetTerminalId},  port {Id}, port state {PortState}.");
                     PortState = PortState.Disconnected;
                     throw new PortException("Ошибка состояния порта. Порт будет отключен");
             }
@@ -100,9 +105,10 @@ namespace ATS.Core.AutomaticTelephoneSystem.Ports
             {
                 case PortState.Calling:
                     PortState = PortState.Connected;
-                    OnPortEndCallSource(this, new PortEndCallEventArgs((sender as Terminal).Id));
+                    OnPortEndCallSource(this, new PortEndCallEventArgs(((Terminal)sender).Id));
                     break;
                 default:
+                    Log.LogMessage($"Port state error. End call from source - terminal {((Terminal)sender).Id} port {Id}, port state {PortState}.");
                     //PortState = PortState.Disconnected;
                     throw new PortException("Ошибка завершения звонка. Порт не находится в состоянии звонка");
             }
@@ -118,6 +124,7 @@ namespace ATS.Core.AutomaticTelephoneSystem.Ports
                     OnPortEndCallTarget(this, e);
                     break;
                 default:
+                    Log.LogMessage($"Port state error. End call from target - terminal {e.EndCallTerminalId} port {Id}, port state {PortState}.");
                     PortState = PortState.Disconnected;
                     throw new PortException("Ошибка состояния порта. Порт будет отключен");
             }

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ATS.Core.AutomaticTelephoneSystem;
-using ATS.Core.EventsArgs;
-using ATS.Core.Reports;
+using ATS.Core.AutomaticTelephoneSystem.EventsArgs;
 
 namespace ATS.Core.BillingSystem
 {
@@ -10,6 +9,6 @@ namespace ATS.Core.BillingSystem
     {
         void StartCall(object sender, StationStartCallAfterAnswerEventArgs e);
         void EndCall(object sender, StationEndCallEventArgs e);
-        IEnumerable<ReportRecord> GetReportForClient(Func<BillingRecord, bool> predicate, Guid clientId, PhoneNumber interlocutorPhoneNumber);
+        
     }
 }

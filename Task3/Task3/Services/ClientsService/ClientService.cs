@@ -3,22 +3,21 @@ using ATS.Core.AutomaticTelephoneSystem;
 using ATS.Core.AutomaticTelephoneSystem.Ports;
 using ATS.Core.AutomaticTelephoneSystem.Stations;
 using ATS.Core.AutomaticTelephoneSystem.Terminals;
-using ATS.Core.BillingSystem;
-using ATS.Core.Reports;
+using ATS.Core.Clients;
 using Logging.Loggers;
+using Services.Reports;
 
-
-namespace ATS.Core.ClientsService
+namespace Services.ClientsService
 {
     public class ClientService : IClientService
     {
-        private readonly Client _client;
+        private readonly IClient _client;
 
         private readonly ITerminal _terminal;
 
         private readonly IReportService _reportService;
 
-        public ClientService(ITerminal terminal, IReportService reportService, Client client)
+        public ClientService(ITerminal terminal, IReportService reportService, IClient client)
         {
             _terminal = terminal;
             _reportService = reportService;
@@ -34,13 +33,13 @@ namespace ATS.Core.ClientsService
             {
                 _terminal.Call(targetNumber);
             }
-            catch (PortException ex)
+            catch (PortException)
             {
-                Log.LogMessage(ex.Message);
+                _terminal.Print("Ошибка вызова. Звонок не начался.");
             }
-            catch (StationException ex)
+            catch (StationException)
             {
-                Log.LogMessage(ex.Message);
+                _terminal.Print("Ошибка вызова. Звонок не начался.");
             }
         }
 
@@ -51,13 +50,13 @@ namespace ATS.Core.ClientsService
             {
                 _terminal.ConnectToPort();
             }
-            catch (PortException ex)
+            catch (PortException)
             {
-                Log.LogMessage(ex.Message);
+                _terminal.Print("Ошибка подключения к порту. Порт не подключен.");
             }
-            catch (StationException ex)
+            catch (StationException)
             {
-                Log.LogMessage(ex.Message);
+                _terminal.Print("Ошибка подключения к порту. Порт не подключен.");
             }
         }
 
@@ -68,13 +67,13 @@ namespace ATS.Core.ClientsService
             {
                 _terminal.DisconnectFromPort();
             }
-            catch (PortException ex)
+            catch (PortException)
             {
-                Log.LogMessage(ex.Message);
+                _terminal.Print("Ошибка отключения от порта. Порт не отключен.");
             }
-            catch (StationException ex)
+            catch (StationException)
             {
-                Log.LogMessage(ex.Message);
+                _terminal.Print("Ошибка отключения от порта. Порт не отключен.");
             }
         }
 
@@ -85,13 +84,13 @@ namespace ATS.Core.ClientsService
             {
                 _terminal.AnswerRequest(isAccept);
             }
-            catch (PortException ex)
+            catch (PortException)
             {
-                Log.LogMessage(ex.Message);
+                _terminal.Print("Невозможно ответить на звонок.");
             }
-            catch (StationException ex)
+            catch (StationException)
             {
-                Log.LogMessage(ex.Message);
+                _terminal.Print("Невозможно ответить на звонок.");
             }
         }
 
@@ -102,13 +101,13 @@ namespace ATS.Core.ClientsService
             {
                 _terminal.End();
             }
-            catch (PortException ex)
+            catch (PortException)
             {
-                Log.LogMessage(ex.Message);
+                _terminal.Print("Невозможно завершить звонок.");
             }
-            catch (StationException ex)
+            catch (StationException)
             {
-                Log.LogMessage(ex.Message);
+                _terminal.Print("Невозможно завершить звонок.");
             }
         }
 

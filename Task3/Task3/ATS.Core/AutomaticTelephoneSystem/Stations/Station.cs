@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ATS.Core.AutomaticTelephoneSystem.EventsArgs;
 using ATS.Core.AutomaticTelephoneSystem.Ports;
 using ATS.Core.AutomaticTelephoneSystem.Ports.States;
 using ATS.Core.AutomaticTelephoneSystem.Terminals;
-using ATS.Core.EventsArgs;
+using Logging.Loggers;
 
 namespace ATS.Core.AutomaticTelephoneSystem.Stations
 {
     public class Station : IStation
     {
         private readonly ICollection<CallingTerminalsPair> _callingTerminalsIdPairs;
-
-        //private readonly ICollection<PhoneNumber> _waitingPhonesNumbers;
-
-        private readonly ICollection<Guid> _waitingTerminalsIds;
 
         private readonly ICollection<Guid> _callingTerminalsIds;
 
@@ -27,9 +24,7 @@ namespace ATS.Core.AutomaticTelephoneSystem.Stations
             ConnectPortsToStation(_portController.Ports);
 
             _callingTerminalsIdPairs = new List<CallingTerminalsPair>();
-            //_waitingPhonesNumbers = new List<PhoneNumber>();
             _callingTerminalsIds = new List<Guid>();
-            _waitingTerminalsIds = new List<Guid>();
         }
 
 
@@ -55,20 +50,14 @@ namespace ATS.Core.AutomaticTelephoneSystem.Stations
 
         private void OnStartCall(object sender, PortStartCallEventArgs e)
         {
-            _waitingTerminalsIds.Add(e.SourceTerminalId);
-            //_waitingPhonesNumbers.Add(e.SourcePhoneNumber);
             _portController.GetPortByPhoneNumber(e.TargetPhoneNumber)
                 .PortStartCallRequest(this, new StationStartCallRequestEventArgs(e.SourcePhoneNumber, e.SourceTerminalId));
         }
 
         private void OnAnswer(object sender, PortAnswerRequestEventArgs e)
         {
-            //var sourceTerminalId = _waitingTerminalsIds.First(t => t.Equals(e.SourceTerminalId));
-
             if (e.IsAccept)
             {
-                _waitingTerminalsIds.Remove(e.SourceTerminalId);
-
                 _callingTerminalsIds.Add(e.SourceTerminalId);
 
                 _callingTerminalsIds.Add(e.TargetTerminalId);
@@ -80,11 +69,6 @@ namespace ATS.Core.AutomaticTelephoneSystem.Stations
 
             var port = _portController.GetPortByTerminalId(e.SourceTerminalId);
 
-            if (port.PortState != PortState.Waiting)
-            {
-
-            }
-
             port.PortAnswerCall(this, new StationStartCallAfterAnswerEventArgs(e.SourceTerminalId, e.TargetTerminalId, e.IsAccept));
         }
 
@@ -93,15 +77,10 @@ namespace ATS.Core.AutomaticTelephoneSystem.Stations
             var terminalsIdsPair = _callingTerminalsIdPairs
                 .FirstOrDefault(p => p.SourceTerminalId.Equals(e.EndCallTerminalId) || p.TargetTerminalId.Equals(e.EndCallTerminalId));
 
-            //var callerTerminal = _callingTerminals
-            //    .FirstOrDefault(t => t.Id.Equals(terminalsIdsPair.SourceTerminalId));
-
-            //var calledTerminal = _callingTerminals
-            //    .FirstOrDefault(t => t.Id.Equals(terminalsIdsPair.TargetTerminalId));
-
             if (terminalsIdsPair == null)
             {
-                throw new StationException("Ошибка порта завершения звонка");
+                Log.LogMessage($"Terminal {e.EndCallTerminalId} not found in station calling terminals pairs.");
+                throw new StationException("Ошибка порта завершения звонка.");
             }
 
             var port = _portController.GetPortByTerminalId(_callingTerminalsIds
@@ -140,7 +119,6 @@ namespace ATS.Core.AutomaticTelephoneSystem.Stations
             {
                 port.StartCall += OnStartCall;
                 port.AnswerRequest += OnAnswer;
-                //StationStartCall += port.
                 port.EndCallSource += OnEndCall;
             }
         }

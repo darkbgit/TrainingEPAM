@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ATS.Core.AutomaticTelephoneSystem;
 
-namespace ATS.Core.Reports
+namespace ATS.Core.BillingSystem
 {
     public class ReportRecord
     {

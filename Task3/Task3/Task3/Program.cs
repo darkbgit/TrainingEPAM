@@ -1,11 +1,12 @@
-﻿using ATS.Core.ClientsService;
-using ATS.Core.MobileCompanies;
-using ATS.Core.Reports;
+﻿using ATS.Core.MobileCompanies;
 using ATS.Core.Tariffs;
 using Logging.Loggers;
 using System;
 using System.Linq;
 using System.Threading;
+using ATS.Core.Clients;
+using Services.ClientsService;
+using Services.Reports;
 
 namespace Task3
 {
@@ -22,7 +23,7 @@ namespace Task3
 
             IReportService reportService = new ReportService(mobileCompany.Billing);
 
-            Client client1 = new()
+            IClient client1 = new Client()
             {
                 FirstName = "A",
                 LastName = "AA"

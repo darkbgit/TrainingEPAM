@@ -1,7 +1,7 @@
 ﻿using System;
 using ATS.Core.AutomaticTelephoneSystem;
 
-namespace ATS.Core.Reports
+namespace Services.Reports
 {
     public interface IReportService
     {

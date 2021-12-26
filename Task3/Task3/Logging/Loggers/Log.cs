@@ -17,7 +17,7 @@ namespace Logging.Loggers
 
         public static void LogMessage(string message)
         {
-            Logger.Log(message);
+            Logger.Log(DateTime.Now.ToString("G") + ": " + message);
         }
     }
 }

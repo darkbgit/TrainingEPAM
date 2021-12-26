@@ -1,6 +1,6 @@
 ﻿using System;
+using ATS.Core.AutomaticTelephoneSystem.EventsArgs;
 using ATS.Core.AutomaticTelephoneSystem.Ports.States;
-using ATS.Core.EventsArgs;
 
 namespace ATS.Core.AutomaticTelephoneSystem.Ports
 {

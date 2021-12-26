@@ -4,7 +4,7 @@ using ATS.Core.AutomaticTelephoneSystem;
 using ATS.Core.AutomaticTelephoneSystem.Stations;
 using ATS.Core.AutomaticTelephoneSystem.Terminals;
 using ATS.Core.BillingSystem;
-using ATS.Core.ClientsService;
+using ATS.Core.Clients;
 using ATS.Core.Tariffs;
 using Logging.Loggers;
 
@@ -33,12 +33,12 @@ namespace ATS.Core.MobileCompanies
            _station = CreateStation();
         }
 
-        public IBilling Billing => _billing;
+        public IBillingReport Billing => (IBillingReport)_billing;
 
         public IEnumerable<ITariff> Tariffs => _tariffs;
 
 
-        public ITerminal SingClientContract(Client client, ITariff tariff)
+        public ITerminal SingClientContract(IClient client, ITariff tariff)
         {
             ITerminal terminal = new Terminal();
 
@@ -60,7 +60,7 @@ namespace ATS.Core.MobileCompanies
             return terminal;
         }
 
-        public void CancelClientContract(Client client)
+        public void CancelClientContract(IClient client)
         {
             var contract = _contracts.FirstOrDefault(c => c.ClientId.Equals(client.Id));
 

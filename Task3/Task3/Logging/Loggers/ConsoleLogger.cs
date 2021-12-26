@@ -6,7 +6,9 @@ namespace Logging.Loggers
     {
         public void Log(string message)
         {
-            Console.WriteLine("logging: " + message);
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(message);
+            Console.ResetColor();
         }
     }
 }

@@ -1,9 +1,9 @@
 ﻿using System;
-using ATS.Core.EventsArgs;
+using ATS.Core.AutomaticTelephoneSystem.EventsArgs;
 
 namespace ATS.Core.AutomaticTelephoneSystem.Stations
 {
-    public interface IStation
+    internal interface IStation
     {
         event EventHandler<StationStartCallAfterAnswerEventArgs> StationStartCall;
         event EventHandler<StationEndCallEventArgs> StationEndCall;

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ATS.Core.EventsArgs
+namespace ATS.Core.AutomaticTelephoneSystem.EventsArgs
 {
     public class TerminalAnswerRequestEventArgs : EventArgs
     {
@@ -10,9 +10,9 @@ namespace ATS.Core.EventsArgs
             SourceTerminalId = sourceTerminalId;
         }
 
-        public bool IsAccept { get; set; }
+        public bool IsAccept { get; }
 
-        public Guid SourceTerminalId { get; set; }
+        public Guid SourceTerminalId { get; }
 
     }
 }
