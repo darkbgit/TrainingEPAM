@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CsvManager.DAL.Core\CsvManager.DAL.Core.csproj" />
+    <ProjectReference Include="..\CsvManager.DAL.Repositories.Interfaces\CsvManager.DAL.Repositories.Interfaces.csproj" />
+  </ItemGroup>
+
+</Project>
