@@ -1,10 +1,12 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using CsvManager.Core.Services.Interfaces;
+﻿using CsvManager.Core.Services.Interfaces;
 using CsvManager.DAL.Core.Entities;
 using CsvManager.DAL.Repositories.Implementation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System;
+using System.IO;
+using System.Threading.Tasks;
+
 
 namespace CsvManager.Services.Implementation
 {
@@ -13,11 +15,12 @@ namespace CsvManager.Services.Implementation
 
         private readonly IRecordService _recordService;
         private readonly IUnitOfWork _unitOfWork;
-
-        public FileService(IRecordService recordService, IUnitOfWork unitOfWork)
+        private readonly ILogger<FileService> _logger;
+        public FileService(IRecordService recordService, IUnitOfWork unitOfWork, ILogger<FileService> logger)
         {
             _recordService = recordService;
             _unitOfWork = unitOfWork;
+            _logger = logger;
         }
 
 
@@ -25,8 +28,17 @@ namespace CsvManager.Services.Implementation
         {
             var fileName = Path.GetFileName(filePath);
 
-            var managerId = await ParseFileName(fileName);
 
+            if (fileName.EndsWith(".csv"))
+            {
+                fileName = fileName[..^4];
+            }
+            else
+            {
+                throw new Exception();
+            }
+
+            var managerId = await ParseFileName(fileName);
             await using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
             using var sr = new StreamReader(fs);
             while (!sr.EndOfStream)
@@ -46,6 +58,8 @@ namespace CsvManager.Services.Implementation
                     });
                 }
             }
+
+            await _unitOfWork.SaveChangesAsync();
         }
 
 
@@ -58,7 +72,7 @@ namespace CsvManager.Services.Implementation
                 throw new Exception();
             }
 
-            return await GetManagerIdBySecondName(fileName);
+            return await GetManagerIdBySecondName(data[0]);
         }
 
         private async Task<Guid> GetManagerIdBySecondName(string secondName)
@@ -66,8 +80,10 @@ namespace CsvManager.Services.Implementation
             if (string.IsNullOrWhiteSpace(secondName))
                 throw new Exception();
 
-            var id = _unitOfWork.Clients.FindBy(c => c.SecondName == secondName)
-                .FirstOrDefaultAsync().Result?.Id;
+            var id = (await _unitOfWork.Managers
+                .FindBy(c => c.SecondName.Equals(secondName))
+                .FirstOrDefaultAsync())
+                ?.Id;
 
             if (id == null)
             {
@@ -78,6 +94,10 @@ namespace CsvManager.Services.Implementation
                 };
 
                 await _unitOfWork.Managers.Add(manager);
+                await _unitOfWork.SaveChangesAsync();
+
+                _logger.LogInformation($"Add new manager {secondName}");
+
 
                 id = manager.Id;
             }

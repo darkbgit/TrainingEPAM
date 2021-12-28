@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Serilog" Version="2.10.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CsvManager.Core.DTOs\CsvManager.Core.DTOs.csproj" />
     <ProjectReference Include="..\CsvManager.Core.Services.Interfaces\CsvManager.Core.Services.Interfaces.csproj" />
     <ProjectReference Include="..\CsvManager.DAL.Repositories.Implementation\CsvManager.DAL.Repositories.Implementation.csproj" />

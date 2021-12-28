@@ -47,8 +47,10 @@ namespace CsvManager.Services.Implementation
             if (string.IsNullOrWhiteSpace(secondName))
                 throw new Exception();
 
-            var id = _unitOfWork.Clients.FindBy(c => c.SecondName == secondName)
-                .FirstOrDefaultAsync().Result?.Id;
+            var id = (await _unitOfWork.Clients
+                .FindBy(c => c.SecondName == secondName)
+                .FirstOrDefaultAsync())
+                ?.Id;
 
             if (id == null)
             {
@@ -71,8 +73,10 @@ namespace CsvManager.Services.Implementation
             if (string.IsNullOrWhiteSpace(productName))
                 throw new Exception();
 
-            var id = _unitOfWork.Products.FindBy(c => c.Name == productName)
-                .FirstOrDefaultAsync().Result?.Id;
+            var id = (await _unitOfWork.Products
+                .FindBy(c => c.Name == productName)
+                .FirstOrDefaultAsync())
+                ?.Id;
 
             if (id == null)
             {
