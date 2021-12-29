@@ -4,8 +4,15 @@ using CsvManager.DAL.Repositories.Implementation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using CsvManager.Core.DTOs;
+using CsvManager.DAL.Core;
+using CsvManager.DAL.Repositories.Implementation.Repositories;
+using Microsoft.Extensions.Configuration;
 
 
 namespace CsvManager.Services.Implementation
@@ -14,95 +21,137 @@ namespace CsvManager.Services.Implementation
     {
 
         private readonly IRecordService _recordService;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IGetOrCreateUnitOfWork<Manager> _getOrCreateUnitOfWork;
         private readonly ILogger<FileService> _logger;
-        public FileService(IRecordService recordService, IUnitOfWork unitOfWork, ILogger<FileService> logger)
+        private readonly IConfiguration _configuration;
+        private readonly IDbContextFactory<CsvManagerContext> _dbContextFactory;
+        
+
+        public FileService(IRecordService recordService, ILogger<FileService> logger, IConfiguration configuration, IDbContextFactory<CsvManagerContext> dbContextFactory, IGetOrCreateUnitOfWork<Manager> getOrCreateUnitOfWork)
         {
             _recordService = recordService;
-            _unitOfWork = unitOfWork;
             _logger = logger;
+            _configuration = configuration;
+            _dbContextFactory = dbContextFactory;
+            _getOrCreateUnitOfWork = getOrCreateUnitOfWork;
         }
 
 
         public async Task Parse(string filePath)
         {
+            _logger.LogInformation($"Start parse {filePath}.");
+
             var fileName = Path.GetFileName(filePath);
 
+            var fileEnd = _configuration["Files:Pattern"];
 
-            if (fileName.EndsWith(".csv"))
+            if (!fileName.EndsWith(fileEnd))
             {
-                fileName = fileName[..^4];
-            }
-            else
-            {
-                throw new Exception();
+                throw new ServiceException($"File error. File don't ends with {fileEnd}.");
             }
 
-            var managerId = await ParseFileName(fileName);
+            var (manager, date) = await ParseFileName(fileName[..^fileEnd.Length]);
+
+            ICollection<OrderDto> orders = new List<OrderDto>();
+
             await using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            using var sr = new StreamReader(fs);
-            while (!sr.EndOfStream)
+            using (var sr = new StreamReader(fs))
             {
-                var order = await _recordService.Parse(await sr.ReadLineAsync());
-
-                if (order != null)
+                while (!sr.EndOfStream)
                 {
-                    await _unitOfWork.Orders.Add(new Order
+                    OrderDto order = null;
+                    try
                     {
-                        Id = order.Id,
-                        ManagerId = managerId,
-                        Date = order.Date,
-                        ClientId = order.ClientId,
-                        ProductId = order.ProductId,
-                        Price = order.Price
-                    });
+                        order = await _recordService.Parse(await sr.ReadLineAsync());
+                    }
+                    catch (ServiceException e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+                    
+                    if (order != null)
+                    {
+                        orders.Add(order);
+                    }
                 }
             }
 
-            await _unitOfWork.SaveChangesAsync();
+            Task.WaitAll();
+            
+            if (orders.Any())
+            {
+                var result = orders.Select(o => new Order
+                {
+                    Id = o.Id,
+                    ManagerId = manager.Id,
+                    Date = o.Date,
+                    ClientId = o.ClientId,
+                    ProductId = o.ProductId,
+                    Price = o.Price
+                }).ToList();
+
+
+                //await _unitOfWork.Orders.AddRange(result);
+                //await _unitOfWork.SaveChangesAsync();
+
+
+                await using (var context = _dbContextFactory.CreateDbContext())
+                {
+                    await context.Orders.AddRangeAsync(result);
+                    await context.SaveChangesAsync();
+                }
+
+
+                var destinationFolder = _configuration["Folders:BackupFolder"];
+
+                //Directory.CreateDirectory(destinationFolder);
+
+                //File.Move(filePath, Path.Combine(destinationFolder, fileName));
+
+            }
+
+            _logger.LogInformation($"File {filePath} parse is finished. For manager {manager.Name} {orders.Count} records added.");
         }
 
 
-        private async Task<Guid> ParseFileName(string fileName)
+        private async Task<Tuple<Manager, DateTime>> ParseFileName(string fileName)
         {
-            var data = fileName.Split('_');
+            var separator = _configuration["Files:Separator"];
+            var dateFormat = _configuration["Files:DateFormat"];
+
+            if (string.IsNullOrWhiteSpace(separator))
+            {
+                throw new ServiceException("Couldn't get separator char for record from configuration.");
+            }
+
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                throw new ServiceException("File name error. Empty file name.");
+            }
+            var data = fileName.Split(separator);
 
             if (data.Length != 2)
             {
-                throw new Exception();
+                throw new ServiceException("File name error. File name wrong format.");
             }
 
-            return await GetManagerIdBySecondName(data[0]);
-        }
-
-        private async Task<Guid> GetManagerIdBySecondName(string secondName)
-        {
-            if (string.IsNullOrWhiteSpace(secondName))
-                throw new Exception();
-
-            var id = (await _unitOfWork.Managers
-                .FindBy(c => c.SecondName.Equals(secondName))
-                .FirstOrDefaultAsync())
-                ?.Id;
-
-            if (id == null)
+            if (!DateTime.TryParseExact(data[1], dateFormat, null, DateTimeStyles.None, out var date))
             {
-                var manager = new Manager()
-                {
-                    Id = Guid.NewGuid(),
-                    SecondName = secondName
-                };
-
-                await _unitOfWork.Managers.Add(manager);
-                await _unitOfWork.SaveChangesAsync();
-
-                _logger.LogInformation($"Add new manager {secondName}");
-
-
-                id = manager.Id;
+                throw new ServiceException("File name error. Date wrong format.");
             }
 
-            return id.Value;
+            Manager manager;
+            try
+            {
+                manager = await _getOrCreateUnitOfWork.GetOrCreateByName(data[0]);
+            }
+            catch (Exception e)
+            {
+                throw new ServiceException("Error get or create manager.", e);
+            }
+            
+
+            return new Tuple<Manager, DateTime>(manager, date);
         }
     }
 }

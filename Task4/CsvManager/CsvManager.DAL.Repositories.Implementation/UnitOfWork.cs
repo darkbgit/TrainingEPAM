@@ -13,19 +13,19 @@ namespace CsvManager.DAL.Repositories.Implementation
     {
         private readonly CsvManagerContext _db;
 
-        public UnitOfWork(IRepository<Manager> managers, IRepository<Client> clients, IRepository<Product> products, IRepository<Order> orders, CsvManagerContext db)
+        public UnitOfWork(IRepository<Manager> managers, IRepository<Client> clients, IRepository<Product> products, CsvManagerContext db)
         {
             Managers = managers;
             Clients = clients;
             Products = products;
-            Orders = orders;
+            //Orders = orders;
             _db = db;
         }
 
         public IRepository<Manager> Managers { get; }
         public IRepository<Client> Clients { get; }
         public IRepository<Product> Products { get; }
-        public IRepository<Order> Orders { get; }
+        //public IRepository<Order> Orders { get; }
 
         public async Task<int> SaveChangesAsync()
         {

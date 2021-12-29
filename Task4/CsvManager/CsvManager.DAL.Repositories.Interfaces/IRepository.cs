@@ -9,7 +9,7 @@ namespace CsvManager.DAL.Repositories.Interfaces
 {
     public interface IRepository<T> :IDisposable where T : class , IBaseEntity
     {
-        IQueryable<T> FindBy(Expression<Func<T, bool>> predicate,
+        IEnumerable<T> FindBy(Expression<Func<T, bool>> predicate,
             params Expression<Func<T, object>>[] includes);
 
         Task<T> Get(Guid id);
@@ -23,5 +23,7 @@ namespace CsvManager.DAL.Repositories.Interfaces
 
         void Remove(Guid id);
         void RemoveRange(IEnumerable<T> entities);
+
+        public Task<int> Save();
     }
 }

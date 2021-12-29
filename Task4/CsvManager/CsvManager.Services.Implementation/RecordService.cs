@@ -6,107 +6,66 @@ using CsvManager.Core.Services.Interfaces;
 using CsvManager.DAL.Core.Entities;
 using CsvManager.DAL.Repositories.Implementation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace CsvManager.Services.Implementation
 {
     public class RecordService : IRecordService
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IGetOrCreateUnitOfWork<Client> _clientUnitOfWork;
+        private readonly IGetOrCreateUnitOfWork<Product> _productUnitOfWork;
+        private readonly ILogger<IRecordService> _logger;
 
-        public RecordService(IUnitOfWork unitOfWork)
+        private readonly string _separator;
+        private readonly string _dateFormat;
+
+        public RecordService(ILogger<IRecordService> logger, IConfiguration configuration, IGetOrCreateUnitOfWork<Client> clientUnitOfWork, IGetOrCreateUnitOfWork<Product> productUnitOfWork)
         {
-            _unitOfWork = unitOfWork;
+            _logger = logger;
+            _clientUnitOfWork = clientUnitOfWork;
+            _productUnitOfWork = productUnitOfWork;
+            _separator = configuration["Records:Separator"];
+            _dateFormat = configuration["Records:DateFormat"];
+
         }
 
         public async Task<OrderDto> Parse(string record)
         {
-            var data = record.Split(';');
+            
+            if (string.IsNullOrWhiteSpace(record))
+            {
+                throw new ServiceException("Record error. Empty record.");
+            }
+
+            var data = record.Split(_separator);
 
             if (data.Length != 4)
-                throw new Exception();
+            {
+                throw new ServiceException("Record error. Record wrong format.");
+            }
+                
 
             if (!double.TryParse(data[3], NumberStyles.Float, CultureInfo.InvariantCulture, out var price))
             {
-                throw new Exception();
+                throw new ServiceException($"Record error. {data[3]} - price wrong format.");
+            }
+
+            if (!DateTime.TryParseExact(data[0], _dateFormat, null, DateTimeStyles.None, out var date))
+            {
+                throw new ServiceException($"Record error. {data[0]} - date wrong format.");
             }
 
             var order = new OrderDto
             {
                 Id = Guid.NewGuid(),
-                Date = DateTime.Parse(data[0]),
-                ClientId = await GetClientIdBySecondName(data[1]),
-                ProductId = await GetProductIdByName(data[2]),
+                Date = date,
+                ClientId = (await _clientUnitOfWork.GetOrCreateByName(data[1])).Id,
+                ProductId = (await _productUnitOfWork.GetOrCreateByName(data[2])).Id,
                 Price = price
             };
 
             return order;
-        }
-
-        private async Task<Guid> GetClientIdBySecondName(string secondName)
-        {
-            if (string.IsNullOrWhiteSpace(secondName))
-                throw new Exception();
-
-            var id = (await _unitOfWork.Clients
-                .FindBy(c => c.SecondName == secondName)
-                .FirstOrDefaultAsync())
-                ?.Id;
-
-            if (id == null)
-            {
-                var client = new Client
-                {
-                    Id = Guid.NewGuid(),
-                    SecondName = secondName
-                };
-
-                await _unitOfWork.Clients.Add(client);
-
-                id = client.Id;
-            }
-
-            return id.Value;
-        }
-
-        private async Task<Guid> GetProductIdByName(string productName)
-        {
-            if (string.IsNullOrWhiteSpace(productName))
-                throw new Exception();
-
-            var id = (await _unitOfWork.Products
-                .FindBy(c => c.Name == productName)
-                .FirstOrDefaultAsync())
-                ?.Id;
-
-            if (id == null)
-            {
-                var product = new Product()
-                {
-                    Id = Guid.NewGuid(),
-                    Name = productName
-                };
-
-                await _unitOfWork.Products.Add(product);
-
-                id = product.Id;
-            }
-
-            return id.Value;
-        }
-        
-        public async Task<int> Add(OrderDto order)
-        {
-            var entity = new Order()
-            {
-                Id = Guid.NewGuid(),
-                ClientId = order.ClientId,
-                Date = order.Date,
-                Price = order.Price,
-                ProductId = order.ProductId
-            };
-
-            await _unitOfWork.Orders.Add(entity);
-            return await _unitOfWork.SaveChangesAsync();
         }
     }
 }

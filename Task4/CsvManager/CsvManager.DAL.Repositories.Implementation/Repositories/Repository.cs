@@ -27,7 +27,7 @@ namespace CsvManager.DAL.Repositories.Implementation.Repositories
             GC.SuppressFinalize(this);
         }
 
-        public IQueryable<T> FindBy(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)
+        public IEnumerable<T> FindBy(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)
         {
             var result = Table.Where(predicate);
             if (includes.Any())
@@ -36,7 +36,7 @@ namespace CsvManager.DAL.Repositories.Implementation.Repositories
                     .Aggregate(result,
                         (current, include) => current.Include(include));
             }
-            return result;
+            return result.ToList();
         }
 
         public async Task<T> Get(Guid id)
@@ -78,6 +78,11 @@ namespace CsvManager.DAL.Repositories.Implementation.Repositories
         public void RemoveRange(IEnumerable<T> entities)
         {
             Table.RemoveRange(entities);
+        }
+
+        public async Task<int> Save()
+        {
+            return await Db.SaveChangesAsync();
         }
     }
 }

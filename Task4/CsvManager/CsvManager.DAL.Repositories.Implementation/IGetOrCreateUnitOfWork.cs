@@ -5,12 +5,9 @@ using CsvManager.DAL.Repositories.Interfaces;
 
 namespace CsvManager.DAL.Repositories.Implementation
 {
-    public interface IUnitOfWork : IDisposable
+    public interface IGetOrCreateUnitOfWork<T> : IDisposable where T : class, IEntityWithName, new()
     {
-        IRepository<Manager> Managers { get; }
-        IRepository<Client> Clients { get; }
-        IRepository<Product> Products { get; }
-        //IRepository<Order> Orders { get; }
+        Task<T> GetOrCreateByName(string name);
 
         Task<int> SaveChangesAsync();
     }

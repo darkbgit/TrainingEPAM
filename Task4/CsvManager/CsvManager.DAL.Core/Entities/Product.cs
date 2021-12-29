@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CsvManager.DAL.Core.Entities
 {
-    public class Product : IBaseEntity
+    public class Product : IEntityWithName
     {
         public Guid Id { get; set; }
 

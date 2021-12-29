@@ -36,8 +36,6 @@ namespace CsvManager.DAL.Core
                 var s = _configuration.GetConnectionString("DefaultConnection");
                 optionsBuilder
                     .UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));
-
-                        //@"Server=DESKTOP-UIGGTGJ;Database=CsvManagerDB;Trusted_Connection=True;MultipleActiveResultSets=true2
             }
         }
 
