@@ -27,18 +27,7 @@ namespace CsvManager
                 .CreateLogger();
 
 
-            var host = CreateHostBuilder(args).Build();
-
-
-            //await host.RunAsync();
-
-
-            var service = host.Services.GetService<IFolderService>();
-
-            if (service != null)
-            {
-                await service.Parse();
-            }
+            await CreateHostBuilder(args).Build().RunAsync();
 
         }
 
@@ -58,15 +47,15 @@ namespace CsvManager
                         .AddTransient<IRepository<Order>, OrdersRepository>()
                         .AddTransient<IRepository<Product>, ProductsRepository>()
 
-                        //.AddTransient<IUnitOfWork, UnitOfWork>()
                         .AddTransient(typeof(IGetOrCreateUnitOfWork<>), typeof(GetOrCreateUnitOfWork<>))
-                        //.AddTransient<IGetOrCreateUnitOfWork<Manager>, GetOrCreateManager>()
+
                         .AddTransient<IFolderService, FolderService>()
                         .AddTransient<IRecordService, RecordService>()
                         .AddTransient<IFileService, FileService>()
 
-                        .AddTransient<IFileServiceFactory, FileServiceFactory>();
+                        .AddTransient<IFileServiceFactory, FileServiceFactory>()
 
+                        .AddHostedService<Startup>();
 
                 })
                 .UseSerilog();

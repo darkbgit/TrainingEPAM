@@ -25,6 +25,8 @@ namespace CsvManager.Services.Implementation
         private readonly ILogger<FileService> _logger;
         private readonly IConfiguration _configuration;
         private readonly IDbContextFactory<CsvManagerContext> _dbContextFactory;
+
+        private readonly string _destinationFolder;
         
 
         public FileService(IRecordService recordService, ILogger<FileService> logger, IConfiguration configuration, IDbContextFactory<CsvManagerContext> dbContextFactory, IGetOrCreateUnitOfWork<Manager> getOrCreateUnitOfWork)
@@ -34,6 +36,7 @@ namespace CsvManager.Services.Implementation
             _configuration = configuration;
             _dbContextFactory = dbContextFactory;
             _getOrCreateUnitOfWork = getOrCreateUnitOfWork;
+            _destinationFolder = configuration["Folders:BackupFolder"];
         }
 
 
@@ -41,16 +44,9 @@ namespace CsvManager.Services.Implementation
         {
             _logger.LogInformation($"Start parse {filePath}.");
 
-            var fileName = Path.GetFileName(filePath);
+            var fileForParse = new FilePath(filePath);
 
-            var fileEnd = _configuration["Files:Pattern"];
-
-            if (!fileName.EndsWith(fileEnd))
-            {
-                throw new ServiceException($"File error. File don't ends with {fileEnd}.");
-            }
-
-            var (manager, date) = await ParseFileName(fileName[..^fileEnd.Length]);
+            var (manager, date) = await ParseFileName(fileForParse.FileName);
 
             ICollection<OrderDto> orders = new List<OrderDto>();
 
@@ -100,15 +96,14 @@ namespace CsvManager.Services.Implementation
                     await context.Orders.AddRangeAsync(result);
                     await context.SaveChangesAsync();
                 }
-
-
-                var destinationFolder = _configuration["Folders:BackupFolder"];
-
-                //Directory.CreateDirectory(destinationFolder);
-
-                //File.Move(filePath, Path.Combine(destinationFolder, fileName));
-
+                
             }
+
+            Directory.CreateDirectory(_destinationFolder);
+
+            var newFilePath =  new FilePath(_destinationFolder, fileForParse.FileName, fileForParse.Extension);
+
+            File.Move(fileForParse.FullPath, newFilePath.FullPathWithNewNameCheck());
 
             _logger.LogInformation($"File {filePath} parse is finished. For manager {manager.Name} {orders.Count} records added.");
         }

@@ -4,6 +4,6 @@ namespace CsvManager.Core.Services.Interfaces
 {
     public interface IFolderService
     {
-        Task Parse();
+        Task Run();
     }
 }
