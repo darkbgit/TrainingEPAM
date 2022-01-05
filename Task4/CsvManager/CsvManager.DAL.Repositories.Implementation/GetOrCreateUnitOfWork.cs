@@ -28,9 +28,9 @@ namespace CsvManager.DAL.Repositories.Implementation
         }
 
 
-        public async Task<int> SaveChangesAsync()
+        public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
         {
-            return await _repo.Save();
+            return await _repo.SaveAsync(cancellationToken);
         }
 
         public void Dispose()
@@ -40,12 +40,14 @@ namespace CsvManager.DAL.Repositories.Implementation
             GC.SuppressFinalize(this);
         }
 
-        public async Task<T> GetOrCreateByName(string name)
+        public async Task<T> GetOrCreateByNameAsync(string name, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             if (string.IsNullOrWhiteSpace(name))
                 throw new Exception("Entity's name for create is null or empty.");
 
-            await SemaphoreSlim.WaitAsync();
+            await SemaphoreSlim.WaitAsync(cancellationToken);
             try
             {
                 var item = _repo
@@ -60,8 +62,8 @@ namespace CsvManager.DAL.Repositories.Implementation
                     Name = name
                 };
 
-                await _repo.Add(item);
-                await SaveChangesAsync();
+                await _repo.AddAsync(item, cancellationToken);
+                await SaveChangesAsync(cancellationToken);
                 
                 _logger.LogInformation($"Add new {typeof(T).Name} {name}.");
 

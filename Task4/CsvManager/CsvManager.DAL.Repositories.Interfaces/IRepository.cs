@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CsvManager.DAL.Repositories.Interfaces
@@ -15,8 +16,8 @@ namespace CsvManager.DAL.Repositories.Interfaces
         Task<T> Get(Guid id);
         IQueryable<T> GetAll();
 
-        Task Add(T entity);
-        Task AddRange(IEnumerable<T> entities);
+        Task AddAsync(T entity, CancellationToken cancellationToken);
+        Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken);
 
         void Update(T entity);
         void UpdateRange(IEnumerable<T> entities);
@@ -24,6 +25,6 @@ namespace CsvManager.DAL.Repositories.Interfaces
         void Remove(Guid id);
         void RemoveRange(IEnumerable<T> entities);
 
-        public Task<int> Save();
+        public Task<int> SaveAsync(CancellationToken cancellationToken);
     }
 }

@@ -13,7 +13,7 @@ using CsvManager.Core.DTOs;
 using CsvManager.DAL.Core;
 using CsvManager.DAL.Repositories.Implementation.Repositories;
 using Microsoft.Extensions.Configuration;
-
+using System.Threading;
 
 namespace CsvManager.Services.Implementation
 {
@@ -27,6 +27,8 @@ namespace CsvManager.Services.Implementation
         private readonly IDbContextFactory<CsvManagerContext> _dbContextFactory;
 
         private readonly string _destinationFolder;
+
+        private CancellationToken ct;
         
 
         public FileService(IRecordService recordService, ILogger<FileService> logger, IConfiguration configuration, IDbContextFactory<CsvManagerContext> dbContextFactory, IGetOrCreateUnitOfWork<Manager> getOrCreateUnitOfWork)
@@ -40,13 +42,28 @@ namespace CsvManager.Services.Implementation
         }
 
 
-        public async Task Parse(string filePath)
+        public async Task ParseAsync(string filePath, CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"Start parse {filePath}.");
+           // ct = cancellationToken;
+
+           //_logger.LogInformation("dfgsdf");
+           //for (int i = 0; i < 1000000000; i++)
+           //{
+           //    i++;
+           //    Thread.Sleep(100);
+           //    if (cancellationToken.IsCancellationRequested)
+           //    {
+           //        Console.WriteLine("Token");
+           //        cancellationToken.ThrowIfCancellationRequested();
+           //        return;
+           //    }
+           //}
+
+           _logger.LogInformation($"Start parse {filePath}.");
 
             var fileForParse = new FilePath(filePath);
 
-            var (manager, date) = await ParseFileName(fileForParse.FileName);
+            var (manager, date) = await ParseFileName(fileForParse.FileName, cancellationToken);
 
             ICollection<OrderDto> orders = new List<OrderDto>();
 
@@ -55,10 +72,17 @@ namespace CsvManager.Services.Implementation
             {
                 while (!sr.EndOfStream)
                 {
+                    Thread.Sleep(100);
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        Console.WriteLine("Token");
+                        cancellationToken.ThrowIfCancellationRequested();
+                        return;
+                    }
                     OrderDto order = null;
                     try
                     {
-                        order = await _recordService.Parse(await sr.ReadLineAsync());
+                        order = await _recordService.ParseAsync(await sr.ReadLineAsync(), cancellationToken);
                     }
                     catch (ServiceException e)
                     {
@@ -76,6 +100,11 @@ namespace CsvManager.Services.Implementation
             
             if (orders.Any())
             {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    Console.WriteLine("t");
+                }
+                cancellationToken.ThrowIfCancellationRequested();
                 var result = orders.Select(o => new Order
                 {
                     Id = o.Id,
@@ -87,14 +116,14 @@ namespace CsvManager.Services.Implementation
                 }).ToList();
 
 
-                //await _unitOfWork.Orders.AddRange(result);
+                //await _unitOfWork.Orders.AddRangeAsync(result);
                 //await _unitOfWork.SaveChangesAsync();
 
 
                 await using (var context = _dbContextFactory.CreateDbContext())
                 {
-                    await context.Orders.AddRangeAsync(result);
-                    await context.SaveChangesAsync();
+                    await context.Orders.AddRangeAsync(result, cancellationToken);
+                    await context.SaveChangesAsync(cancellationToken);
                 }
                 
             }
@@ -105,11 +134,11 @@ namespace CsvManager.Services.Implementation
 
             File.Move(fileForParse.FullPath, newFilePath.FullPathWithNewNameCheck());
 
-            _logger.LogInformation($"File {filePath} parse is finished. For manager {manager.Name} {orders.Count} records added.");
+            //.LogInformation($"File {filePath} parse is finished. For manager {/*manager.Name*/} {orders.Count} records added.");
         }
 
 
-        private async Task<Tuple<Manager, DateTime>> ParseFileName(string fileName)
+        private async Task<Tuple<Manager, DateTime>> ParseFileName(string fileName, CancellationToken cancellationToken)
         {
             var separator = _configuration["Files:Separator"];
             var dateFormat = _configuration["Files:DateFormat"];
@@ -138,7 +167,7 @@ namespace CsvManager.Services.Implementation
             Manager manager;
             try
             {
-                manager = await _getOrCreateUnitOfWork.GetOrCreateByName(data[0]);
+                manager = await _getOrCreateUnitOfWork.GetOrCreateByNameAsync(data[0], cancellationToken);
             }
             catch (Exception e)
             {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using CsvManager.DAL.Core;
 using CsvManager.DAL.Core.Entities;
@@ -49,14 +50,14 @@ namespace CsvManager.DAL.Repositories.Implementation.Repositories
             return Table;
         }
 
-        public async Task Add(T entity)
+        public async Task AddAsync(T entity, CancellationToken cancellationToken)
         {
-            await Table.AddAsync(entity);
+            await Table.AddAsync(entity, cancellationToken);
         }
 
-        public async Task AddRange(IEnumerable<T> entities)
+        public async Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken)
         {
-            await Table.AddRangeAsync(entities);
+            await Table.AddRangeAsync(entities, cancellationToken);
         }
 
         public void Update(T entity)
@@ -80,9 +81,9 @@ namespace CsvManager.DAL.Repositories.Implementation.Repositories
             Table.RemoveRange(entities);
         }
 
-        public async Task<int> Save()
+        public async Task<int> SaveAsync(CancellationToken cancellationToken)
         {
-            return await Db.SaveChangesAsync();
+            return await Db.SaveChangesAsync(cancellationToken);
         }
     }
 }

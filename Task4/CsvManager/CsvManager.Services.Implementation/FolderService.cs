@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using CsvManager.Core.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
@@ -9,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace CsvManager.Services.Implementation
 {
-    public class FolderService : IFolderService, IDisposable
+    public class FolderService : IFolderService
     {
         private readonly string _folderName;
         private readonly IFileServiceFactory _fileServiceFactory;
@@ -18,6 +19,9 @@ namespace CsvManager.Services.Implementation
 
         private FileSystemWatcher _watcher;
 
+        private readonly CancellationTokenSource _cancellationTokenSource;
+        private  CancellationToken _cancellationToken;
+
         public FolderService(IConfiguration configuration, IFileServiceFactory fileServiceFactory, ILogger<FolderService> logger)
         {
             _fileServiceFactory = fileServiceFactory;
@@ -25,18 +29,38 @@ namespace CsvManager.Services.Implementation
             _folderName = configuration["Folders:InitFolder"];
             _filesPattern = configuration["Folders:FilesPattern"];
             InitWatcher();
+            _cancellationTokenSource = new CancellationTokenSource();
+            //_cancellationToken = _cancellationTokenSource.Token;
+
         }
 
-        public async Task Run()
+        //public event EventHandler<> 
+
+        public async Task RunAsync(CancellationToken ct)
         {
             _logger.LogInformation($"Start watch folder {_folderName} ...");
+            _cancellationToken = ct;
             await ParseAll();
+        }
+
+        public void Cancel()
+        {
+            //_cancellationTokenSource.Cancel();
+            //Dispose();
         }
 
         private void OnCreated(object sender, FileSystemEventArgs e)
         {
             _logger.LogInformation($"File {e.Name} added. Start parse.");
-            var t = Task.Factory.StartNew(() => _fileServiceFactory.CreateFileService().Parse(e.FullPath));
+            try
+            {
+                Task.Run(async () => await _fileServiceFactory.CreateFileService().ParseAsync(e.FullPath, _cancellationToken));
+            }
+            catch (OperationCanceledException exception)
+            {
+                Console.WriteLine(exception);
+            }
+            
         }
 
         private async Task ParseAll()
@@ -46,11 +70,18 @@ namespace CsvManager.Services.Implementation
             if (files.Any())
             {
                 _logger.LogInformation($"On start found {files.Count()} files for parsing. Begin parse.");
-                var tasks = files.Select(f => _fileServiceFactory.CreateFileService().Parse(f));
+                try
+                {
+                    var tasks = files.Select(async f => await _fileServiceFactory.CreateFileService().ParseAsync(f, _cancellationToken));
                 
-                await Task.WhenAll(tasks);
+                    await Task.WhenAll(tasks);
+                }
+                catch (OperationCanceledException e)
+                {
+                    Console.WriteLine(e);
+                }
+                
             }
-           
         }
 
         private void InitWatcher()

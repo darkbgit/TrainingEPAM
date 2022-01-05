@@ -1,9 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CsvManager.Core.Services.Interfaces
 {
-    public interface IFolderService
+    public interface IFolderService : IDisposable
     {
-        Task Run();
+        Task RunAsync(CancellationToken cancellationToken);
+
+        void Cancel();
     }
 }

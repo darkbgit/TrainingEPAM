@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Threading;
 using System.Threading.Tasks;
 using CsvManager.Core.DTOs;
 using CsvManager.Core.Services.Interfaces;
@@ -30,7 +31,7 @@ namespace CsvManager.Services.Implementation
 
         }
 
-        public async Task<OrderDto> Parse(string record)
+        public async Task<OrderDto> ParseAsync(string record, CancellationToken cancellationToken)
         {
             
             if (string.IsNullOrWhiteSpace(record))
@@ -56,12 +57,13 @@ namespace CsvManager.Services.Implementation
                 throw new ServiceException($"Record error. {data[0]} - date wrong format.");
             }
 
+            cancellationToken.ThrowIfCancellationRequested();
             var order = new OrderDto
             {
                 Id = Guid.NewGuid(),
                 Date = date,
-                ClientId = (await _clientUnitOfWork.GetOrCreateByName(data[1])).Id,
-                ProductId = (await _productUnitOfWork.GetOrCreateByName(data[2])).Id,
+                ClientId = (await _clientUnitOfWork.GetOrCreateByNameAsync(data[1], cancellationToken)).Id,
+                ProductId = (await _productUnitOfWork.GetOrCreateByNameAsync(data[2], cancellationToken)).Id,
                 Price = price
             };
 

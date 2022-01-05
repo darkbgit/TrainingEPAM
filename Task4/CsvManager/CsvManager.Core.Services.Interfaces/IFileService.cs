@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace CsvManager.Core.Services.Interfaces
 {
     public interface IFileService
     {
-        Task Parse(string filePath);
+        Task ParseAsync(string filePath, CancellationToken token);
     }
 }

@@ -1,4 +1,5 @@
-﻿using CsvManager.Core.Services.Interfaces;
+﻿using System;
+using CsvManager.Core.Services.Interfaces;
 using CsvManager.DAL.Core;
 using CsvManager.DAL.Core.Entities;
 using CsvManager.DAL.Repositories.Implementation;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CsvManager
@@ -26,10 +28,30 @@ namespace CsvManager
                 .WriteTo.File(@"C:\Log\csvLog.txt", LogEventLevel.Information)
                 .CreateLogger();
 
+            //var tokenSource = new CancellationTokenSource();
 
-            await CreateHostBuilder(args).Build().RunAsync();
+            ////var token = tokenSource.Token;
 
+            //var exitEvent = new ManualResetEventSlim(false);
+
+            //AppDomain.CurrentDomain.ProcessExit += (sender, e) =>
+            //{
+            //    exitEvent.Set();
+            //};
+            //Console.CancelKeyPress += (sender, eventArgs) =>
+            //{
+            //    //eventArgs.Cancel = true;
+            //    exitEvent.Set();
+            //    //tokenSource.Cancel(true);
+            //};
+
+            var host = CreateHostBuilder(args).Build();
+
+            await host.RunAsync();
+
+            //exitEvent.Wait();
         }
+
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
@@ -55,7 +77,7 @@ namespace CsvManager
 
                         .AddTransient<IFileServiceFactory, FileServiceFactory>()
 
-                        .AddHostedService<Startup>();
+                        .AddHostedService<Worker>();
 
                 })
                 .UseSerilog();
