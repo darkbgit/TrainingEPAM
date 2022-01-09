@@ -6,6 +6,7 @@ using CsvManager.Core.DTOs;
 using CsvManager.Core.Services.Interfaces;
 using CsvManager.DAL.Core.Entities;
 using CsvManager.DAL.Repositories.Implementation;
+using CsvManager.Services.Implementation.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;

@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CsvManager.Core.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CsvManager.Services.Implementation
+namespace CsvManager.Services.Implementation.Factories
 {
     public class FileServiceFactory : IFileServiceFactory
     {

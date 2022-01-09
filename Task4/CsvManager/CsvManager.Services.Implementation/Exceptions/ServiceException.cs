@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CsvManager.Services.Implementation
+namespace CsvManager.Services.Implementation.Exceptions
 {
     public class ServiceException : Exception
     {

@@ -14,6 +14,8 @@ using CsvManager.DAL.Core;
 using CsvManager.DAL.Repositories.Implementation.Repositories;
 using Microsoft.Extensions.Configuration;
 using System.Threading;
+using CsvManager.Services.Implementation.Exceptions;
+using CsvManager.Services.Implementation.Extensions;
 
 namespace CsvManager.Services.Implementation
 {
@@ -61,9 +63,9 @@ namespace CsvManager.Services.Implementation
 
            _logger.LogInformation($"Start parse {filePath}.");
 
-            var fileForParse = new FilePath(filePath);
+            var fileForParse = new FileInfo(filePath);
 
-            var (manager, date) = await ParseFileName(fileForParse.FileName, cancellationToken);
+            var (manager, date) = await ParseFileName(Path.GetFileNameWithoutExtension(fileForParse.Name), cancellationToken);
 
             ICollection<OrderDto> orders = new List<OrderDto>();
 
@@ -130,9 +132,9 @@ namespace CsvManager.Services.Implementation
 
             Directory.CreateDirectory(_destinationFolder);
 
-            var newFilePath =  new FilePath(_destinationFolder, fileForParse.FileName, fileForParse.Extension);
+            var newFilePath = fileForParse.NewFullName(_destinationFolder);
 
-            File.Move(fileForParse.FullPath, newFilePath.FullPathWithNewNameCheck());
+            File.Move(fileForParse.FullName, newFilePath);
 
             //.LogInformation($"File {filePath} parse is finished. For manager {/*manager.Name*/} {orders.Count} records added.");
         }
