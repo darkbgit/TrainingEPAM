@@ -8,12 +8,17 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using CsvManager.Core.DTOs;
 using CsvManager.DAL.Core;
 using CsvManager.DAL.Repositories.Implementation.Repositories;
 using Microsoft.Extensions.Configuration;
 using System.Threading;
+using CsvHelper;
+using CsvHelper.Configuration;
+using CsvHelper.TypeConversion;
+using CsvManager.Services.Implementation.Csv;
 using CsvManager.Services.Implementation.Exceptions;
 using CsvManager.Services.Implementation.Extensions;
 
@@ -31,7 +36,9 @@ namespace CsvManager.Services.Implementation
         private readonly string _destinationFolder;
 
         private CancellationToken ct;
-        
+        private readonly string _separatorInRecord;
+        private readonly string _dateFormatInRecord;
+
 
         public FileService(IRecordService recordService, ILogger<FileService> logger, IConfiguration configuration, IDbContextFactory<CsvManagerContext> dbContextFactory, IGetOrCreateUnitOfWork<Manager> getOrCreateUnitOfWork)
         {
@@ -41,6 +48,8 @@ namespace CsvManager.Services.Implementation
             _dbContextFactory = dbContextFactory;
             _getOrCreateUnitOfWork = getOrCreateUnitOfWork;
             _destinationFolder = configuration["Folders:BackupFolder"];
+            _separatorInRecord = configuration["Records:Separator"];
+            _dateFormatInRecord = configuration["Records:DateFormat"];
         }
 
 
@@ -69,30 +78,51 @@ namespace CsvManager.Services.Implementation
 
             ICollection<OrderDto> orders = new List<OrderDto>();
 
-            await using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            using (var sr = new StreamReader(fs))
+            bool isRecordGood = true;
+            int badRecords = 0;
+            using (var reader = new StreamReader(fileForParse.FullName, Encoding.Default))
             {
-                while (!sr.EndOfStream)
+                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)
                 {
-                    Thread.Sleep(100);
-                    if (cancellationToken.IsCancellationRequested)
+                    Delimiter = _separatorInRecord,
+                    HasHeaderRecord = false,
+                    BadDataFound = context =>
                     {
-                        Console.WriteLine("Token");
+                        isRecordGood = false;
+                        badRecords++;
+                        _logger.LogInformation($"{context.RawRecord} couldn't parse. Record skipped.");
+                    }
+                  
+                }))
+                {
+                    csv.Context.RegisterClassMap<CsvMap>();
+
+                    csv.Context.Maps[typeof(RecordDto)].MemberMaps[0].TypeConverterOption.Format(_dateFormatInRecord);
+
+                    while (await csv.ReadAsync())
+                    {
+                        Thread.Sleep(100);
+
                         cancellationToken.ThrowIfCancellationRequested();
-                        return;
-                    }
-                    OrderDto order = null;
-                    try
-                    {
-                        order = await _recordService.ParseAsync(await sr.ReadLineAsync(), cancellationToken);
-                    }
-                    catch (ServiceException e)
-                    {
-                        Console.WriteLine(e.Message);
-                    }
-                    
-                    if (order != null)
-                    {
+
+                        var record = csv.GetRecord<RecordDto>();
+
+                        if (!isRecordGood) continue;
+                        
+                        OrderDto order;
+                        try
+                        {
+                            order = await _recordService.ParseAsync(record, cancellationToken);
+                        }
+                        catch (ServiceException e)
+                        {
+                            Console.WriteLine(e.Message);
+                            continue;
+                        }
+
+                        if (order == null) continue;
+
+                        order.Date = date;
                         orders.Add(order);
                     }
                 }
@@ -127,7 +157,6 @@ namespace CsvManager.Services.Implementation
                     await context.Orders.AddRangeAsync(result, cancellationToken);
                     await context.SaveChangesAsync(cancellationToken);
                 }
-                
             }
 
             Directory.CreateDirectory(_destinationFolder);
@@ -136,7 +165,7 @@ namespace CsvManager.Services.Implementation
 
             File.Move(fileForParse.FullName, newFilePath);
 
-            //.LogInformation($"File {filePath} parse is finished. For manager {/*manager.Name*/} {orders.Count} records added.");
+            _logger.LogInformation($"File {filePath} parse is finished. For manager {manager.Name} {orders.Count} records added. {badRecords} records skipped.");
         }
 
 

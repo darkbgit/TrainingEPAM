@@ -54,7 +54,7 @@ namespace CsvManager.Services.Implementation
             _logger.LogInformation($"File {e.Name} added. Start parse.");
             try
             {
-                Task.Run(async () => await _fileServiceFactory.CreateFileService().ParseAsync(e.FullPath, _cancellationToken));
+                Task.Run(async () => await _fileServiceFactory.CreateFileService().ParseAsync(e.FullPath, _cancellationToken), _cancellationToken);
             }
             catch (OperationCanceledException exception)
             {
