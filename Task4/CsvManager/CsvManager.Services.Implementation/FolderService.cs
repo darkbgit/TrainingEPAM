@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CsvManager.Core.Services.Interfaces;
+using CsvManager.Services.Implementation.Exceptions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -56,9 +57,9 @@ namespace CsvManager.Services.Implementation
             {
                 Task.Run(async () => await _fileServiceFactory.CreateFileService().ParseAsync(e.FullPath, _cancellationToken), _cancellationToken);
             }
-            catch (OperationCanceledException exception)
+            catch (ServiceException exception)
             {
-                Console.WriteLine(exception);
+                Console.WriteLine(exception.Message);
             }
             
         }
@@ -76,9 +77,9 @@ namespace CsvManager.Services.Implementation
                 
                     await Task.WhenAll(tasks);
                 }
-                catch (OperationCanceledException e)
+                catch (ServiceException e)
                 {
-                    Console.WriteLine(e);
+                    Console.WriteLine(e.Message);
                 }
                 
             }

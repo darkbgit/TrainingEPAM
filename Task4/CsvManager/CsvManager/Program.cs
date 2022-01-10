@@ -29,9 +29,10 @@ namespace CsvManager
                 .WriteTo.File(@"C:\Log\csvLog.txt", LogEventLevel.Information)
                 .CreateLogger();
 
+
             //var tokenSource = new CancellationTokenSource();
 
-            ////var token = tokenSource.Token;
+            //var token = tokenSource.Token;
 
             //var exitEvent = new ManualResetEventSlim(false);
 
@@ -41,14 +42,25 @@ namespace CsvManager
             //};
             //Console.CancelKeyPress += (sender, eventArgs) =>
             //{
-            //    //eventArgs.Cancel = true;
-            //    exitEvent.Set();
-            //    //tokenSource.Cancel(true);
+            //    eventArgs.Cancel = true;
+            ////    exitEvent.Set();
+            ////    //tokenSource.Cancel(true);
             //};
+
+            using var singleGlobal = new SingleGlobal(0);
+
+            if (!singleGlobal.IsSingle)
+            {
+                Log.Information("Application is already running! Exiting the application.");
+                Thread.Sleep(1000);
+                return;
+            }
 
             var host = CreateHostBuilder(args).Build();
 
             await host.RunAsync();
+
+            Task.WaitAll();
 
             //exitEvent.Wait();
         }
@@ -81,7 +93,7 @@ namespace CsvManager
                         .AddHostedService<Worker>();
 
                 })
-                .UseSerilog();
-
+                .UseSerilog()
+                .UseConsoleLifetime();
     }
 }

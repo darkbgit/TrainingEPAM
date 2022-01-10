@@ -32,7 +32,16 @@ namespace CsvManager
         //public override Task StartAsync(CancellationToken cancellationToken)
         //{
         //    _logger.LogInformation("Starting FolderWatch service...");
-        //    return base.StartAsync(cancellationToken);
+        //    try
+        //    {
+        //        return base.StartAsync(cancellationToken);
+        //    }
+        //    catch (OperationCanceledException e)
+        //    {
+        //        Console.WriteLine(e.Message);
+        //        Task.WaitAll();
+        //    }
+
         //}
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -76,6 +85,7 @@ namespace CsvManager
         private void OnStopped()
         {
             _logger.LogInformation("FolderWatch service was stopped.");
+            Task.Delay(2000).GetAwaiter().GetResult();
         }
     }
 }

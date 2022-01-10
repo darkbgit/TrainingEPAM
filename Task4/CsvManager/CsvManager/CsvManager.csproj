@@ -20,6 +20,7 @@
     <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    <PackageReference Include="System.Threading.AccessControl" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,6 +28,21 @@
     <ProjectReference Include="..\CsvManager.DAL.Repositories.Implementation\CsvManager.DAL.Repositories.Implementation.csproj" />
     <ProjectReference Include="..\CsvManager.DAL.Repositories.Interfaces\CsvManager.DAL.Repositories.Interfaces.csproj" />
     <ProjectReference Include="..\CsvManager.Services.Implementation\CsvManager.Services.Implementation.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

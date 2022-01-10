@@ -200,6 +200,10 @@ namespace CsvManager.Services.Implementation
             {
                 manager = await _getOrCreateUnitOfWork.GetOrCreateByNameAsync(data[0], cancellationToken);
             }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
             catch (Exception e)
             {
                 throw new ServiceException("Error get or create manager.", e);
