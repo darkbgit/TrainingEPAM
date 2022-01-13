@@ -27,8 +27,10 @@ namespace CsvManager
                 IsSingle = true;
             }
         }
-        public bool IsSingle { get; private set; }
 
+        public bool IsSingle { get; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]
         private static void InitSemaphore()
         {
             const string MUTEX_ID = @"Global\27A9F7D0-F215-4E1E-840C-7B0F4267D8D6";

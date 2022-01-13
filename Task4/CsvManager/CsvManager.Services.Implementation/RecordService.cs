@@ -7,6 +7,7 @@ using CsvManager.Core.DTOs;
 using CsvManager.Core.Services.Interfaces;
 using CsvManager.DAL.Core.Entities;
 using CsvManager.DAL.Repositories.Implementation;
+using CsvManager.DAL.Repositories.Interfaces.UnitsOfWork;
 using CsvManager.Services.Implementation.Csv;
 using CsvManager.Services.Implementation.Exceptions;
 using Microsoft.EntityFrameworkCore;

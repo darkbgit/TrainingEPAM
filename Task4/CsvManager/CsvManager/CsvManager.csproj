@@ -1,8 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <!--<OutputType>Exe</OutputType>-->
     <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>dotnet-CsvService-BBD2F1CC-371A-420C-80A3-5B2873E537AA</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

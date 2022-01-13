@@ -2,9 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using CsvManager.DAL.Core.Entities;
-using CsvManager.DAL.Repositories.Interfaces;
 
-namespace CsvManager.DAL.Repositories.Implementation
+namespace CsvManager.DAL.Repositories.Interfaces.UnitsOfWork
 {
     public interface IGetOrCreateUnitOfWork<T> : IDisposable where T : class, IEntityWithName, new()
     {

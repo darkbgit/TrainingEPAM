@@ -1,7 +1,13 @@
-﻿using CsvManager.Core.Services.Interfaces;
+﻿using CsvHelper;
+using CsvHelper.Configuration;
+using CsvManager.Core.DTOs;
+using CsvManager.Core.Services.Interfaces;
 using CsvManager.DAL.Core.Entities;
-using CsvManager.DAL.Repositories.Implementation;
-using Microsoft.EntityFrameworkCore;
+using CsvManager.DAL.Repositories.Interfaces.UnitsOfWork;
+using CsvManager.Services.Implementation.Csv;
+using CsvManager.Services.Implementation.Exceptions;
+using CsvManager.Services.Implementation.Extensions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -9,18 +15,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using CsvManager.Core.DTOs;
-using CsvManager.DAL.Core;
-using CsvManager.DAL.Repositories.Implementation.Repositories;
-using Microsoft.Extensions.Configuration;
 using System.Threading;
-using CsvHelper;
-using CsvHelper.Configuration;
-using CsvHelper.TypeConversion;
-using CsvManager.Services.Implementation.Csv;
-using CsvManager.Services.Implementation.Exceptions;
-using CsvManager.Services.Implementation.Extensions;
+using System.Threading.Tasks;
 
 namespace CsvManager.Services.Implementation
 {
@@ -28,25 +24,23 @@ namespace CsvManager.Services.Implementation
     {
 
         private readonly IRecordService _recordService;
-        private readonly IGetOrCreateUnitOfWork<Manager> _getOrCreateUnitOfWork;
+        private readonly IGetOrCreateUnitOfWork<Manager> _managerUnitOfWork;
         private readonly ILogger<FileService> _logger;
         private readonly IConfiguration _configuration;
-        private readonly IDbContextFactory<CsvManagerContext> _dbContextFactory;
+        private readonly IAddUnitOfWork<Order> _ordersUnitOfWork;
 
         private readonly string _destinationFolder;
-
-        private CancellationToken ct;
         private readonly string _separatorInRecord;
         private readonly string _dateFormatInRecord;
 
 
-        public FileService(IRecordService recordService, ILogger<FileService> logger, IConfiguration configuration, IDbContextFactory<CsvManagerContext> dbContextFactory, IGetOrCreateUnitOfWork<Manager> getOrCreateUnitOfWork)
+        public FileService(IRecordService recordService, ILogger<FileService> logger, IConfiguration configuration, IGetOrCreateUnitOfWork<Manager> managerUnitOfWork, IAddUnitOfWork<Order> ordersUnitOfWork)
         {
             _recordService = recordService;
             _logger = logger;
             _configuration = configuration;
-            _dbContextFactory = dbContextFactory;
-            _getOrCreateUnitOfWork = getOrCreateUnitOfWork;
+            _managerUnitOfWork = managerUnitOfWork;
+            _ordersUnitOfWork = ordersUnitOfWork;
             _destinationFolder = configuration["Folders:BackupFolder"];
             _separatorInRecord = configuration["Records:Separator"];
             _dateFormatInRecord = configuration["Records:DateFormat"];
@@ -55,22 +49,7 @@ namespace CsvManager.Services.Implementation
 
         public async Task ParseAsync(string filePath, CancellationToken cancellationToken)
         {
-           // ct = cancellationToken;
-
-           //_logger.LogInformation("dfgsdf");
-           //for (int i = 0; i < 1000000000; i++)
-           //{
-           //    i++;
-           //    Thread.Sleep(100);
-           //    if (cancellationToken.IsCancellationRequested)
-           //    {
-           //        Console.WriteLine("Token");
-           //        cancellationToken.ThrowIfCancellationRequested();
-           //        return;
-           //    }
-           //}
-
-           _logger.LogInformation($"Start parse {filePath}.");
+            _logger.LogInformation($"Start parse {filePath}.");
 
             var fileForParse = new FileInfo(filePath);
 
@@ -78,8 +57,8 @@ namespace CsvManager.Services.Implementation
 
             ICollection<OrderDto> orders = new List<OrderDto>();
 
-            bool isRecordGood = true;
-            int badRecords = 0;
+            var isRecordGood = true;
+            var badRecords = 0;
             using (var reader = new StreamReader(fileForParse.FullName, Encoding.Default))
             {
                 using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)
@@ -92,7 +71,7 @@ namespace CsvManager.Services.Implementation
                         badRecords++;
                         _logger.LogInformation($"{context.RawRecord} couldn't parse. Record skipped.");
                     }
-                  
+
                 }))
                 {
                     csv.Context.RegisterClassMap<CsvMap>();
@@ -108,7 +87,7 @@ namespace CsvManager.Services.Implementation
                         var record = csv.GetRecord<RecordDto>();
 
                         if (!isRecordGood) continue;
-                        
+
                         OrderDto order;
                         try
                         {
@@ -116,7 +95,7 @@ namespace CsvManager.Services.Implementation
                         }
                         catch (ServiceException e)
                         {
-                            Console.WriteLine(e.Message);
+                            _logger.LogInformation(e.Message);
                             continue;
                         }
 
@@ -129,13 +108,9 @@ namespace CsvManager.Services.Implementation
             }
 
             Task.WaitAll();
-            
+
             if (orders.Any())
             {
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    Console.WriteLine("t");
-                }
                 cancellationToken.ThrowIfCancellationRequested();
                 var result = orders.Select(o => new Order
                 {
@@ -148,15 +123,8 @@ namespace CsvManager.Services.Implementation
                 }).ToList();
 
 
-                //await _unitOfWork.Orders.AddRangeAsync(result);
-                //await _unitOfWork.SaveChangesAsync();
-
-
-                await using (var context = _dbContextFactory.CreateDbContext())
-                {
-                    await context.Orders.AddRangeAsync(result, cancellationToken);
-                    await context.SaveChangesAsync(cancellationToken);
-                }
+                await _ordersUnitOfWork.AddRangeAsync(result, cancellationToken);
+                await _ordersUnitOfWork.SaveChangesAsync(cancellationToken);
             }
 
             Directory.CreateDirectory(_destinationFolder);
@@ -198,7 +166,12 @@ namespace CsvManager.Services.Implementation
             Manager manager;
             try
             {
-                manager = await _getOrCreateUnitOfWork.GetOrCreateByNameAsync(data[0], cancellationToken);
+                manager = await _managerUnitOfWork.GetOrCreateByNameAsync(data[0], cancellationToken);
+                //manager = _unitOfWork.Managers.FindBy(m => m.Name.Equals(data[0])).FirstOrDefault();
+                //if (manager == null)
+                //{
+
+                //}
             }
             catch (OperationCanceledException)
             {
@@ -208,7 +181,7 @@ namespace CsvManager.Services.Implementation
             {
                 throw new ServiceException("Error get or create manager.", e);
             }
-            
+
 
             return new Tuple<Manager, DateTime>(manager, date);
         }

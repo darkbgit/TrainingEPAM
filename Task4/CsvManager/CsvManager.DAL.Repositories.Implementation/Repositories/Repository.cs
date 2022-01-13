@@ -11,12 +11,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CsvManager.DAL.Repositories.Implementation.Repositories
 {
-    public abstract class Repository<T> : IRepository<T> where T : class, IBaseEntity
+    public class Repository<T> : IRepository<T> where T : class, IBaseEntity
     {
         protected readonly CsvManagerContext Db;
         protected readonly DbSet<T> Table;
 
-        protected Repository(CsvManagerContext db)
+        public Repository(CsvManagerContext db)
         {
             Db = db;
             Table = Db.Set<T>();
@@ -81,9 +81,9 @@ namespace CsvManager.DAL.Repositories.Implementation.Repositories
             Table.RemoveRange(entities);
         }
 
-        public async Task<int> SaveAsync(CancellationToken cancellationToken)
-        {
-            return await Db.SaveChangesAsync(cancellationToken);
-        }
+        //public async Task<int> SaveAsync(CancellationToken cancellationToken)
+        //{
+        //    return await Db.SaveChangesAsync(cancellationToken);
+        //}
     }
 }

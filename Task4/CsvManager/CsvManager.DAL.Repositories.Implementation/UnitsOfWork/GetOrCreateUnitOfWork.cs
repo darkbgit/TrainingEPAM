@@ -5,40 +5,27 @@ using System.Threading.Tasks;
 using CsvManager.DAL.Core;
 using CsvManager.DAL.Core.Entities;
 using CsvManager.DAL.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
+using CsvManager.DAL.Repositories.Interfaces.UnitsOfWork;
 using Microsoft.Extensions.Logging;
 
-namespace CsvManager.DAL.Repositories.Implementation
+namespace CsvManager.DAL.Repositories.Implementation.UnitsOfWork
 {
-    public class GetOrCreateUnitOfWork<T> : IGetOrCreateUnitOfWork<T> where T : class, IEntityWithName, new()
+    public class GetOrCreateUnitOfWork<T> : BaseUnitOfWork<T>, IGetOrCreateUnitOfWork<T> where T : class, IEntityWithName, new()
 
     {
-        private readonly CsvManagerContext _db;
         private readonly IRepository<T> _repo;
         private readonly ILogger<GetOrCreateUnitOfWork<T>> _logger;
 
         private static readonly SemaphoreSlim SemaphoreSlim = new(1, 1);
         
 
-        public GetOrCreateUnitOfWork(IRepository<T> repository, CsvManagerContext db, ILogger<GetOrCreateUnitOfWork<T>> logger)
+        public GetOrCreateUnitOfWork(CsvManagerContext db, IRepositoryFactory repositoryFactory, ILogger<GetOrCreateUnitOfWork<T>> logger):
+            base(db)
         {
-            _repo = repository;
-            _db = db;
+            _repo = repositoryFactory.CreateRepository<T>(db);
             _logger = logger;
         }
 
-
-        public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
-        {
-            return await _repo.SaveAsync(cancellationToken);
-        }
-
-        public void Dispose()
-        {
-            _db?.Dispose();
-            _repo?.Dispose();
-            GC.SuppressFinalize(this);
-        }
 
         public async Task<T> GetOrCreateByNameAsync(string name, CancellationToken cancellationToken)
         {

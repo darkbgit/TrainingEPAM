@@ -11,17 +11,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CsvManager.DAL", "CsvManage
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CsvManager.DAL.Core", "CsvManager.DAL.Core\CsvManager.DAL.Core.csproj", "{7D13FA50-53F1-40EC-AD7E-628FF167DC83}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsvManager.DAL.Repositories.Interfaces", "CsvManager.DAL.Repositories.Interfaces\CsvManager.DAL.Repositories.Interfaces.csproj", "{815CD114-BBA7-4F42-978E-43A3D106AEEB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CsvManager.DAL.Repositories.Interfaces", "CsvManager.DAL.Repositories.Interfaces\CsvManager.DAL.Repositories.Interfaces.csproj", "{815CD114-BBA7-4F42-978E-43A3D106AEEB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsvManager.DAL.Repositories.Implementation", "CsvManager.DAL.Repositories.Implementation\CsvManager.DAL.Repositories.Implementation.csproj", "{CA1D3416-E55F-4D86-BA7A-66F7E5B27029}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CsvManager.DAL.Repositories.Implementation", "CsvManager.DAL.Repositories.Implementation\CsvManager.DAL.Repositories.Implementation.csproj", "{CA1D3416-E55F-4D86-BA7A-66F7E5B27029}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsvManager.Core.DTOs", "CsvManager.Core.DTOs\CsvManager.Core.DTOs.csproj", "{201A83EB-5CBA-4F55-8F76-4EF7E2824475}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CsvManager.Core.DTOs", "CsvManager.Core.DTOs\CsvManager.Core.DTOs.csproj", "{201A83EB-5CBA-4F55-8F76-4EF7E2824475}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsvManager.Core.Services.Interfaces", "CsvManager.Core.Services.Interfaces\CsvManager.Core.Services.Interfaces.csproj", "{1523DB79-E925-40BD-B3B7-8180E38D95C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CsvManager.Core.Services.Interfaces", "CsvManager.Core.Services.Interfaces\CsvManager.Core.Services.Interfaces.csproj", "{1523DB79-E925-40BD-B3B7-8180E38D95C4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{CAE6ABA3-D85A-4784-A1BA-EC01C3621DD3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsvManager.Services.Implementation", "CsvManager.Services.Implementation\CsvManager.Services.Implementation.csproj", "{244B40E0-9312-4DEA-9E3A-10E758E355E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CsvManager.Services.Implementation", "CsvManager.Services.Implementation\CsvManager.Services.Implementation.csproj", "{244B40E0-9312-4DEA-9E3A-10E758E355E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

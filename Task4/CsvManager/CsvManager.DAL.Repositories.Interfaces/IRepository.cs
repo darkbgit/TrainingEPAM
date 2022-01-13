@@ -25,6 +25,6 @@ namespace CsvManager.DAL.Repositories.Interfaces
         void Remove(Guid id);
         void RemoveRange(IEnumerable<T> entities);
 
-        public Task<int> SaveAsync(CancellationToken cancellationToken);
+        //public Task<int> SaveAsync(CancellationToken cancellationToken);
     }
 }

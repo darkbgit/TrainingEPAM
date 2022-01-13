@@ -14,6 +14,8 @@ using Serilog.Events;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using CsvManager.DAL.Repositories.Implementation.UnitsOfWork;
+using CsvManager.DAL.Repositories.Interfaces.UnitsOfWork;
 using CsvManager.Services.Implementation.Factories;
 
 namespace CsvManager
@@ -61,8 +63,6 @@ namespace CsvManager
             await host.RunAsync();
 
             Task.WaitAll();
-
-            //exitEvent.Wait();
         }
 
 
@@ -84,16 +84,18 @@ namespace CsvManager
 
                         .AddTransient(typeof(IGetOrCreateUnitOfWork<>), typeof(GetOrCreateUnitOfWork<>))
 
+                        .AddTransient(typeof(IAddUnitOfWork<>), typeof(AddUnitOfWork<>))
+
                         .AddTransient<IFolderService, FolderService>()
                         .AddTransient<IRecordService, RecordService>()
                         .AddTransient<IFileService, FileService>()
 
+                        .AddTransient<IRepositoryFactory, RepositoryFactory>()
+
                         .AddTransient<IFileServiceFactory, FileServiceFactory>()
 
                         .AddHostedService<Worker>();
-
                 })
-                .UseSerilog()
-                .UseConsoleLifetime();
+                .UseSerilog();
     }
 }

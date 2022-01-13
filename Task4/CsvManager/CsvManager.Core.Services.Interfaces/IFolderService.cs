@@ -7,7 +7,5 @@ namespace CsvManager.Core.Services.Interfaces
     public interface IFolderService : IDisposable
     {
         Task RunAsync(CancellationToken cancellationToken);
-
-        void Cancel();
     }
 }

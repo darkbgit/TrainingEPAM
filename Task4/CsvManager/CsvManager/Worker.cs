@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using CsvManager.Core.Services.Interfaces;
+﻿using CsvManager.Core.Services.Interfaces;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CsvManager
 {
@@ -15,9 +12,6 @@ namespace CsvManager
         private readonly IFolderService _folderService;
         private readonly ILogger<Worker> _logger;
 
-        private CancellationToken t;
-        //private readonly CancellationTokenSource cancellationToken = new CancellationTokenSource();
-
         public Worker(IFolderService folderService, ILogger<Worker> logger,
             IHostApplicationLifetime appLifetime)
         {
@@ -25,8 +19,7 @@ namespace CsvManager
             _logger = logger;
             appLifetime.ApplicationStarted.Register(OnStarted);
             appLifetime.ApplicationStopped.Register(OnStopped);
-
-
+            appLifetime.ApplicationStopping.Register(OnStopping);
         }
 
         //public override Task StartAsync(CancellationToken cancellationToken)
@@ -46,13 +39,6 @@ namespace CsvManager
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-
-            t = stoppingToken;
-            //cancellationToken.Cancel();
-
-            stoppingToken.Register(() =>
-                _logger.LogInformation("FolderWatcher service is stopping."));
-
             try
             {
                 Task.Run(async () => await _folderService.RunAsync(stoppingToken), stoppingToken);
@@ -79,13 +65,14 @@ namespace CsvManager
 
         private void OnStopping()
         {
-            _logger.LogInformation("3. OnStopping has been called.");
+            _logger.LogInformation("FolderWatcher service is stopping...");
+            Task.Delay(2000).GetAwaiter().GetResult();
         }
 
         private void OnStopped()
         {
             _logger.LogInformation("FolderWatch service was stopped.");
-            Task.Delay(2000).GetAwaiter().GetResult();
+            //Task.Delay(2000).GetAwaiter().GetResult();
         }
     }
 }

@@ -19,8 +19,6 @@ namespace CsvManager.Services.Implementation
         private readonly ILogger<FolderService> _logger;
 
         private FileSystemWatcher _watcher;
-
-        private readonly CancellationTokenSource _cancellationTokenSource;
         private  CancellationToken _cancellationToken;
 
         public FolderService(IConfiguration configuration, IFileServiceFactory fileServiceFactory, ILogger<FolderService> logger)
@@ -30,24 +28,14 @@ namespace CsvManager.Services.Implementation
             _folderName = configuration["Folders:InitFolder"];
             _filesPattern = configuration["Folders:FilesPattern"];
             InitWatcher();
-            _cancellationTokenSource = new CancellationTokenSource();
-            //_cancellationToken = _cancellationTokenSource.Token;
-
         }
 
-        //public event EventHandler<> 
 
         public async Task RunAsync(CancellationToken ct)
         {
             _logger.LogInformation($"Start watch folder {_folderName} ...");
             _cancellationToken = ct;
             await ParseAll();
-        }
-
-        public void Cancel()
-        {
-            //_cancellationTokenSource.Cancel();
-            //Dispose();
         }
 
         private void OnCreated(object sender, FileSystemEventArgs e)
@@ -61,7 +49,6 @@ namespace CsvManager.Services.Implementation
             {
                 Console.WriteLine(exception.Message);
             }
-            
         }
 
         private async Task ParseAll()
@@ -71,17 +58,18 @@ namespace CsvManager.Services.Implementation
             if (files.Any())
             {
                 _logger.LogInformation($"On start found {files.Count()} files for parsing. Begin parse.");
+
+                var tasks = files.Select(async f =>
+                    await _fileServiceFactory.CreateFileService().ParseAsync(f, _cancellationToken));
                 try
                 {
-                    var tasks = files.Select(async f => await _fileServiceFactory.CreateFileService().ParseAsync(f, _cancellationToken));
-                
                     await Task.WhenAll(tasks);
                 }
                 catch (ServiceException e)
                 {
                     Console.WriteLine(e.Message);
                 }
-                
+
             }
         }
 
@@ -96,6 +84,7 @@ namespace CsvManager.Services.Implementation
         {
             _watcher.Created -= OnCreated;
             _watcher.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }
