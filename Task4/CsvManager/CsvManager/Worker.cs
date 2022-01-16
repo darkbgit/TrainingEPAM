@@ -22,41 +22,13 @@ namespace CsvManager
             appLifetime.ApplicationStopping.Register(OnStopping);
         }
 
-        //public override Task StartAsync(CancellationToken cancellationToken)
-        //{
-        //    _logger.LogInformation("Starting FolderWatch service...");
-        //    try
-        //    {
-        //        return base.StartAsync(cancellationToken);
-        //    }
-        //    catch (OperationCanceledException e)
-        //    {
-        //        Console.WriteLine(e.Message);
-        //        Task.WaitAll();
-        //    }
-
-        //}
-
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            try
-            {
-                Task.Run(async () => await _folderService.RunAsync(stoppingToken), stoppingToken);
-            }
-            catch (OperationCanceledException e)
-            {
-                Console.WriteLine(e.CancellationToken);
-            }
+
+            Task.Run(async () => await _folderService.RunAsync(stoppingToken), stoppingToken);
 
             return Task.CompletedTask;
         }
-
-        //public override Task StopAsync(CancellationToken cancellationToken)
-        //{
-        //    _logger.LogInformation("Stopping folder service...");
-        //    _folderService?.Cancel();
-        //    return Task.CompletedTask;
-        //}
 
         private void OnStarted()
         {

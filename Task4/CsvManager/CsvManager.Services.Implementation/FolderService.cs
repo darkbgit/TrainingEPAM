@@ -1,39 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using CsvManager.Core.Services.Interfaces;
+using CsvManager.Services.Implementation.Config;
+using CsvManager.Services.Implementation.Exceptions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using CsvManager.Core.Services.Interfaces;
-using CsvManager.Services.Implementation.Exceptions;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace CsvManager.Services.Implementation
 {
     public class FolderService : IFolderService
     {
-        private readonly string _folderName;
         private readonly IFileServiceFactory _fileServiceFactory;
-        private readonly string _filesPattern;
         private readonly ILogger<FolderService> _logger;
+        private readonly FolderOptions _folderOptions;
 
         private FileSystemWatcher _watcher;
-        private  CancellationToken _cancellationToken;
+        private CancellationToken _cancellationToken;
 
-        public FolderService(IConfiguration configuration, IFileServiceFactory fileServiceFactory, ILogger<FolderService> logger)
+        public FolderService(IOptions<FolderOptions> options, IFileServiceFactory fileServiceFactory, ILogger<FolderService> logger)
         {
             _fileServiceFactory = fileServiceFactory;
             _logger = logger;
-            _folderName = configuration["Folders:InitFolder"];
-            _filesPattern = configuration["Folders:FilesPattern"];
+            _folderOptions = options.Value;
             InitWatcher();
         }
 
 
         public async Task RunAsync(CancellationToken ct)
         {
-            _logger.LogInformation($"Start watch folder {_folderName} ...");
+            _logger.LogInformation($"Start watch folder {_folderOptions.InitFolder} ...");
             _cancellationToken = ct;
             await ParseAll();
         }
@@ -47,13 +45,13 @@ namespace CsvManager.Services.Implementation
             }
             catch (ServiceException exception)
             {
-                Console.WriteLine(exception.Message);
+                _logger.LogInformation(exception.Message);
             }
         }
 
         private async Task ParseAll()
         {
-            var files = Directory.EnumerateFiles(_folderName, _filesPattern);
+            var files = Directory.EnumerateFiles(_folderOptions.InitFolder, _folderOptions.FilesPattern);
 
             if (files.Any())
             {
@@ -67,7 +65,7 @@ namespace CsvManager.Services.Implementation
                 }
                 catch (ServiceException e)
                 {
-                    Console.WriteLine(e.Message);
+                    _logger.LogInformation(e.Message);
                 }
 
             }
@@ -75,7 +73,7 @@ namespace CsvManager.Services.Implementation
 
         private void InitWatcher()
         {
-            _watcher = new FileSystemWatcher(_folderName, _filesPattern);
+            _watcher = new FileSystemWatcher(_folderOptions.InitFolder, _folderOptions.FilesPattern);
             _watcher.Created += OnCreated;
             _watcher.EnableRaisingEvents = true;
         }

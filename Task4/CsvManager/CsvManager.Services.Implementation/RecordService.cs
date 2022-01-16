@@ -1,18 +1,10 @@
-﻿using System;
-using System.Globalization;
-using System.Threading;
-using System.Threading.Tasks;
-using CsvHelper;
-using CsvManager.Core.DTOs;
+﻿using CsvManager.Core.DTOs;
 using CsvManager.Core.Services.Interfaces;
 using CsvManager.DAL.Core.Entities;
-using CsvManager.DAL.Repositories.Implementation;
 using CsvManager.DAL.Repositories.Interfaces.UnitsOfWork;
-using CsvManager.Services.Implementation.Csv;
-using CsvManager.Services.Implementation.Exceptions;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CsvManager.Services.Implementation
 {

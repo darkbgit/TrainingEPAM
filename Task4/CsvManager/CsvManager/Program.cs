@@ -16,7 +16,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using CsvManager.DAL.Repositories.Implementation.UnitsOfWork;
 using CsvManager.DAL.Repositories.Interfaces.UnitsOfWork;
+using CsvManager.Services.Implementation.Config;
 using CsvManager.Services.Implementation.Factories;
+using FileOptions = CsvManager.Services.Implementation.Config.FileOptions;
 
 namespace CsvManager
 {
@@ -24,30 +26,14 @@ namespace CsvManager
     {
         static async Task Main(string[] args)
         {
+            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
                 .WriteTo.File(@"C:\Log\csvLog.txt", LogEventLevel.Information)
                 .CreateLogger();
-
-
-            //var tokenSource = new CancellationTokenSource();
-
-            //var token = tokenSource.Token;
-
-            //var exitEvent = new ManualResetEventSlim(false);
-
-            //AppDomain.CurrentDomain.ProcessExit += (sender, e) =>
-            //{
-            //    exitEvent.Set();
-            //};
-            //Console.CancelKeyPress += (sender, eventArgs) =>
-            //{
-            //    eventArgs.Cancel = true;
-            ////    exitEvent.Set();
-            ////    //tokenSource.Cancel(true);
-            //};
 
             using var singleGlobal = new SingleGlobal(0);
 
@@ -70,10 +56,11 @@ namespace CsvManager
             Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((_, appConfig) =>
                 {
-                    appConfig.SetBasePath(Directory.GetCurrentDirectory())
+                    appConfig.SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                         .AddJsonFile("appsettings.json");
                 })
-                .ConfigureServices((_, services) =>
+                .UseWindowsService()
+                .ConfigureServices((hostContext, services) =>
                 {
                     services.AddDbContext<CsvManagerContext>(ServiceLifetime.Transient)
                         .AddDbContextFactory<CsvManagerContext>()
@@ -94,8 +81,12 @@ namespace CsvManager
 
                         .AddTransient<IFileServiceFactory, FileServiceFactory>()
 
-                        .AddHostedService<Worker>();
+                        .AddHostedService<Worker>()
+                        .Configure<FolderOptions>(hostContext.Configuration.GetSection("FolderOptions"))
+                        .Configure<FileOptions>(hostContext.Configuration.GetSection("FileOptions"))
+                        .Configure<RecordOptions>(hostContext.Configuration.GetSection("RecordOptions"));
                 })
+                
                 .UseSerilog();
     }
 }

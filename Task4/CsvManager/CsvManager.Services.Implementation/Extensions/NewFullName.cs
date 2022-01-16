@@ -10,9 +10,9 @@ namespace CsvManager.Services.Implementation.Extensions
 
             var newName = oldFileInfo.Name;
 
-            int i = 1;
+            var i = 1;
 
-            string newFullName = Path.Combine(destinationDirectory, name + oldFileInfo.Extension);
+            var newFullName = Path.Combine(destinationDirectory, name + oldFileInfo.Extension);
 
             while (File.Exists(newFullName))
             {

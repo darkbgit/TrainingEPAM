@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Security.Principal;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace CsvManager
 {
@@ -33,13 +27,13 @@ namespace CsvManager
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]
         private static void InitSemaphore()
         {
-            const string MUTEX_ID = @"Global\27A9F7D0-F215-4E1E-840C-7B0F4267D8D6";
+            const string APP_ID = @"Global\27A9F7D0-F215-4E1E-840C-7B0F4267D8D6";
 
-            _semaphore = new Semaphore(1, 1, MUTEX_ID);
+            _semaphore = new Semaphore(1, 1, APP_ID);
 
             var allowEveryoneRule = new SemaphoreAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null),
                 SemaphoreRights.FullControl, AccessControlType.Allow);
-            
+
             var securitySettings = new SemaphoreSecurity();
             securitySettings.AddAccessRule(allowEveryoneRule);
 
@@ -53,7 +47,7 @@ namespace CsvManager
             if (IsSingle)
             {
                 _semaphore.Release();
-            } 
+            }
             _semaphore.Close();
         }
     }

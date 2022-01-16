@@ -4,10 +4,10 @@ using CsvManager.Core.DTOs;
 using CsvManager.Core.Services.Interfaces;
 using CsvManager.DAL.Core.Entities;
 using CsvManager.DAL.Repositories.Interfaces.UnitsOfWork;
+using CsvManager.Services.Implementation.Config;
 using CsvManager.Services.Implementation.Csv;
 using CsvManager.Services.Implementation.Exceptions;
 using CsvManager.Services.Implementation.Extensions;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -17,33 +17,31 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using FileOptions = CsvManager.Services.Implementation.Config.FileOptions;
 
 namespace CsvManager.Services.Implementation
 {
     public class FileService : IFileService
     {
-
         private readonly IRecordService _recordService;
         private readonly IGetOrCreateUnitOfWork<Manager> _managerUnitOfWork;
         private readonly ILogger<FileService> _logger;
-        private readonly IConfiguration _configuration;
         private readonly IAddUnitOfWork<Order> _ordersUnitOfWork;
+        private readonly FolderOptions _folderOptions;
+        private readonly FileOptions _fileOptions;
+        private readonly RecordOptions _recordOptions;
 
-        private readonly string _destinationFolder;
-        private readonly string _separatorInRecord;
-        private readonly string _dateFormatInRecord;
 
-
-        public FileService(IRecordService recordService, ILogger<FileService> logger, IConfiguration configuration, IGetOrCreateUnitOfWork<Manager> managerUnitOfWork, IAddUnitOfWork<Order> ordersUnitOfWork)
+        public FileService(IRecordService recordService, ILogger<FileService> logger, IGetOrCreateUnitOfWork<Manager> managerUnitOfWork, IAddUnitOfWork<Order> ordersUnitOfWork, IOptions<FolderOptions> folderOptions, IOptions<FileOptions> fileOptions, IOptions<RecordOptions> recordOptions)
         {
             _recordService = recordService;
             _logger = logger;
-            _configuration = configuration;
             _managerUnitOfWork = managerUnitOfWork;
             _ordersUnitOfWork = ordersUnitOfWork;
-            _destinationFolder = configuration["Folders:BackupFolder"];
-            _separatorInRecord = configuration["Records:Separator"];
-            _dateFormatInRecord = configuration["Records:DateFormat"];
+            _folderOptions = folderOptions.Value;
+            _fileOptions = fileOptions.Value;
+            _recordOptions = recordOptions.Value;
         }
 
 
@@ -57,26 +55,16 @@ namespace CsvManager.Services.Implementation
 
             ICollection<OrderDto> orders = new List<OrderDto>();
 
-            var isRecordGood = true;
             var badRecords = 0;
             using (var reader = new StreamReader(fileForParse.FullName, Encoding.Default))
             {
                 using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)
                 {
-                    Delimiter = _separatorInRecord,
-                    HasHeaderRecord = false,
-                    BadDataFound = context =>
-                    {
-                        isRecordGood = false;
-                        badRecords++;
-                        _logger.LogInformation($"{context.RawRecord} couldn't parse. Record skipped.");
-                    }
-
+                    Delimiter = _recordOptions.Separator,
+                    HasHeaderRecord = false
                 }))
                 {
-                    csv.Context.RegisterClassMap<CsvMap>();
-
-                    csv.Context.Maps[typeof(RecordDto)].MemberMaps[0].TypeConverterOption.Format(_dateFormatInRecord);
+                    csv.Context.AutoMap<RecordDto>().MemberMaps[0].TypeConverterOption.Format(_recordOptions.DateFormat);
 
                     while (await csv.ReadAsync())
                     {
@@ -84,10 +72,18 @@ namespace CsvManager.Services.Implementation
 
                         cancellationToken.ThrowIfCancellationRequested();
 
-                        var record = csv.GetRecord<RecordDto>();
-
-                        if (!isRecordGood) continue;
-
+                        RecordDto record;
+                        try
+                        {
+                            record = csv.GetRecord<RecordDto>();
+                        }
+                        catch (Exception e)
+                        {
+                            badRecords++;
+                            _logger.LogInformation(e.Message);
+                            continue;
+                        }
+                        
                         OrderDto order;
                         try
                         {
@@ -109,9 +105,12 @@ namespace CsvManager.Services.Implementation
 
             Task.WaitAll();
 
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var numberSavedOrders = 0;
+
             if (orders.Any())
             {
-                cancellationToken.ThrowIfCancellationRequested();
                 var result = orders.Select(o => new Order
                 {
                     Id = o.Id,
@@ -122,56 +121,57 @@ namespace CsvManager.Services.Implementation
                     Price = o.Price
                 }).ToList();
 
-
                 await _ordersUnitOfWork.AddRangeAsync(result, cancellationToken);
-                await _ordersUnitOfWork.SaveChangesAsync(cancellationToken);
+                numberSavedOrders = await _ordersUnitOfWork.SaveChangesAsync(cancellationToken);
             }
 
-            Directory.CreateDirectory(_destinationFolder);
+            if (badRecords == 0 && numberSavedOrders == orders.Count)
+            {
+                Directory.CreateDirectory(_folderOptions.BackupFolder);
 
-            var newFilePath = fileForParse.NewFullName(_destinationFolder);
+                File.Move(fileForParse.FullName, fileForParse.NewFullName(_folderOptions.BackupFolder));
 
-            File.Move(fileForParse.FullName, newFilePath);
+                _logger.LogInformation($"File {filePath} parse is finished. For manager {manager.Name} {orders.Count} records added.");
+            }
+            else
+            {
+                Directory.CreateDirectory(_folderOptions.BackupWithErrors);
 
-            _logger.LogInformation($"File {filePath} parse is finished. For manager {manager.Name} {orders.Count} records added. {badRecords} records skipped.");
+                File.Move(fileForParse.FullName, fileForParse.NewFullName(_folderOptions.BackupWithErrors));
+
+                _logger.LogInformation($"File {filePath} parse is finished. For manager {manager.Name} {orders.Count} records added. {badRecords} BAD RECORDS.");
+            }
         }
 
 
         private async Task<Tuple<Manager, DateTime>> ParseFileName(string fileName, CancellationToken cancellationToken)
         {
-            var separator = _configuration["Files:Separator"];
-            var dateFormat = _configuration["Files:DateFormat"];
-
-            if (string.IsNullOrWhiteSpace(separator))
+            CsvFileName csvFileName;
+            using (TextReader reader = new StringReader(fileName))
             {
-                throw new ServiceException("Couldn't get separator char for record from configuration.");
-            }
+                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)
+                {
+                    Delimiter = _fileOptions.Separator,
+                    HasHeaderRecord = false,
+                    BadDataFound = context =>
+                    {
+                        _logger.LogInformation($"{context.RawRecord} couldn't parse file name.");
+                        throw new ServiceException("");
+                    }
+                }))
+                {
+                    csv.Context.AutoMap<CsvFileName>().MemberMaps[1].TypeConverterOption.Format(_fileOptions.DateFormat);
 
-            if (string.IsNullOrWhiteSpace(fileName))
-            {
-                throw new ServiceException("File name error. Empty file name.");
-            }
-            var data = fileName.Split(separator);
+                    await csv.ReadAsync();
 
-            if (data.Length != 2)
-            {
-                throw new ServiceException("File name error. File name wrong format.");
-            }
-
-            if (!DateTime.TryParseExact(data[1], dateFormat, null, DateTimeStyles.None, out var date))
-            {
-                throw new ServiceException("File name error. Date wrong format.");
+                    csvFileName = csv.GetRecord<CsvFileName>();
+                }
             }
 
             Manager manager;
             try
             {
-                manager = await _managerUnitOfWork.GetOrCreateByNameAsync(data[0], cancellationToken);
-                //manager = _unitOfWork.Managers.FindBy(m => m.Name.Equals(data[0])).FirstOrDefault();
-                //if (manager == null)
-                //{
-
-                //}
+                manager = await _managerUnitOfWork.GetOrCreateByNameAsync(csvFileName.ManagerName, cancellationToken);
             }
             catch (OperationCanceledException)
             {
@@ -182,8 +182,7 @@ namespace CsvManager.Services.Implementation
                 throw new ServiceException("Error get or create manager.", e);
             }
 
-
-            return new Tuple<Manager, DateTime>(manager, date);
+            return new Tuple<Manager, DateTime>(manager, csvFileName.Date);
         }
     }
 }
