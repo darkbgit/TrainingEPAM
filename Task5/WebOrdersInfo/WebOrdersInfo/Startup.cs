@@ -8,6 +8,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
+using WebOrdersInfo.Core.Services.Interfaces;
+using WebOrdersInfo.DAL.Core;
+using WebOrdersInfo.DAL.Core.Entities;
+using WebOrdersInfo.DAL.Repositories.Implementations;
+using WebOrdersInfo.Repositories.Interfaces;
+using WebOrdersInfo.DAL.Repositories.Implementations.Repositories;
+using WebOrdersInfo.Services.Implementations;
+using WebOrdersInfo.Services.Implementations.Mapping;
 
 namespace WebOrdersInfo
 {
@@ -23,6 +34,37 @@ namespace WebOrdersInfo
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<WebOrdersInfoContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+            });
+
+            services.AddHttpContextAccessor();
+
+            //services.AddSingleton<IUriService>(o =>
+            //{
+            //    var accessor = o.GetRequiredService<IHttpContextAccessor>();
+            //    var request = accessor.HttpContext.Request;
+            //    var uri = string.Concat(request.Scheme, "://", request.Host.ToUriComponent());
+            //    return new UriService(uri);
+            //});
+
+            services.AddIdentity<User, Role>(options =>
+                {
+                    options.SignIn.RequireConfirmedAccount = false;
+                    options.Password.RequireNonAlphanumeric = false;
+                })
+                .AddEntityFrameworkStores<WebOrdersInfoContext>();
+
+            services.AddTransient<IRepository<Order>, OrdersRepository>();
+            services.AddTransient<IRepository<User>, UserRepository>();
+
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            services.AddTransient<IOrderService, OrdersService>();
+
+            services.AddAutoMapper(typeof(MappingProfile));
+
             services.AddControllersWithViews();
         }
 
@@ -44,6 +86,7 @@ namespace WebOrdersInfo
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

@@ -1,0 +1,47 @@
+﻿@model WebOrdersInfo.Helpers.Paging
+
+
+<div class="row">
+    <div class="col-sm-12 col-lg-12">
+            <ul class="pagination">
+                @if (Model.IsFirst)
+                    {
+                        <li class="page-item disabled"><a class="page-link" href="@Model.FirstUrl">&lt;&lt;</a></li>
+                        <li class="page-item disabled"><a class="page-link" href="@Model.PrevUrl">&lt;</a></li>
+                    }
+                    else
+                    {
+                        <li class="page-item"><a class="page-link" href="@Model.FirstUrl">&lt;&lt;</a></li>
+                        <li class="page-item"><a class="page-link" href="@Model.PrevUrl">&lt;</a></li>
+                    }
+
+                    @foreach (var i in Model.GetPaging())
+                    {
+                        if (Model.IsCurrent(i))
+                        {
+                            <li class="page-item active">
+                                <a class="page-link disabled" href="@Model.GetUrl(i)">@i</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Model.GetUrl(i)">@i</a>
+                            </li>
+                        }
+                    }
+                    @if (Model.IsLast)
+                    {
+                        <li class="page-item disabled"><a class="page-link" href="@Model.NextUrl">&gt;</a></li>
+                        <li class="page-item disabled"><a class="page-link" href="@Model.LastUrl">&gt;&gt;</a></li>
+                    }
+                    else
+                    {
+                        <li class="page-item"><a class="page-link" href="@Model.NextUrl">&gt;</a></li>
+                        <li class="page-item"><a class="page-link" href="@Model.LastUrl">&gt;&gt;</a></li>
+                    }
+               @*@Html.PageLinks(Model, i => Url.Action("Index", new { page = i }))*@
+                </ul>
+
+    </div>
+</div>

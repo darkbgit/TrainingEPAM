@@ -1,0 +1,26 @@
+﻿@model WebOrdersInfo.Models.ViewModels.Orders.OrderViewModel
+
+
+<tr>
+    <td>@Model.Id</td>
+    <td>@Model.Date</td>
+    <td>@Model.ProductName</td>
+    <td>@Model.Price</td>
+    <td>@Model.ClientName</td>
+    <td>@Model.ManagerName</td>
+    
+    @if (User.IsInRole("admin"))
+    {
+        <td>
+            <div class="card-footer">
+                <div class="d-flex flex-row">
+                    <a asp-action="Edit" asp-route-id="@Model.Id">Редактировать</a>
+                    <form asp-action="Delete" asp-controller="Orders" asp-route-id="@Model.Id" method="post">
+                        <input class="btn btn-danger" type="submit" value="Удалить"/>
+                    </form>
+                </div>
+            </div>
+        </td>
+    }
+</tr>
+

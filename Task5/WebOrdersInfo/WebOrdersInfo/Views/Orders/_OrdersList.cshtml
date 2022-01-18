@@ -1,0 +1,23 @@
+﻿@model IEnumerable<WebOrdersInfo.Models.ViewModels.Orders.OrderViewModel>
+
+<div>
+    <table>
+        <thead>
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.Id)</th>
+                <th>@Html.DisplayNameFor(model => model.Date)</th>
+                <th>@Html.DisplayNameFor(model => model.ProductName)</th>
+                <th>@Html.DisplayNameFor(model => model.Price)</th>
+                <th>@Html.DisplayNameFor(model => model.ClientName)</th>
+                <th>@Html.DisplayNameFor(model => model.ManagerName)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                await Html.RenderPartialAsync("_Order", item);
+            }
+        </tbody>
+    </table>
+
+</div>
