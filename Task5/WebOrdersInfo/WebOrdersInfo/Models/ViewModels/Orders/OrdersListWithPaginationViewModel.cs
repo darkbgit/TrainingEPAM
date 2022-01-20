@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
-using WebOrdersInfo.Helpers;
+using WebOrdersInfo.Models.ViewModels.OrdersFilter;
+using WebOrdersInfo.Pagination;
+using WebOrdersInfo.Pagination2;
 
 namespace WebOrdersInfo.Models.ViewModels.Orders
 {
@@ -7,6 +9,10 @@ namespace WebOrdersInfo.Models.ViewModels.Orders
     {
         public IEnumerable<OrderViewModel> OrderList { get; set; }
 
-        public Paging Pagination { get; set; }
+        //public Paging Pagination { get; set; }
+
+        public PageInfo Pagination { get; set; }
+
+        public OrdersFilterViewModel Filters { get; set; }
     }
 }

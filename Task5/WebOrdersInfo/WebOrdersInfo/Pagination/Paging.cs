@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace WebOrdersInfo.Helpers
+namespace WebOrdersInfo.Pagination
 {
     public class Paging
     {

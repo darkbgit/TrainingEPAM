@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using WebOrdersInfo.Core.DTOs;
+using WebOrdersInfo.Core.DTOs.Filters;
+using WebOrdersInfo.DAL.Core.Entities;
 
 namespace WebOrdersInfo.Core.Services.Interfaces
 {
@@ -11,7 +14,8 @@ namespace WebOrdersInfo.Core.Services.Interfaces
         void GetAll();
         Task<Tuple<IEnumerable<OrderWithNamesDto>, int>> GetOrdersPerPage(int pageNumber,
             int newsPerPage,
-            string sortOrder);
+            Expression<Func<Order, bool>> filter,
+            OrderSortEnum sort);
 
         void GetOrderWithNamesById();
 

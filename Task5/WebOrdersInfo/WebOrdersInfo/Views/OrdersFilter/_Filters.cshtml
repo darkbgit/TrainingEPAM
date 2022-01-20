@@ -1,0 +1,143 @@
+﻿@using WebOrdersInfo.Core.DTOs.Filters
+@model WebOrdersInfo.Models.ViewModels.OrdersFilter.OrdersFilterViewModel
+
+@{
+    Layout = null;
+}
+
+<div class="container">
+    <form id="filterForm">
+        @*@Html.ValidationSummary()*@
+        <div class="input-group">
+            <label asp-for="OrderBy" class="col-form-label"></label>
+            <select asp-for="OrderBy" asp-items="Html.GetEnumSelectList(typeof(OrderSortEnum))" class="form-select"></select>
+        </div>
+
+        <div class="text-center">
+            <label>Фильтровать по</label>
+        </div>
+        <div class="accordion" id="accordionFilters">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="clientsFilterHeader">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" dta-bs-target="#collapseClients" aria-expanded="true" aria-controls="collapseClients">
+                        Клиенты
+                    </button>
+                </h2>
+                <div id="collapseClients" class="accordion-collapse collapse show" aria-labelledby="clientsFilterHeader">
+                    <div class="accordion-body">
+                        @for (var i = 0; i < Model.Clients.Count; i++)
+                        {
+                            <div class="form-check">
+                                <input asp-for="Clients[i].Id" type="hidden"/>
+                                <input asp-for="Clients[i].Name" type="hidden"/>
+                                <input asp-for="Clients[i].IsChecked" type="checkbox" class="form-check-input"/>
+                                <label asp-for="Clients[i].IsChecked" class="form-check-label">@Model.Clients[i].Name</label>
+
+                                @*@Html.HiddenFor(m => m.Clients[i].Id)
+                                @Html.CheckBoxFor(m => m.Clients[i].IsChecked, new {@class = "form-check-input"})
+                                @Html.LabelFor(m => m.Clients[i].IsChecked, Model.Clients[i].Name, new {@class = "form-check-label"})
+                                @Html.HiddenFor(m => m.Clients[i].Name)*@
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="managersFilterHeader">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" dta-bs-target="#collapseManagers" aria-expanded="false" aria-controls="collapseManagers">
+                        Менеджеры
+                    </button>
+                </h2>
+                <div id="collapseManagers" class="accordion-collapse collapsed" aria-labelledby="managersFilterHeader">
+                    <div class="accordion-body">
+                        @for (var i = 0; i < Model.Managers.Count; i++)
+                        {
+                            <div class="form-check">
+                                <input asp-for="Managers[i].Id" type="hidden"/>
+                                <input asp-for="Managers[i].Name" type="hidden"/>
+                                <input asp-for="Managers[i].IsChecked" type="checkbox" class="form-check-input"/>
+                                <label asp-for="Managers[i].IsChecked" class="form-check-label">@Model.Managers[i].Name</label>
+                                @*@Html.HiddenFor(m => m.Managers[i].Id)
+                                @Html.CheckBoxFor(m => m.Managers[i].IsChecked, new { @class = "form-check-input" })
+                                @Html.LabelFor(m => m.Managers[i].IsChecked, Model.Managers[i].Name, new { @class = "form-check-label" })
+                                @Html.HiddenFor(m => m.Managers[i].Name)*@
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="productsFilterHeader">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" dta-bs-target="#collapseProducts" aria-expanded="false" aria-controls="collapseProducts">
+                        Продукты
+                    </button>
+                </h2>
+                <div id="collapseProducts" class="accordion-collapse collapsed" aria-labelledby="productsFilterHeader">
+                    <div class="accordion-body">
+                        @for (var i = 0; i < Model.Products.Count; i++)
+                        {
+                            <div class="form-check">
+                                <input asp-for="Products[i].Id" type="hidden"/>
+                                <input asp-for="Products[i].Name" type="hidden"/>
+                                <input asp-for="Products[i].IsChecked" type="checkbox" class="form-check-input"/>
+                                <label asp-for="Products[i].IsChecked" class="form-check-label">@Model.Products[i].Name</label>
+                                @*@Html.HiddenFor(m => m.Products[i].Id)
+                                @Html.CheckBoxFor(m => m.Products[i].IsChecked, new {@class = "form-check-input"})
+                                @Html.LabelFor(m => m.Products[i].IsChecked, Model.Products[i].Name, new {@class = "form-check-label"})
+                                @Html.HiddenFor(m => m.Products[i].Name)*@
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <text class="text-center">Цена</text>
+            <span asp-validation-for="PriceFrom" class="text-danger"></span>
+            <span asp-validation-for="PriceTo" class="text-danger"></span>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="input-group price">
+                    <label asp-for="PriceFrom" class="col-form-label"></label>
+                    <input asp-for="PriceFrom" type="text" class="form-control"/>
+                </div>
+            </div>
+            <div class="col">
+                <div class="input-group price">
+                    <label asp-for="PriceTo" class="col-form-label"></label>
+                    <input asp-for="PriceTo" type="text" class="form-control"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <text class="text-center">Дата</text>
+        </div>
+
+        <div class="input-group date-input">
+            <label asp-for="DateFrom" class="col-form-label"></label>
+            <input asp-for="DateFrom" id="datepickerFrom" class="form-control ui-datepicker" />
+            <span asp-validation-for="DateFrom" class="text-danger"></span>
+        </div>
+
+        <div class="input-group date-input">
+            <label asp-for="DateTo" class="col-form-label"></label>
+            <input asp-for="DateTo" id="datepickerTo" class="form-control" />
+            <span asp-validation-for="DateTo" class="text-danger"></span>
+        </div>
+
+
+        <div class="row filter-buttons">
+            <div class="col">
+                <input type="button" class="btn btn-primary" id="applyFilters" value="Применить"/>
+            </div>
+            <div class="col">
+                <button type="button" class="btn btn-outline-primary" id="clearFilters">Сбросить</button>
+            </div>
+        </div>
+    </form>
+</div>
+

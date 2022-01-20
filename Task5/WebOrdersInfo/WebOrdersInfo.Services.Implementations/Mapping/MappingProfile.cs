@@ -10,6 +10,16 @@ namespace WebOrdersInfo.Services.Implementations.Mapping
         {
             CreateMap<Order, OrderDto>();
             CreateMap<OrderDto, Order>();
+
+            CreateMap<Client, NameDto>();
+            CreateMap<NameDto, Client>();
+
+            CreateMap<Product, NameDto>();
+            CreateMap<NameDto, Product>();
+
+            CreateMap<Manager, NameDto>();
+            CreateMap<NameDto, Manager>();
+
         }
     }
 }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace WebOrdersInfo.Core.DTOs.Filters
+﻿namespace WebOrdersInfo.Core.DTOs.Pagination
 {
     public class PaginationFilter
     {

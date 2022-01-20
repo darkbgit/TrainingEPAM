@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using WebOrdersInfo.Core.DTOs;
+using WebOrdersInfo.Core.DTOs.Filters;
 using WebOrdersInfo.Core.Services.Interfaces;
 using WebOrdersInfo.DAL.Core.Entities;
 using WebOrdersInfo.DAL.Repositories.Implementations;
@@ -33,20 +35,49 @@ namespace WebOrdersInfo.Services.Implementations
             //_unitOfWork.Orders.GetAll().CountAsync()
         }
 
+
+
         public async Task<Tuple<IEnumerable<OrderWithNamesDto>, int>> GetOrdersPerPage(int pageNumber,
             int newsPerPage,
-            string sortOrder)
+            Expression<Func<Order, bool>> filter,
+            OrderSortEnum sort)
         {
-            var orders = await _unitOfWork.Orders.FindBy(o => true,
+            if (filter == null)
+            {
+                filter = order => true;
+            }
+
+            Expression<Func<Order, object>> sortExpression;
+            switch (sort)
+            {
+                case OrderSortEnum.Date:
+                default:
+                    sortExpression = o => o.Date;
+                    break;
+                case OrderSortEnum.Product:
+                    sortExpression = o => o.Product.Name;
+                    break;
+                case OrderSortEnum.Price:
+                    sortExpression = o => o.Price;
+                    break;
+                case OrderSortEnum.Client:
+                    sortExpression = o => o.Client.Name;
+                    break;
+                case OrderSortEnum.Manager:
+                    sortExpression = o => o.Manager.Name;
+                    break;
+            }
+
+            var orders = await _unitOfWork.Orders.FindBy(filter,
                 o => o.Client,
                 o => o.Manager,
                 o => o.Product)
-                .OrderBy(o => o.Manager.Name)
+                .OrderBy(sortExpression)
                 .Skip((pageNumber - 1) * newsPerPage)
                 .Take(newsPerPage)
                 .ToListAsync();
 
-            var count = await _unitOfWork.Orders.GetAll().CountAsync();
+            var count = await _unitOfWork.Orders.FindBy(filter).CountAsync();
 
             //var result = orders.Select(o => _mapper.Map<OrderDto>(o)).ToList();
 

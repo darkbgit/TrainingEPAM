@@ -17,6 +17,7 @@ using WebOrdersInfo.DAL.Core.Entities;
 using WebOrdersInfo.DAL.Repositories.Implementations;
 using WebOrdersInfo.Repositories.Interfaces;
 using WebOrdersInfo.DAL.Repositories.Implementations.Repositories;
+using WebOrdersInfo.Mapping;
 using WebOrdersInfo.Services.Implementations;
 using WebOrdersInfo.Services.Implementations.Mapping;
 
@@ -57,15 +58,26 @@ namespace WebOrdersInfo
                 .AddEntityFrameworkStores<WebOrdersInfoContext>();
 
             services.AddTransient<IRepository<Order>, OrdersRepository>();
+            services.AddTransient<IRepository<Client>, ClientsRepository>();
+            services.AddTransient<IRepository<Manager>, ManagersRepository>();
+            services.AddTransient<IRepository<Product>, ProductsRepository>();
             services.AddTransient<IRepository<User>, UserRepository>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddTransient<IOrderService, OrdersService>();
+            services.AddTransient<IClientService, ClientsService>();
+            services.AddTransient<IManagerService, ManagerService>();
+            services.AddTransient<IProductService, ProductsService>();
+            services.AddTransient<IFilterService, FilterService>();
 
-            services.AddAutoMapper(typeof(MappingProfile));
+
+            services.AddAutoMapper(typeof(MappingProfile), typeof(MappingProfile2));
 
             services.AddControllersWithViews();
+
+            services.AddDistributedMemoryCache();
+            services.AddSession();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -81,6 +93,9 @@ namespace WebOrdersInfo
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.UseSession();
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
