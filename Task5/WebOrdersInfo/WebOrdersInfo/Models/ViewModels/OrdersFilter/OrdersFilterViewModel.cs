@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using WebOrdersInfo.Core.DTOs.Filters;
+using WebOrdersInfo.Core.DTOs.Models.Filters;
 
 namespace WebOrdersInfo.Models.ViewModels.OrdersFilter
 {

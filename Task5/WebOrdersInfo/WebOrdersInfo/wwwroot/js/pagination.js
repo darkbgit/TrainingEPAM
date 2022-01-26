@@ -1,5 +1,4 @@
-﻿
-$('body').on('click', '.page-item', function () {
+﻿$('body').on('click', '.page-item', function () {
     var page = $(this).children('a').attr('value');
     updatePageFromPagination(page);
 });
@@ -26,6 +25,11 @@ function updatePageFromPagination(page) {
         success: function (response) {
             console.log('success!');
             $('#ordersContainer').html(response);
+        },
+        error: function (jqXHR, exception) {
+            if (jqXHR.status === 404) {
+                window.location.href = '/Order/Index';
+            }
         }
     });
 };

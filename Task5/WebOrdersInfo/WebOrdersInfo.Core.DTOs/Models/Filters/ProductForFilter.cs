@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WebOrdersInfo.Core.DTOs.Filters
+namespace WebOrdersInfo.Core.DTOs.Models.Filters
 {
     public class ProductForFilter
     {

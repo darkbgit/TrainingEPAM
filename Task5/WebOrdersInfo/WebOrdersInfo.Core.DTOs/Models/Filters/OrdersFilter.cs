@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace WebOrdersInfo.Core.DTOs.Filters
+namespace WebOrdersInfo.Core.DTOs.Models.Filters
 {
     public class OrdersFilter
     {

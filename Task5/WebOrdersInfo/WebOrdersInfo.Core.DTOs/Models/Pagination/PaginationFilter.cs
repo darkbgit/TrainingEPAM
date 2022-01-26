@@ -1,4 +1,4 @@
-﻿namespace WebOrdersInfo.Core.DTOs.Pagination
+﻿namespace WebOrdersInfo.Core.DTOs.Models.Pagination
 {
     public class PaginationFilter
     {

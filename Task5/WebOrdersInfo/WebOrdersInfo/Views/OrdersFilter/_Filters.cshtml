@@ -1,4 +1,4 @@
-﻿@using WebOrdersInfo.Core.DTOs.Filters
+﻿@using WebOrdersInfo.Core.DTOs.Models.Filters
 @model WebOrdersInfo.Models.ViewModels.OrdersFilter.OrdersFilterViewModel
 
 @{
@@ -16,14 +16,15 @@
         <div class="text-center">
             <label>Фильтровать по</label>
         </div>
-        <div class="accordion" id="accordionFilters">
+
+        <div class="accordion" id="accordionExample">
             <div class="accordion-item">
-                <h2 class="accordion-header" id="clientsFilterHeader">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" dta-bs-target="#collapseClients" aria-expanded="true" aria-controls="collapseClients">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
                         Клиенты
                     </button>
                 </h2>
-                <div id="collapseClients" class="accordion-collapse collapse show" aria-labelledby="clientsFilterHeader">
+                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" >
                     <div class="accordion-body">
                         @for (var i = 0; i < Model.Clients.Count; i++)
                         {
@@ -32,23 +33,18 @@
                                 <input asp-for="Clients[i].Name" type="hidden"/>
                                 <input asp-for="Clients[i].IsChecked" type="checkbox" class="form-check-input"/>
                                 <label asp-for="Clients[i].IsChecked" class="form-check-label">@Model.Clients[i].Name</label>
-
-                                @*@Html.HiddenFor(m => m.Clients[i].Id)
-                                @Html.CheckBoxFor(m => m.Clients[i].IsChecked, new {@class = "form-check-input"})
-                                @Html.LabelFor(m => m.Clients[i].IsChecked, Model.Clients[i].Name, new {@class = "form-check-label"})
-                                @Html.HiddenFor(m => m.Clients[i].Name)*@
                             </div>
                         }
                     </div>
                 </div>
             </div>
             <div class="accordion-item">
-                <h2 class="accordion-header" id="managersFilterHeader">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" dta-bs-target="#collapseManagers" aria-expanded="false" aria-controls="collapseManagers">
+                <h2 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
                         Менеджеры
                     </button>
                 </h2>
-                <div id="collapseManagers" class="accordion-collapse collapsed" aria-labelledby="managersFilterHeader">
+                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo">
                     <div class="accordion-body">
                         @for (var i = 0; i < Model.Managers.Count; i++)
                         {
@@ -57,10 +53,6 @@
                                 <input asp-for="Managers[i].Name" type="hidden"/>
                                 <input asp-for="Managers[i].IsChecked" type="checkbox" class="form-check-input"/>
                                 <label asp-for="Managers[i].IsChecked" class="form-check-label">@Model.Managers[i].Name</label>
-                                @*@Html.HiddenFor(m => m.Managers[i].Id)
-                                @Html.CheckBoxFor(m => m.Managers[i].IsChecked, new { @class = "form-check-input" })
-                                @Html.LabelFor(m => m.Managers[i].IsChecked, Model.Managers[i].Name, new { @class = "form-check-label" })
-                                @Html.HiddenFor(m => m.Managers[i].Name)*@
                             </div>
                         }
                     </div>
@@ -68,11 +60,11 @@
             </div>
             <div class="accordion-item">
                 <h2 class="accordion-header" id="productsFilterHeader">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" dta-bs-target="#collapseProducts" aria-expanded="false" aria-controls="collapseProducts">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProducts" aria-expanded="false" aria-controls="collapseProducts">
                         Продукты
                     </button>
                 </h2>
-                <div id="collapseProducts" class="accordion-collapse collapsed" aria-labelledby="productsFilterHeader">
+                <div id="collapseProducts" class="accordion-collapse collapse" aria-labelledby="productsFilterHeader">
                     <div class="accordion-body">
                         @for (var i = 0; i < Model.Products.Count; i++)
                         {
@@ -81,10 +73,6 @@
                                 <input asp-for="Products[i].Name" type="hidden"/>
                                 <input asp-for="Products[i].IsChecked" type="checkbox" class="form-check-input"/>
                                 <label asp-for="Products[i].IsChecked" class="form-check-label">@Model.Products[i].Name</label>
-                                @*@Html.HiddenFor(m => m.Products[i].Id)
-                                @Html.CheckBoxFor(m => m.Products[i].IsChecked, new {@class = "form-check-input"})
-                                @Html.LabelFor(m => m.Products[i].IsChecked, Model.Products[i].Name, new {@class = "form-check-label"})
-                                @Html.HiddenFor(m => m.Products[i].Name)*@
                             </div>
                         }
                     </div>
@@ -138,6 +126,6 @@
                 <button type="button" class="btn btn-outline-primary" id="clearFilters">Сбросить</button>
             </div>
         </div>
+        
     </form>
 </div>
-

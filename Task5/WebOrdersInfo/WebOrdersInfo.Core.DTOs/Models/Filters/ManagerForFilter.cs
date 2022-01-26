@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace WebOrdersInfo.Core.DTOs.Filters
+namespace WebOrdersInfo.Core.DTOs.Models.Filters
 {
-    public class ClientForFilter
+    public class ManagerForFilter
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

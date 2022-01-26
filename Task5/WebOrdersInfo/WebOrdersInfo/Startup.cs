@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using WebOrdersInfo.Core.Services.Interfaces;
@@ -54,6 +55,9 @@ namespace WebOrdersInfo
                 {
                     options.SignIn.RequireConfirmedAccount = false;
                     options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequiredLength = 1;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireUppercase = false;
                 })
                 .AddEntityFrameworkStores<WebOrdersInfoContext>();
 
@@ -81,7 +85,7 @@ namespace WebOrdersInfo
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
             {
@@ -110,6 +114,80 @@ namespace WebOrdersInfo
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            CreateRoles(serviceProvider);
+        }
+
+        private void CreateRoles(IServiceProvider serviceProvider)
+        {
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<Role>>();
+            var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+
+
+            Task<IdentityResult> roleResult;
+            var adminRoleName = Configuration["DefaultUsers:AdminRoleName"];
+
+            Task<bool> hasAdminRole = roleManager.RoleExistsAsync(adminRoleName);
+            hasAdminRole.Wait();
+
+            if (!hasAdminRole.Result)
+            {
+                roleResult = roleManager.CreateAsync(new Role(adminRoleName));
+                roleResult.Wait();
+            }
+
+            var adminEmail = Configuration["DefaultUsers:AdminEmail"];
+
+            Task<User> adminUser = userManager.FindByEmailAsync(adminEmail);
+            adminUser.Wait();
+
+            if (adminUser.Result == null)
+            {
+                User user = new() { Email = adminEmail, UserName = adminEmail };
+
+                var adminPassword = Configuration["DefaultUsers:AdminPassword"];
+
+                Task<IdentityResult> newUser = userManager.CreateAsync(user, adminPassword);
+                newUser.Wait();
+
+                if (newUser.Result.Succeeded)
+                {
+                    Task<IdentityResult> newUserRole = userManager.AddToRoleAsync(user, adminRoleName);
+                    newUserRole.Wait();
+                }
+            }
+
+            var userRoleName = Configuration["DefaultUsers:UserRoleName"];
+
+            Task<bool> hasUserRole = roleManager.RoleExistsAsync(userRoleName);
+            hasUserRole.Wait();
+
+            if (!hasUserRole.Result)
+            {
+                roleResult = roleManager.CreateAsync(new Role(userRoleName));
+                roleResult.Wait();
+            }
+
+            var userEmail = Configuration["DefaultUsers:UserEmail"];
+
+            Task<User> userUser = userManager.FindByEmailAsync(userEmail);
+            userUser.Wait();
+
+            if (userUser.Result == null)
+            {
+                User user = new() { Email = userEmail, UserName = userEmail };
+
+                var userPassword = Configuration["DefaultUsers:UserPassword"];
+
+                Task<IdentityResult> newUser = userManager.CreateAsync(user, userPassword);
+                newUser.Wait();
+
+                if (newUser.Result.Succeeded)
+                {
+                    Task<IdentityResult> newUserRole = userManager.AddToRoleAsync(user, userRoleName);
+                    newUserRole.Wait();
+                }
+            }
         }
     }
 }

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using WebOrdersInfo.Core.DTOs.Filters;
+using WebOrdersInfo.Core.DTOs.Models.Filters;
 using WebOrdersInfo.Core.Services.Interfaces;
 using WebOrdersInfo.DAL.Core.Entities;
 using WebOrdersInfo.Services.Implementations.Extensions;

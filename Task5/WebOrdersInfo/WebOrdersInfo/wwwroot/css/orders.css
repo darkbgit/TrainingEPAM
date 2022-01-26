@@ -52,3 +52,19 @@
 .filtersContainer {
     background-color: darkgray;
 }
+
+.btn-delete {
+    padding-left: 25px;
+    background: url(~/images/x-lg.svg) no-repeat left;
+    background-size: 20px;
+}
+
+.hide-submit input[type="submit"] {
+    display: none;
+}
+
+#delete-icon {
+    fill: #ff0000;
+    cursor: pointer;
+    margin: 0 10px;
+}

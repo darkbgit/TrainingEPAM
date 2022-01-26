@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using WebOrdersInfo.Core.DTOs;
-using WebOrdersInfo.Core.DTOs.Filters;
+using WebOrdersInfo.Core.DTOs.Models.Filters;
 using WebOrdersInfo.DAL.Core.Entities;
+using WebOrdersInfo.Models.ViewModels.Account;
 using WebOrdersInfo.Models.ViewModels.OrdersFilter;
+
 
 namespace WebOrdersInfo.Mapping
 {
@@ -14,7 +16,8 @@ namespace WebOrdersInfo.Mapping
             CreateMap<OrdersFilterViewModel, OrdersFilter>();
             //.ForMember(o => o.IsValid, opt => opt.MapFrom(src => true));
 
-
+            CreateMap<RegisterViewModel, User>()
+                .ForMember("UserName", opt => opt.MapFrom(r => r.Email));
 
         }
     }

@@ -4,7 +4,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using WebOrdersInfo.Core.DTOs.Filters;
+using WebOrdersInfo.Core.DTOs.Models.Filters;
 using WebOrdersInfo.Core.Services.Interfaces;
 using WebOrdersInfo.Extensions;
 using WebOrdersInfo.Models.ViewModels.Orders;
@@ -12,6 +12,7 @@ using WebOrdersInfo.Models.ViewModels.OrdersFilter;
 
 namespace WebOrdersInfo.Controllers
 {
+    [Authorize]
     public class OrdersFilterController : Controller
     {
         private readonly IClientService _clientService;
@@ -44,8 +45,15 @@ namespace WebOrdersInfo.Controllers
 
 
         [HttpPost]
-        public IActionResult Index(OrdersFilterViewModel model)
+        public async Task<IActionResult> Index(OrdersFilterViewModel model)
         {
+            if (model.IsClear)
+            {
+                var filters = await _filterService.GetFilter();
+                var filterViewModel = _mapper.Map<OrdersFilterViewModel>(filters);
+                HttpContext.Session.SetData("ordersFilters", filters);
+                return Ok();
+            }
             if (ModelState.IsValid && Validate(model))
             {
                 var filters = _mapper.Map<OrdersFilter>(model);

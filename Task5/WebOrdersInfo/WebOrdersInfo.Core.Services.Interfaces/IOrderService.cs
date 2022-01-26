@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using WebOrdersInfo.Core.DTOs;
-using WebOrdersInfo.Core.DTOs.Filters;
+using WebOrdersInfo.Core.DTOs.Models.Filters;
 using WebOrdersInfo.DAL.Core.Entities;
 
 namespace WebOrdersInfo.Core.Services.Interfaces
