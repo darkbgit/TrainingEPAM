@@ -34,6 +34,9 @@ function loadFilters() {
             console.log('success!');
             $('#filtersContainer').html(response);
             bindButton();
+        },
+        error: function() {
+            $('#filtersContainer').html('');
         }
     });
 }

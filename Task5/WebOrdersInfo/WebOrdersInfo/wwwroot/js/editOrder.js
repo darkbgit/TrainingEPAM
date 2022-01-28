@@ -1,5 +1,6 @@
 ﻿$(function () {
     $('#datepicker').datepicker({
-        inline: true
+        inline: true,
+        dateFormat: "yy-mm-dd"
     });
 });

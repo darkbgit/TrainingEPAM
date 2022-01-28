@@ -16,7 +16,10 @@ namespace WebOrdersInfo.Services.Implementations
         private readonly IProductService _productService;
         private readonly IOrderService _orderService;
 
-        public FilterService(IClientService clientService, IManagerService managerService, IProductService productService, IOrderService orderService)
+        public FilterService(IClientService clientService,
+            IManagerService managerService,
+            IProductService productService,
+            IOrderService orderService)
         {
             _clientService = clientService;
             _managerService = managerService;
@@ -26,15 +29,16 @@ namespace WebOrdersInfo.Services.Implementations
 
         public Expression<Func<Order, bool>> Query(OrdersFilter filter)
         {
-
-            //Expression<Func<Order, bool>> expression = null;
-
+            if (filter == null)
+            {
+                return null;
+            }
             Expression<Func<Order, bool>> clientExpression = filter.Clients
                 .Where(client => client.IsChecked)
                 .Aggregate<ClientForFilter, Expression<Func<Order, bool>>>(null, (current, client) =>
                     current.OrElse(o => o.ClientId.Equals(client.Id)));
 
-            var expression = ((Expression<Func<Order, bool>>) null).AndAlso(clientExpression);
+            var expression = ((Expression<Func<Order, bool>>)null).AndAlso(clientExpression);
 
             Expression<Func<Order, bool>> productExpression = filter.Products
                 .Where(product => product.IsChecked)
@@ -73,9 +77,9 @@ namespace WebOrdersInfo.Services.Implementations
 
         public async Task<OrdersFilter> GetFilter()
         {
-            var clients = (await _clientService.GetAll()).OrderBy(c => c.Name);
+            var clientsDto = (await _clientService.GetAll()).OrderBy(c => c.Name);
 
-            var c = clients.Select(c => new ClientForFilter
+            var clients = clientsDto.Select(c => new ClientForFilter
             {
                 Id = c.Id,
                 Name = c.Name,
@@ -83,18 +87,18 @@ namespace WebOrdersInfo.Services.Implementations
 
             }).ToList();
 
-            var managers = (await _managerService.GetAll()).OrderBy(c => c.Name);
+            var managersDto = (await _managerService.GetAll()).OrderBy(n => n.Name);
 
-            var m = managers.Select(m => new ManagerForFilter
+            var managers = managersDto.Select(m => new ManagerForFilter
             {
                 Id = m.Id,
                 Name = m.Name,
                 IsChecked = false
             }).ToList();
 
-            var products = (await _productService.GetAll()).OrderBy(c => c.Name);
+            var productsDto = (await _productService.GetAll()).OrderBy(d => d.Name);
 
-            var p = products.Select(p => new ProductForFilter
+            var products = productsDto.Select(p => new ProductForFilter
             {
                 Id = p.Id,
                 Name = p.Name,
@@ -103,20 +107,20 @@ namespace WebOrdersInfo.Services.Implementations
 
             var min = await _orderService.GetMinPrice();
             var max = await _orderService.GetMaxPrice();
-            
+
 
             var filters = new OrdersFilter
             {
-                Clients = c,
-                Managers = m,
-                Products = p,
-                IsClear = false,
+                Clients = clients,
+                Managers = managers,
+                Products = products,
+                IsNeedClear = false,
                 OrderBy = OrderSortEnum.Date,
                 MinPrice = min,
                 MaxPrice = max,
                 PriceFrom = min,
                 PriceTo = max
-        };
+            };
 
             return filters;
         }

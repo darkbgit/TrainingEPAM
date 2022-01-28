@@ -1,0 +1,34 @@
+﻿@{
+    ViewData["Title"] = "Статистика";
+}
+
+
+<div id="topManagersChart-container">
+    <canvas id="topManagersByOrdersChart" style="width: 100%; height: 500px"></canvas>
+</div>
+<div class="text-center">
+    <div class="input-group mb-3">
+        <span class="input-group-text">Выбрать</span>
+        <select id="topManagersNumber" class="form-select" >
+            <option selected>5</option>
+            <option>10</option>
+            <option>15</option>
+        </select>
+        <select id="topManagersFromTop" class="form-select">
+            <option value="true" selected>первых</option>
+            <option value="false">последних</option>
+        </select>
+        <input id="topManagersLoad" class="btn btn-outline-primary" type="button" value="Обновить" onclick="loadTopManagers()"/>
+    </div>
+</div>
+
+
+<div id="topProductsChart-container">
+    <canvas id="topProductsChart" style="width: 100%; height: 500px"></canvas>
+</div>
+
+@section scripts
+{
+    <script src="~/lib/chart/chart.min.js"></script>
+    <script src="js/charts.js"></script>
+}

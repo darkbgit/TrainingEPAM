@@ -13,7 +13,7 @@ namespace WebOrdersInfo.Core.DTOs.Models.Filters
         public DateTime? DateTo { get; set; }
         public double? PriceFrom { get; set; }
         public double? PriceTo { get; set; }
-        public bool IsClear { get; set; }
+        public bool IsNeedClear { get; set; }
 
         public OrderSortEnum OrderBy { get; set; }
 

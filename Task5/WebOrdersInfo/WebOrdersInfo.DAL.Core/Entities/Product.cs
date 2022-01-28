@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace WebOrdersInfo.DAL.Core.Entities
 {
-    public class Product : IBaseEntity
+    public class Product : IEntityWithName
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

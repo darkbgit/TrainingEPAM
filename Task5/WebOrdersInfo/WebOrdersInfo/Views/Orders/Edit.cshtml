@@ -17,7 +17,7 @@
                 <span id="dateEdit" class="input-group-text">
                     <label asp-for="Date"></label>
                 </span>
-                <input asp-for="Date" id="datepicker" class="form-control" aria-describedby="dataEdit" />
+                <input asp-for="Date" type="text" id="datepicker" class="form-control" aria-describedby="dataEdit" />
                 <span asp-validation-for="Date" class="text-danger"></span>
             </div>
 
@@ -62,5 +62,7 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    <script src="~/js/editOrder.js"></script>
+    
 }
+
+<script src="~/js/editOrder.js"></script>

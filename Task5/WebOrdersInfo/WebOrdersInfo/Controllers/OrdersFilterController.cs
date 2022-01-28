@@ -1,11 +1,14 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using WebOrdersInfo.Core.DTOs.Models.Filters;
 using WebOrdersInfo.Core.Services.Interfaces;
+using WebOrdersInfo.DAL.Core.Entities;
 using WebOrdersInfo.Extensions;
 using WebOrdersInfo.Models.ViewModels.Orders;
 using WebOrdersInfo.Models.ViewModels.OrdersFilter;
@@ -15,30 +18,35 @@ namespace WebOrdersInfo.Controllers
     [Authorize]
     public class OrdersFilterController : Controller
     {
-        private readonly IClientService _clientService;
-        private readonly IManagerService _managerService;
-        private readonly IProductService _productService;
         private readonly IFilterService _filterService;
-
         private readonly IMapper _mapper;
+        private readonly ILogger<OrdersFilterController> _logger;
 
-        public OrdersFilterController(IClientService clientService, IManagerService managerService, IProductService productService, IMapper mapper, IFilterService filterService)
+        public OrdersFilterController(IMapper mapper,
+            IFilterService filterService, ILogger<OrdersFilterController> logger)
         {
-            _clientService = clientService;
-            _managerService = managerService;
-            _productService = productService;
             _mapper = mapper;
             _filterService = filterService;
+            _logger = logger;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var filters = await _filterService.GetFilter();
+            OrdersFilter filter;
+            try
+            {
+                filter = await _filterService.GetFilter();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+                return BadRequest();
+            }
+            
+            var filterViewModel = _mapper.Map<OrdersFilterViewModel>(filter);
 
-            var filterViewModel = _mapper.Map<OrdersFilterViewModel>(filters);
-
-            HttpContext.Session.SetData("ordersFilters", filters);
+            HttpContext.Session.SetData("ordersFilters", filter);
 
             return PartialView("_Filters", filterViewModel);
         }
@@ -47,18 +55,27 @@ namespace WebOrdersInfo.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(OrdersFilterViewModel model)
         {
+            OrdersFilter filter;
             if (model.IsClear)
             {
-                var filters = await _filterService.GetFilter();
-                model = _mapper.Map<OrdersFilterViewModel>(filters);
-                HttpContext.Session.SetData("ordersFilters", filters);
+                try
+                {
+                    filter = await _filterService.GetFilter();
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e.Message);
+                    return BadRequest();
+                }
+                model = _mapper.Map<OrdersFilterViewModel>(filter);
+                HttpContext.Session.SetData("ordersFilters", filter);
             }
             else if (ModelState.IsValid && Validate(model))
             {
-                var filters = _mapper.Map<OrdersFilter>(model);
-                model = _mapper.Map<OrdersFilterViewModel>(filters);
+                filter = _mapper.Map<OrdersFilter>(model);
+                model = _mapper.Map<OrdersFilterViewModel>(filter);
                 ModelState.Clear();
-                HttpContext.Session.SetData("ordersFilters", filters);
+                HttpContext.Session.SetData("ordersFilters", filter);
             }
             else
             {

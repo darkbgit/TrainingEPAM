@@ -1,12 +1,14 @@
 ﻿$(function() {
     $('#datepickerFrom').datepicker({
-        inline: true
+        inline: false,
+        dateFormat: "yy-mm-dd"
     });
 });
 
-$(function () {
+$(function() {
     $('#datepickerTo').datepicker({
-        inline: true
+        inline: true,
+        dateFormat: "yy-mm-dd"
     });
 });
 

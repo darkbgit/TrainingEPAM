@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using WebOrdersInfo.Core.DTOs;
 using WebOrdersInfo.Core.DTOs.Models.Filters;
 using WebOrdersInfo.Core.Services.Interfaces;
@@ -18,11 +19,13 @@ namespace WebOrdersInfo.Services.Implementations
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly ILogger<OrdersService> _logger;
 
-        public OrdersService(IUnitOfWork unitOfWork, IMapper mapper)
+        public OrdersService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<OrdersService> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<OrderDto> GetOrderById(Guid id)
@@ -43,10 +46,7 @@ namespace WebOrdersInfo.Services.Implementations
             Expression<Func<Order, bool>> filter,
             OrderSortEnum sort)
         {
-            if (filter == null)
-            {
-                filter = order => true;
-            }
+            filter ??= order => true;
 
             Expression<Func<Order, object>> sortExpression;
             switch (sort)
@@ -80,49 +80,28 @@ namespace WebOrdersInfo.Services.Implementations
 
             var count = await _unitOfWork.Orders.FindBy(filter).CountAsync();
 
-            //var result = orders.Select(o => _mapper.Map<OrderDto>(o)).ToList();
-
-            var result = orders.Select(o => new OrderWithNamesDto()
-            {
-                Id = o.Id,
-                Date = o.Date,
-                ProductName = o.Product.Name,
-                Price = o.Price,
-                ClientName = o.Client.Name,
-                ManagerName = o.Manager.Name
-            }).ToList();
+            var result = orders.Select(o => _mapper.Map<OrderWithNamesDto>(o)).ToList();
 
             return new Tuple<IEnumerable<OrderWithNamesDto>, int>(result, count);
         }
 
         public async Task<double> GetMinPrice()
         {
-            return await _unitOfWork.Orders.GetAll().MinAsync(o => o.Price);
+            double result = 0;
+            try
+            {
+                result = await _unitOfWork.Orders.GetAll().MinAsync(o => o.Price);
+            }
+            catch (InvalidOperationException e)
+            {
+                _logger.LogError(e.Message);
+            }
+            return result;
         }
 
         public async Task<double> GetMaxPrice()
         {
             return await _unitOfWork.Orders.GetAll().MaxAsync(o => o.Price);
-        }
-
-        public void GetOrderWithNamesById()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void GetOrdersByClientId()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void GetOrdersByManagerId()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void GetOrdersByProductId()
-        {
-            throw new NotImplementedException();
         }
 
         public async Task Add(OrderDto order)
@@ -153,5 +132,7 @@ namespace WebOrdersInfo.Services.Implementations
             _unitOfWork.Orders.RemoveRange(entities);
             await _unitOfWork.SaveChangesAsync();
         }
+
+        
     }
 }

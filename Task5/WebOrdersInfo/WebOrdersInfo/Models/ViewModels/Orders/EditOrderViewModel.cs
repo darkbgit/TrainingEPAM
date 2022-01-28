@@ -19,6 +19,7 @@ namespace WebOrdersInfo.Models.ViewModels.Orders
 
         [Required]
         [Display(Name = "Цена")]
+        [Range(0, int.MaxValue, ErrorMessage = "Цена должна быть больше нуля")]
         public double Price { get; set; }
 
         public Guid ClientId { get; set; }

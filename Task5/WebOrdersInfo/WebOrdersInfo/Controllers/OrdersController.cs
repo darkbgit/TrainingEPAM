@@ -1,22 +1,19 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using WebOrdersInfo.Core.DTOs;
 using WebOrdersInfo.Core.DTOs.Models.Filters;
 using WebOrdersInfo.Core.DTOs.Models.Pagination;
 using WebOrdersInfo.Core.Services.Interfaces;
+using WebOrdersInfo.DAL.Core.Entities;
 using WebOrdersInfo.Extensions;
-using WebOrdersInfo.Models;
 using WebOrdersInfo.Models.ViewModels.Orders;
-using WebOrdersInfo.Models.ViewModels.OrdersFilter;
-using WebOrdersInfo.Pagination;
 using WebOrdersInfo.Pagination2;
 
 
@@ -35,7 +32,13 @@ namespace WebOrdersInfo.Controllers
 
         private readonly IMapper _mapper;
 
-        public OrdersController(IOrderService orderService, IClientService clientService, IManagerService managerService, IProductService productService, IFilterService filterService, IMapper mapper, ILogger<OrdersController> logger)
+        public OrdersController(IOrderService orderService,
+            IClientService clientService,
+            IManagerService managerService,
+            IProductService productService,
+            IFilterService filterService,
+            IMapper mapper,
+            ILogger<OrdersController> logger)
         {
             _orderService = orderService;
             _clientService = clientService;
@@ -53,13 +56,22 @@ namespace WebOrdersInfo.Controllers
             var paginationFilter = new PaginationFilter();
             var filter = HttpContext.Session.GetData<OrdersFilter>("ordersFilters");
 
-            if (filter is not {IsClear: false})
+            if (filter is not { IsNeedClear: false })
             {
-                filter = await _filterService.GetFilter();
+                try
+                {
+                    filter = await _filterService.GetFilter();
+                }
+                catch (Exception e)
+                {
+                    filter = null;
+                    _logger.LogError(e.Message);
+                }
+                
                 HttpContext.Session.SetData("ordersFilters", filter);
             }
 
-            var ordersListWithPagination = await GetOrdersList(paginationFilter);
+            var ordersListWithPagination = await GetOrdersList(paginationFilter, filter);
 
             return View(ordersListWithPagination);
         }
@@ -70,12 +82,12 @@ namespace WebOrdersInfo.Controllers
         {
             var filter = HttpContext.Session.GetData<OrdersFilter>("ordersFilters");
 
-            if (filter is not { IsClear: false })
+            if (filter is not { IsNeedClear: false })
             {
                 return BadRequest();
             }
 
-            var ordersListWithPagination = await GetOrdersList(paginationFilter);
+            var ordersListWithPagination = await GetOrdersList(paginationFilter, filter);
 
             return PartialView("_OrdersListWithPagination", ordersListWithPagination);
         }
@@ -113,7 +125,6 @@ namespace WebOrdersInfo.Controllers
             {
                 var orderDto = _mapper.Map<OrderDto>(order);
                 orderDto.Id = Guid.NewGuid();
-
 
                 try
                 {
@@ -182,8 +193,7 @@ namespace WebOrdersInfo.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            
-            //ViewData["RssSourceName"] = new SelectList(await _rssSourceService.GetAllRssSources(), "Id", "Name", news.RssSourceId);
+
             return View(order);
         }
 
@@ -198,24 +208,19 @@ namespace WebOrdersInfo.Controllers
         }
 
 
-        private async Task<OrdersListWithPaginationViewModel> GetOrdersList(PaginationFilter paginationFilter)
+        private async Task<OrdersListWithPaginationViewModel> GetOrdersList(PaginationFilter paginationFilter, OrdersFilter filter)
         {
-            var filter = HttpContext.Session.GetData<OrdersFilter>("ordersFilters");
-
-            if (filter is { IsClear: true })
-            {
-                filter = await _filterService.GetFilter();
-                HttpContext.Session.SetData("ordersFilters", filter);
-            }
-
             var query = _filterService.Query(filter);
+
+            filter ??= new OrdersFilter
+            {
+                OrderBy = OrderSortEnum.Date
+            };
 
             var (ordersDtoPerPage, allOrders) = await _orderService
                 .GetOrdersPerPage(paginationFilter.PageNumber, paginationFilter.PageSize, query, filter.OrderBy);
 
             var i = paginationFilter.PageSize * (paginationFilter.PageNumber - 1) + 1;
-
-            var beginNumber = paginationFilter.PageSize * (paginationFilter.PageNumber - 1) + 1;
 
             var ordersViewModel = ordersDtoPerPage.Select(o => new OrderViewModel
             {
@@ -230,7 +235,6 @@ namespace WebOrdersInfo.Controllers
 
             var ordersListWithPagination = new OrdersListWithPaginationViewModel
             {
-                //BeginOrdersNumber = beginNumber,
                 OrderList = ordersViewModel,
                 //Pagination = new Paging(paginationFilter.PageSize, paginationFilter.PageNumber, allOrders, url),
                 Pagination = new PageInfo(paginationFilter.PageNumber, allOrders, paginationFilter.PageSize)
@@ -238,6 +242,5 @@ namespace WebOrdersInfo.Controllers
 
             return ordersListWithPagination;
         }
-
     }
 }

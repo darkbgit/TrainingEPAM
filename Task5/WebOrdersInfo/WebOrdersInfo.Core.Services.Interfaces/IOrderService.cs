@@ -11,7 +11,7 @@ namespace WebOrdersInfo.Core.Services.Interfaces
     public interface IOrderService
     {
         Task<OrderDto> GetOrderById(Guid id);
-        void GetAll();
+
         Task<Tuple<IEnumerable<OrderWithNamesDto>, int>> GetOrdersPerPage(int pageNumber,
             int newsPerPage,
             Expression<Func<Order, bool>> filter,
@@ -20,17 +20,9 @@ namespace WebOrdersInfo.Core.Services.Interfaces
         Task<double> GetMinPrice();
         Task<double> GetMaxPrice();
 
-        void GetOrderWithNamesById();
-
-        void GetOrdersByClientId();
-        void GetOrdersByManagerId();
-        void GetOrdersByProductId();
-
         Task Add(OrderDto order);
         Task Update(OrderDto order);
         Task Delete(Guid id);
         Task DeleteRange(IEnumerable<OrderDto> orders);
-
-        
     }
 }

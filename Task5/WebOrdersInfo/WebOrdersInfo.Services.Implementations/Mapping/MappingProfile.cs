@@ -11,15 +11,19 @@ namespace WebOrdersInfo.Services.Implementations.Mapping
             CreateMap<Order, OrderDto>();
             CreateMap<OrderDto, Order>();
 
-            CreateMap<Client, NameDto>();
-            CreateMap<NameDto, Client>();
+            CreateMap<Client, ClientDto>();
+            CreateMap<ClientDto, Client>();
 
-            CreateMap<Product, NameDto>();
-            CreateMap<NameDto, Product>();
+            CreateMap<Product, ProductDto>();
+            CreateMap<ProductDto, Product>();
 
-            CreateMap<Manager, NameDto>();
-            CreateMap<NameDto, Manager>();
+            CreateMap<Manager, ManagerDto>();
+            CreateMap<ManagerDto, Manager>();
 
+            CreateMap<Order, OrderWithNamesDto>()
+                .ForMember(o => o.ClientName, opt => opt.MapFrom(m => m.Client.Name))
+                .ForMember(o => o.ManagerName, opt => opt.MapFrom(m => m.Manager.Name))
+                .ForMember(o => o.ProductName, opt => opt.MapFrom(m => m.Product.Name));
 
 
         }

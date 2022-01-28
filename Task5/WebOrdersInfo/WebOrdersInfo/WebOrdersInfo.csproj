@@ -188,6 +188,7 @@
 
   <ItemGroup>
     <Folder Include="Extensions\" />
+    <Folder Include="Models\ViewModels\Statistics\" />
     <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
