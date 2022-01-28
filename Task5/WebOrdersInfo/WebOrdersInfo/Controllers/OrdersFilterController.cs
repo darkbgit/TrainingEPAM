@@ -50,18 +50,21 @@ namespace WebOrdersInfo.Controllers
             if (model.IsClear)
             {
                 var filters = await _filterService.GetFilter();
-                var filterViewModel = _mapper.Map<OrdersFilterViewModel>(filters);
+                model = _mapper.Map<OrdersFilterViewModel>(filters);
                 HttpContext.Session.SetData("ordersFilters", filters);
-                return Ok();
             }
-            if (ModelState.IsValid && Validate(model))
+            else if (ModelState.IsValid && Validate(model))
             {
                 var filters = _mapper.Map<OrdersFilter>(model);
+                model = _mapper.Map<OrdersFilterViewModel>(filters);
+                ModelState.Clear();
                 HttpContext.Session.SetData("ordersFilters", filters);
-                return Ok();
             }
-
-            HttpContext.Response.StatusCode = 400;
+            else
+            {
+                HttpContext.Response.StatusCode = 400;
+            }
+            
             return PartialView("_Filters", model);
         }
 

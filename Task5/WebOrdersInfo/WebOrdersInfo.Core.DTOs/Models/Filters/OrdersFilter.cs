@@ -16,5 +16,8 @@ namespace WebOrdersInfo.Core.DTOs.Models.Filters
         public bool IsClear { get; set; }
 
         public OrderSortEnum OrderBy { get; set; }
+
+        public double MinPrice { get; set; }
+        public double MaxPrice { get; set; }
     }
 }

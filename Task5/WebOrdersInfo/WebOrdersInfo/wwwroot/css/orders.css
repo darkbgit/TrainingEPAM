@@ -68,3 +68,11 @@
     cursor: pointer;
     margin: 0 10px;
 }
+
+#amountPrice {
+    outline: 0;
+    border:0;
+    color:#1b6ec2;
+    font-weight:bold;
+    width: auto;
+}

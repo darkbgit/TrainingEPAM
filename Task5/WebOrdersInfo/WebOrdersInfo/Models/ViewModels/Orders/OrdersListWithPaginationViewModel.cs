@@ -7,6 +7,7 @@ namespace WebOrdersInfo.Models.ViewModels.Orders
 {
     public class OrdersListWithPaginationViewModel
     {
+        public int Page { get; set; }
         public IEnumerable<OrderViewModel> OrderList { get; set; }
 
         //public Paging Pagination { get; set; }

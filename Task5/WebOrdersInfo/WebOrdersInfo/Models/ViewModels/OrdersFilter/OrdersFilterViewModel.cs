@@ -39,5 +39,9 @@ namespace WebOrdersInfo.Models.ViewModels.OrdersFilter
 
         [Display(Name = "Сортировать по")]
         public OrderSortEnum OrderBy { get; set; }
+
+        public double MinPrice { get; set; }
+
+        public double MaxPrice { get; set; }
     }
 }

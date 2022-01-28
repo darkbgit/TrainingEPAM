@@ -14,12 +14,14 @@ namespace WebOrdersInfo.Services.Implementations
         private readonly IClientService _clientService;
         private readonly IManagerService _managerService;
         private readonly IProductService _productService;
+        private readonly IOrderService _orderService;
 
-        public FilterService(IClientService clientService, IManagerService managerService, IProductService productService)
+        public FilterService(IClientService clientService, IManagerService managerService, IProductService productService, IOrderService orderService)
         {
             _clientService = clientService;
             _managerService = managerService;
             _productService = productService;
+            _orderService = orderService;
         }
 
         public Expression<Func<Order, bool>> Query(OrdersFilter filter)
@@ -99,14 +101,22 @@ namespace WebOrdersInfo.Services.Implementations
                 IsChecked = false
             }).ToList();
 
+            var min = await _orderService.GetMinPrice();
+            var max = await _orderService.GetMaxPrice();
+            
+
             var filters = new OrdersFilter
             {
                 Clients = c,
                 Managers = m,
                 Products = p,
                 IsClear = false,
-                OrderBy = OrderSortEnum.Date
-            };
+                OrderBy = OrderSortEnum.Date,
+                MinPrice = min,
+                MaxPrice = max,
+                PriceFrom = min,
+                PriceTo = max
+        };
 
             return filters;
         }

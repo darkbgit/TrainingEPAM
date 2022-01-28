@@ -20,6 +20,8 @@ namespace WebOrdersInfo.Services.Implementations.Mapping
             CreateMap<Manager, NameDto>();
             CreateMap<NameDto, Manager>();
 
+
+
         }
     }
 }

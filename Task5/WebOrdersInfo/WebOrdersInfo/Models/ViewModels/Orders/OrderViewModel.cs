@@ -5,8 +5,10 @@ namespace WebOrdersInfo.Models.ViewModels.Orders
 {
     public class OrderViewModel
     {
+        public Guid Id { get; set; }
+
         [Display(Name = "N")]
-        public int Id { get; set; }
+        public int SequenceNumber { get; set; }
 
         [Display(Name = "Дата заказа")]
         public DateTime Date { get; set; }

@@ -10,12 +10,15 @@ namespace WebOrdersInfo.Core.Services.Interfaces
 {
     public interface IOrderService
     {
-        void GetOrderById();
+        Task<OrderDto> GetOrderById(Guid id);
         void GetAll();
         Task<Tuple<IEnumerable<OrderWithNamesDto>, int>> GetOrdersPerPage(int pageNumber,
             int newsPerPage,
             Expression<Func<Order, bool>> filter,
             OrderSortEnum sort);
+
+        Task<double> GetMinPrice();
+        Task<double> GetMaxPrice();
 
         void GetOrderWithNamesById();
 

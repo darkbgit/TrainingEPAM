@@ -2,9 +2,8 @@
 
 namespace WebOrdersInfo.Core.DTOs
 {
-    public class ClientDto
+    public class ClientDto : NameDto
     {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
+       
     }
 }

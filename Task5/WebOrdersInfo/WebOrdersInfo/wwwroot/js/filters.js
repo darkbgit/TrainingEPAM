@@ -1,30 +1,12 @@
 ﻿successRequest = function (data, textStatus, XHR) {
     $('#filters').html(data);
     bindButton();
-    //pagedList();
 }
 
 failRequest = function () {
     jQuery("#filtercontent").html().val('');
 }
 
-
-//window.onload = function () {
-//        jQuery.ajax(
-//                {
-//                    url: "/OrdersFilter/Index",
-//                    type: "GET",
-//                    success: successRequest,
-//                    dataType: "html"
-//                }
-//            )
-//            .fail(failRequest);
-//
-
-
-
-
-//};
 
 window.onload = function () {
     loadFilters();
@@ -86,7 +68,9 @@ function applyFilters() {
         data: $('#filterForm').serialize() + "&__RequestVerificationToken=" + token,
         //},
         //dataType: 'json',
-        success: function() {
+        success: function (response) {
+            $('#filtersContainer').html(response);
+            bindButton();
             loadOrders();
         }
         //error: function(response) {
@@ -116,16 +100,3 @@ function loadOrders() {
         }
     });
 }
-
-
-$(function() {
-    $('#datepickerFrom').datepicker({
-        inline: true
-    });
-});
-
-$(function () {
-    $('#datepickerTo').datepicker({
-        inline: true
-    });
-});

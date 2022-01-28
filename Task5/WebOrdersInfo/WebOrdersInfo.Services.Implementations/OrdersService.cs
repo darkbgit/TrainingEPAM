@@ -25,9 +25,10 @@ namespace WebOrdersInfo.Services.Implementations
             _mapper = mapper;
         }
 
-        public void GetOrderById()
+        public async Task<OrderDto> GetOrderById(Guid id)
         {
-            throw new NotImplementedException();
+            var entity = await _unitOfWork.Orders.Get(id);
+            return _mapper.Map<OrderDto>(entity);
         }
 
         public void GetAll()
@@ -92,6 +93,16 @@ namespace WebOrdersInfo.Services.Implementations
             }).ToList();
 
             return new Tuple<IEnumerable<OrderWithNamesDto>, int>(result, count);
+        }
+
+        public async Task<double> GetMinPrice()
+        {
+            return await _unitOfWork.Orders.GetAll().MinAsync(o => o.Price);
+        }
+
+        public async Task<double> GetMaxPrice()
+        {
+            return await _unitOfWork.Orders.GetAll().MaxAsync(o => o.Price);
         }
 
         public void GetOrderWithNamesById()

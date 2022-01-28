@@ -1,0 +1,75 @@
+﻿@using WebOrdersInfo.Core.DTOs
+@using WebOrdersInfo.Core.DTOs.Models.Pagination
+@model WebOrdersInfo.Models.ViewModels.Orders.CreateOrderViewModel
+
+@{
+    ViewData["Title"] = "Редактирование заказа";
+}
+
+<h4>Создать новый заказ</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" asp-controller="Orders">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <div class="input-group mb-3">
+                <span id="dateEdit" class="input-group-text">
+                    <label asp-for="Date"></label>
+                </span>
+                <input asp-for="Date" id="datepicker" class="form-control" aria-describedby="dataEdit" />
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
+
+            <div class="input-group mb-3">
+                <span id="priceEdit" class="input-group-text">
+                    <label asp-for="Price"></label>
+                </span>
+                <input asp-for="Price" class="form-control" aria-describedby="priceEdit"/>
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="input-group mb-3">
+                <span id="clientEdit" class="input-group-text">
+                    <label asp-for="Clients"></label>
+                </span>
+                <select asp-for="ClientId"
+                        asp-items="@Model.Clients" class="form-select" aria-describedby="clientEdit">
+                    <option selected></option>
+                </select>
+                <span asp-validation-for="ClientId" class="text-danger"></span>
+            </div>
+            <div class="input-group mb-3">
+                <span id="managerEdit" class="input-group-text">
+                    <label asp-for="Managers"></label>
+                </span>
+                <select asp-for="ManagerId"
+                        asp-items="@Model.Managers" class="form-select" aria-describedby="managerEdit">
+                    <option selected></option>
+                </select>
+                <span asp-validation-for="ManagerId" class="text-danger"></span>
+            </div>
+            <div class="input-group mb-3">
+                <span id="productEdit" class="input-group-text">
+                    <label asp-for="Products"></label>
+                </span>
+                <select asp-for="ProductId"
+                        asp-items="@Model.Products" class="form-select" aria-describedby="productEdit">
+                    <option selected></option>
+                </select>
+                <span asp-validation-for="ProductId" class="text-danger"></span>
+            </div>
+            <div class="input-group mb-3">
+                <input type="submit" value="Создать заказ" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Вернуться к списку</a> 
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/js/editOrder.js"></script>
+}

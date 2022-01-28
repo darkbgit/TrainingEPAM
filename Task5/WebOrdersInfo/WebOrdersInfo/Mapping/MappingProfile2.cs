@@ -3,6 +3,7 @@ using WebOrdersInfo.Core.DTOs;
 using WebOrdersInfo.Core.DTOs.Models.Filters;
 using WebOrdersInfo.DAL.Core.Entities;
 using WebOrdersInfo.Models.ViewModels.Account;
+using WebOrdersInfo.Models.ViewModels.Orders;
 using WebOrdersInfo.Models.ViewModels.OrdersFilter;
 
 
@@ -19,6 +20,12 @@ namespace WebOrdersInfo.Mapping
             CreateMap<RegisterViewModel, User>()
                 .ForMember("UserName", opt => opt.MapFrom(r => r.Email));
 
+            CreateMap<OrderWithNamesDto, OrderViewModel>();
+
+            CreateMap<OrderDto, EditOrderViewModel>();
+            CreateMap<EditOrderViewModel, OrderDto>();
+
+            CreateMap<CreateOrderViewModel, OrderDto>();
         }
     }
 }
