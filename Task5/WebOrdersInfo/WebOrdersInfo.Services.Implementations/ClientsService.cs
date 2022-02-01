@@ -1,20 +1,18 @@
-﻿using System;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 using WebOrdersInfo.Core.DTOs;
+using WebOrdersInfo.Core.DTOs.Models.Pagination;
 using WebOrdersInfo.Core.Services.Interfaces;
 using WebOrdersInfo.DAL.Core.Entities;
 using WebOrdersInfo.DAL.Repositories.Implementations;
-using WebOrdersInfo.Repositories.Interfaces;
-using WebOrdersInfo.Services.Implementations.Base;
 
 namespace WebOrdersInfo.Services.Implementations
 {
-    public class ClientsService : IClientService 
+    public class ClientsService : IClientService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -24,10 +22,62 @@ namespace WebOrdersInfo.Services.Implementations
             _mapper = mapper;
         }
 
+        public async Task<PaginatedList<ClientDto>> GetClientsPerPage(string sortOrder,
+            string searchString,
+            int pageNumber)
+        {
+            const int PAGE_SIZE = 5;
+
+            var clients = _unitOfWork.Clients.GetAll();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                clients = clients.Where(s => s.Name.Contains(searchString));
+            }
+
+            clients = sortOrder switch
+            {
+                "name_desc" => clients.OrderByDescending(c => c.Name),
+                _ => clients.OrderBy(c => c.Name)
+            };
+
+            var items = await clients
+                .Skip((pageNumber - 1) * PAGE_SIZE)
+                .Take(PAGE_SIZE)
+                .ToListAsync();
+
+            var count = await clients.CountAsync();
+
+            var clientDto = items.Select(i => _mapper.Map<ClientDto>(i)).ToList();
+
+            var result = new PaginatedList<ClientDto>(clientDto,
+                count,
+                pageNumber,
+                PAGE_SIZE);
+
+            return result;
+        }
+
         public async Task<IEnumerable<ClientDto>> GetAll()
         {
             var result = await _unitOfWork.Clients.GetAll().ToListAsync();
             return result.Select(i => _mapper.Map<ClientDto>(i));
+        }
+
+        public async Task<ClientDto> GetById(Guid id)
+        {
+            var result = await _unitOfWork.Clients
+                .FindBy(c => c.Id.Equals(id))
+                .FirstOrDefaultAsync();
+            return _mapper.Map<ClientDto>(result);
+        }
+
+        public async Task<ClientDto> GetByName(string name)
+        {
+            var result = await _unitOfWork.Clients
+                .FindBy(c => c.Name.Equals(name))
+                .FirstOrDefaultAsync();
+            return _mapper.Map<ClientDto>(result);
         }
 
         public async Task Add(ClientDto client)
@@ -49,6 +99,5 @@ namespace WebOrdersInfo.Services.Implementations
             _unitOfWork.Clients.Remove(id);
             await _unitOfWork.SaveChangesAsync();
         }
-
     }
 }

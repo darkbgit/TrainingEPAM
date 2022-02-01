@@ -21,6 +21,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Views\Products\Create.cshtml" />
+    <Content Remove="Views\Products\Edit.cshtml" />
+    <Content Remove="Views\Products\Index.cshtml" />
+    <Content Remove="Views\Clients\Create.cshtml" />
+    <Content Remove="Views\Clients\Edit.cshtml" />
+    <Content Remove="Views\Clients\Index.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="11.0.0" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.13" />
@@ -197,6 +206,15 @@
     <None Include="Views\Account\Register.cshtml" />
     <None Include="Views\Account\_Login.cshtml" />
     <None Include="Views\Account\_Logout.cshtml" />
+    <None Include="Views\Products\Create.cshtml" />
+    <None Include="Views\Products\Edit.cshtml" />
+    <None Include="Views\Products\Index.cshtml" />
+    <None Include="Views\Clients\Create.cshtml" />
+    <None Include="Views\Clients\Edit.cshtml" />
+    <None Include="Views\Clients\Index.cshtml" />
+    <None Include="Views\Managers\Create.cshtml" />
+    <None Include="Views\Managers\Edit.cshtml" />
+    <None Include="Views\Managers\Index.cshtml" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="https://jenkins-x.io/schemas/jx-schema.json`" /></VisualStudio></ProjectExtensions>

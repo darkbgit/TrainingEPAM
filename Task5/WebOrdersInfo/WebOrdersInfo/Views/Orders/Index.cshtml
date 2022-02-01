@@ -15,22 +15,29 @@
 
 <div class="row">
     <div class="col">
-        <div id="ordersContainer">
+        <div id="ordersContainer" class="mb-3">
             @{ await Html.RenderPartialAsync("_OrdersListWithPagination", @Model); }
         </div>
+        @if (User.IsInRole("admin"))
+        {
+            <div class="input-group mb-3">
+                    <a asp-action="Index" asp-controller="Managers" type="button" class="btn btn-outline-primary">Менеджеры</a>
+                    <a asp-action="Index" asp-controller="Clients" type="button" class="btn btn-outline-primary">Клиенты</a>
+                    <a asp-action="Index" asp-controller="Products" type="button" class="btn btn-outline-primary">Продукты</a>
+            </div>
+        }
     </div>
     <div class="col-4">
         <div id="filtersContainer">
             @if (!User.Identity.IsAuthenticated)
             {
-                <div><a asp-action="Login" asp-controller="Account">Войдите</a> или <a asp-action="Register" asp-controller="Account">зарегистрируйтесь</a> для фильтрации заказов</div>
+                <div>
+                    <p>Фильтрация заказов доступна только для зарегистрированных пользователей</p>
+                </div>
             }
-            @*@{ await Html.RenderPartialAsync("_Filters", @Model.Filters); }*@
         </div>
     </div>
 </div>
-
-
 
 
 @section scripts

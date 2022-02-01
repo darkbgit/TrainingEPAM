@@ -1,0 +1,31 @@
+﻿@model WebOrdersInfo.Models.ViewModels.Products.ProductViewModel
+
+@{
+    ViewData["Title"] = "Удаление продукта";
+}
+
+
+<h3>Вы уверены что хотите удалить данный продукт?</h3>
+<p class="text-danger">@ViewData["ErrorMessage"]</p>
+<div>
+    <h4>Продукт</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Удалить" class="btn btn-danger" /> |
+        <a asp-action="Index">Вернуться к списку</a>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

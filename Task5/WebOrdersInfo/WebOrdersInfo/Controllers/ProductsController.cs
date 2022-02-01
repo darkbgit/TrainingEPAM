@@ -4,32 +4,29 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using WebOrdersInfo.Core.DTOs;
 using WebOrdersInfo.Core.Services.Interfaces;
-using WebOrdersInfo.Models.ViewModels.Managers;
+using WebOrdersInfo.Models.ViewModels.Products;
 
 namespace WebOrdersInfo.Controllers
 {
     [Authorize(Roles = "admin")]
-    public class ManagersController : Controller
+    public class ProductsController : Controller
     {
-        private readonly IManagerService _managerService;
-        private readonly ILogger<OrdersController> _logger;
+        private readonly IProductService _productService;
         private readonly IMapper _mapper;
+        private readonly ILogger<ProductsController> _logger;
 
-        public ManagersController(IManagerService managerService,
-            IMapper mapper,
-            ILogger<OrdersController> logger)
+        public ProductsController(IProductService productService, IMapper mapper, ILogger<ProductsController> logger)
         {
-            _managerService = managerService;
+            _productService = productService;
             _mapper = mapper;
             _logger = logger;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Index(string sortOrder,
+        public async Task<IActionResult> Index(
+            string sortOrder,
             string currentFilter,
             string searchString,
             int? pageNumber)
@@ -48,29 +45,31 @@ namespace WebOrdersInfo.Controllers
 
             ViewData["CurrentFilter"] = searchString;
 
-            var managers = await _managerService.GetManagersPerPage(sortOrder, searchString, pageNumber.Value);
-            
-            return View(managers);
+            var products = await _productService.GetProductsPerPage(sortOrder, searchString, pageNumber.Value);
+
+            return View(products);
         }
 
-
-        public IActionResult Create() => View();
+        public IActionResult Create()
+        {
+            return View();
+        }
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateManagerViewModel model)
+        public async Task<IActionResult> Create(CreateProductViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var dto = _mapper.Map<ManagerDto>(model);
+                var dto = _mapper.Map<ProductDto>(model);
                 dto.Id = Guid.NewGuid();
 
-                if (!await ManagerNameExists(dto.Name))
+                if (!await ProductNameExists(dto.Name))
                 {
                     try
                     {
-                        await _managerService.Add(dto);
+                        await _productService.Add(dto);
                         return RedirectToAction(nameof(Index));
                     }
                     catch (DbUpdateException e)
@@ -81,12 +80,11 @@ namespace WebOrdersInfo.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("Name", "Менеджер с такой фамилией уже существует");
+                    ModelState.AddModelError("Name", "Продукт с таким названием уже существует");
                 }
             }
             return View(model);
         }
-
 
         public async Task<IActionResult> Edit(Guid? id)
         {
@@ -95,14 +93,14 @@ namespace WebOrdersInfo.Controllers
                 return NotFound();
             }
 
-            var manager = await _managerService.GetById((Guid)id);
+            var product = await _productService.GetById(id.Value);
 
-            if (manager == null)
+            if (product == null)
             {
                 return NotFound();
             }
 
-            var model = _mapper.Map<ManagerViewModel>(manager);
+            var model = _mapper.Map<ProductViewModel>(product);
 
             return View(model);
         }
@@ -110,17 +108,17 @@ namespace WebOrdersInfo.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(ManagerViewModel model)
+        public async Task<IActionResult> Edit(ProductViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var dto = _mapper.Map<ManagerDto>(model);
+                var dto = _mapper.Map<ProductDto>(model);
 
-                if (!await ManagerNameExists(dto.Name))
+                if (!await ProductNameExists(dto.Name))
                 {
                     try
                     {
-                        await _managerService.Update(dto);
+                        await _productService.Update(dto);
                         return RedirectToAction(nameof(Index));
                     }
                     catch (DbUpdateException e)
@@ -131,10 +129,9 @@ namespace WebOrdersInfo.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("Name", "Менеджер с такой фамилией уже существует");
+                    ModelState.AddModelError("Name", "Продукт с таким названием уже существует");
                 }
             }
-
             return View(model);
         }
 
@@ -145,9 +142,9 @@ namespace WebOrdersInfo.Controllers
                 return NotFound();
             }
 
-            var manager = await _managerService.GetById(id.Value);
+            var product = await _productService.GetById(id.Value);
 
-            if (manager == null)
+            if (product == null)
             {
                 return NotFound();
             }
@@ -157,7 +154,7 @@ namespace WebOrdersInfo.Controllers
                 ViewData["ErrorMessage"] = "Delete failed. Try again.";
             }
 
-            var model = _mapper.Map<ManagerViewModel>(manager);
+            var model = _mapper.Map<ProductViewModel>(product);
 
             return View(model);
         }
@@ -167,16 +164,16 @@ namespace WebOrdersInfo.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var manager = await _managerService.GetById(id);
+            var product = await _productService.GetById(id);
 
-            if (manager == null)
+            if (product == null)
             {
                 return RedirectToAction(nameof(Index));
             }
 
             try
             {
-                await _managerService.Delete(id);
+                await _productService.Delete(id);
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateException ex)
@@ -186,9 +183,9 @@ namespace WebOrdersInfo.Controllers
             }
         }
 
-        private async Task<bool> ManagerNameExists(string name)
+        private async Task<bool> ProductNameExists(string name)
         {
-            return await _managerService.GetByName(name) != null;
+            return await _productService.GetByName(name) != null;
         }
     }
 }

@@ -29,15 +29,14 @@ function loadFilters() {
         data: {
             __RequestVerificationToken: token
         },
-        //dataType: 'json',
         success: function (response) {
             console.log('success!');
             $('#filtersContainer').html(response);
             bindButton();
-        },
-        error: function() {
-            $('#filtersContainer').html('');
         }
+        //error: function() {
+        //    $('#filtersContainer').html('');
+        //}
     });
 }
 
@@ -52,7 +51,6 @@ function clearFilters() {
             __RequestVerificationToken: token,
             IsClear: true
         },
-        //dataType: 'json',
         success: function () {
             loadOrders();
             loadFilters();
@@ -69,8 +67,6 @@ function applyFilters() {
         type: 'POST',
         url: '/OrdersFilter/Index',
         data: $('#filterForm').serialize() + "&__RequestVerificationToken=" + token,
-        //},
-        //dataType: 'json',
         success: function (response) {
             $('#filtersContainer').html(response);
             bindButton();
@@ -96,7 +92,6 @@ function loadOrders() {
         data: {
             __RequestVerificationToken: token
         },
-        //dataType: 'json',
         success: function (response) {
             console.log('success!');
             $('#ordersContainer').html(response);

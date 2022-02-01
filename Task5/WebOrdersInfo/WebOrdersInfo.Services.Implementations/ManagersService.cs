@@ -1,16 +1,15 @@
-﻿using System;
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebOrdersInfo.Core.DTOs;
+using WebOrdersInfo.Core.DTOs.Models.Pagination;
 using WebOrdersInfo.Core.DTOs.Models.Statistics;
 using WebOrdersInfo.Core.Services.Interfaces;
 using WebOrdersInfo.DAL.Core.Entities;
 using WebOrdersInfo.DAL.Repositories.Implementations;
-using WebOrdersInfo.Repositories.Interfaces;
-using WebOrdersInfo.Services.Implementations.Base;
 
 namespace WebOrdersInfo.Services.Implementations
 {
@@ -19,17 +18,70 @@ namespace WebOrdersInfo.Services.Implementations
 
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-
+        
+        
         public ManagerService(IMapper mapper, IUnitOfWork unitOfWork)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
         }
 
+        public async Task<PaginatedList<ManagerDto>> GetManagersPerPage(string sortOrder, string searchString, int pageNumber)
+        {
+            const int PAGE_SIZE = 5;
+
+            var managers = _unitOfWork.Managers.GetAll();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                managers = managers.Where(m => m.Name.Contains(searchString));
+            }
+
+            managers = sortOrder switch
+            {
+                "name_desc" => managers.OrderByDescending(m => m.Name),
+                _ => managers.OrderBy(m => m.Name)
+            };
+
+            var items = await managers
+                .Skip((pageNumber - 1) * PAGE_SIZE)
+                .Take(PAGE_SIZE)
+                .ToListAsync();
+
+            var count = await managers.CountAsync();
+
+            var managerDto = items.Select(i => _mapper.Map<ManagerDto>(i)).ToList();
+
+            var result = new PaginatedList<ManagerDto>(managerDto,
+                count,
+                pageNumber,
+                PAGE_SIZE);
+
+            return result;
+        }
+
         public async Task<IEnumerable<ManagerDto>> GetAll()
         {
             var result = await _unitOfWork.Managers.GetAll().ToListAsync();
             return result.Select(i => _mapper.Map<ManagerDto>(i));
+        }
+
+        
+
+        public async Task<ManagerDto> GetById(Guid id)
+        {
+            var result = await _unitOfWork.Managers
+                .FindBy(m => m.Id.Equals(id))
+                .FirstOrDefaultAsync();
+            return _mapper.Map<ManagerDto>(result);
+        }
+
+        public async Task<ManagerDto> GetByName(string name)
+        {
+            var result = await _unitOfWork.Managers
+                .FindBy(m => m.Name.Equals(name))
+                .FirstOrDefaultAsync();
+            return _mapper.Map<ManagerDto>(result);
         }
 
         public async Task<IEnumerable<ManagerWithCountOrdersDto>> GetEntityWithOrdersCount(int take = 10, bool fromTop = true)

@@ -2,6 +2,12 @@
     ViewData["Title"] = "Статистика";
 }
 
+@if (!User.Identity.IsAuthenticated)
+{
+    <div>
+        <p>Статистика доступна только для зарегистрированных пользователей</p>
+    </div>
+}
 
 <div id="topManagersChart-container">
     <canvas id="topManagersByOrdersChart" style="width: 100%; height: 500px"></canvas>

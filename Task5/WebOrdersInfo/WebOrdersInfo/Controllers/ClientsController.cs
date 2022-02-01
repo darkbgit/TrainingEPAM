@@ -1,35 +1,32 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using WebOrdersInfo.Core.DTOs;
 using WebOrdersInfo.Core.Services.Interfaces;
-using WebOrdersInfo.Models.ViewModels.Managers;
+using WebOrdersInfo.Models.ViewModels.Clients;
 
 namespace WebOrdersInfo.Controllers
 {
     [Authorize(Roles = "admin")]
-    public class ManagersController : Controller
+    public class ClientsController : Controller
     {
-        private readonly IManagerService _managerService;
-        private readonly ILogger<OrdersController> _logger;
+        private readonly IClientService _clientService;
         private readonly IMapper _mapper;
+        private readonly ILogger<ClientsController> _logger;
 
-        public ManagersController(IManagerService managerService,
-            IMapper mapper,
-            ILogger<OrdersController> logger)
+        public ClientsController(IClientService clientService, IMapper mapper, ILogger<ClientsController> logger)
         {
-            _managerService = managerService;
+            _clientService = clientService;
             _mapper = mapper;
             _logger = logger;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Index(string sortOrder,
+        public async Task<IActionResult> Index(
+            string sortOrder,
             string currentFilter,
             string searchString,
             int? pageNumber)
@@ -48,29 +45,29 @@ namespace WebOrdersInfo.Controllers
 
             ViewData["CurrentFilter"] = searchString;
 
-            var managers = await _managerService.GetManagersPerPage(sortOrder, searchString, pageNumber.Value);
-            
-            return View(managers);
+            var clients = await _clientService.GetClientsPerPage(sortOrder, searchString, pageNumber.Value);
+
+            return View(clients);
         }
 
-
         public IActionResult Create() => View();
+        
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateManagerViewModel model)
+        public async Task<IActionResult> Create(CreateClientViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var dto = _mapper.Map<ManagerDto>(model);
+                var dto = _mapper.Map<ClientDto>(model);
                 dto.Id = Guid.NewGuid();
 
-                if (!await ManagerNameExists(dto.Name))
+                if (!await ClientNameExists(dto.Name))
                 {
                     try
                     {
-                        await _managerService.Add(dto);
+                        await _clientService.Add(dto);
                         return RedirectToAction(nameof(Index));
                     }
                     catch (DbUpdateException e)
@@ -81,12 +78,11 @@ namespace WebOrdersInfo.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("Name", "Менеджер с такой фамилией уже существует");
+                    ModelState.AddModelError("Name", "Клиент с такой фамилией уже существует");
                 }
             }
             return View(model);
         }
-
 
         public async Task<IActionResult> Edit(Guid? id)
         {
@@ -95,14 +91,14 @@ namespace WebOrdersInfo.Controllers
                 return NotFound();
             }
 
-            var manager = await _managerService.GetById((Guid)id);
+            var client = await _clientService.GetById(id.Value);
 
-            if (manager == null)
+            if (client == null)
             {
                 return NotFound();
             }
 
-            var model = _mapper.Map<ManagerViewModel>(manager);
+            var model = _mapper.Map<ClientViewModel>(client);
 
             return View(model);
         }
@@ -110,17 +106,17 @@ namespace WebOrdersInfo.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(ManagerViewModel model)
+        public async Task<IActionResult> Edit(ClientViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var dto = _mapper.Map<ManagerDto>(model);
+                var dto = _mapper.Map<ClientDto>(model);
 
-                if (!await ManagerNameExists(dto.Name))
+                if (!await ClientNameExists(dto.Name))
                 {
                     try
                     {
-                        await _managerService.Update(dto);
+                        await _clientService.Update(dto);
                         return RedirectToAction(nameof(Index));
                     }
                     catch (DbUpdateException e)
@@ -131,10 +127,9 @@ namespace WebOrdersInfo.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("Name", "Менеджер с такой фамилией уже существует");
+                    ModelState.AddModelError("Name", "Клиент с такой фамилией уже существует");
                 }
             }
-
             return View(model);
         }
 
@@ -145,9 +140,9 @@ namespace WebOrdersInfo.Controllers
                 return NotFound();
             }
 
-            var manager = await _managerService.GetById(id.Value);
+            var client = await _clientService.GetById(id.Value);
 
-            if (manager == null)
+            if (client == null)
             {
                 return NotFound();
             }
@@ -157,7 +152,7 @@ namespace WebOrdersInfo.Controllers
                 ViewData["ErrorMessage"] = "Delete failed. Try again.";
             }
 
-            var model = _mapper.Map<ManagerViewModel>(manager);
+            var model = _mapper.Map<ClientViewModel>(client);
 
             return View(model);
         }
@@ -167,28 +162,29 @@ namespace WebOrdersInfo.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var manager = await _managerService.GetById(id);
+            var client = await _clientService.GetById(id);
 
-            if (manager == null)
+            if (client == null)
             {
                 return RedirectToAction(nameof(Index));
             }
 
             try
             {
-                await _managerService.Delete(id);
+                await _clientService.Delete(id);
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateException ex)
             {
                 _logger.LogError(ex.Message);
-                return RedirectToAction(nameof(Delete), new { id, saveChangesError = true });
+                return RedirectToAction(nameof(Delete), new { id = id, saveChangesError = true });
             }
         }
 
-        private async Task<bool> ManagerNameExists(string name)
+        private async Task<bool> ClientNameExists(string name)
         {
-            return await _managerService.GetByName(name) != null;
+            return await _clientService.GetByName(name) != null;
         }
     }
 }
+

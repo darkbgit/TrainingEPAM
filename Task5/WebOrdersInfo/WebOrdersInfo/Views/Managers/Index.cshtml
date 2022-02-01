@@ -1,0 +1,66 @@
+﻿@model WebOrdersInfo.Core.DTOs.Models.Pagination.PaginatedList<WebOrdersInfo.Core.DTOs.ManagerDto>
+@{ 
+    ViewData["Title"] = "Список менеджеров";
+}
+
+<div class="col-md-4">
+    <div class="mb-3">
+        <a asp-action="Create">Добавить нового менеджера</a>
+    </div>
+    <form asp-action="Index" method="get">
+        <div class="input-group mb-3">
+            <span id="searchLabel" class="input-group-text">
+                Поиск по фамилии:
+            </span>
+            <input type="text" class="form-control" name="SearchString" value="@ViewData["CurrentFilter"]"/>
+            <input type="submit" value="Поиск" class="btn btn-primary" />
+            <a asp-action="Index" data-bs-toggle="tooltip" data-bs-placement="top" title="Сбросить фильтр">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                    <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+                </svg>
+            </a>
+        </div>
+    </form>
+
+    <table class="table">
+        <tr>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParam"]">Фамилия менеджера</a>
+            </th>
+            <th></th>
+        </tr>
+        @foreach (var product in Model)
+        {
+            <tr>
+                <td>@product.Name</td>
+                <td>
+                    <a class="btn btn-outline-primary" asp-action="Edit" asp-controller="Managers" asp-route-id="@product.Id">Изменить</a>
+                    <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@product.Id">Удалить</a>
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-primary @prevDisabled">
+    Предыдущая
+</a>
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-primary @nextDisabled">
+    Следующая
+</a>
+
+<a asp-action="Index" asp-controller="Orders">Вернуться к заказам</a>
