@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Http.Headers;
 
 namespace WebOrdersInfo.DAL.Core.Entities
 {
@@ -16,6 +15,6 @@ namespace WebOrdersInfo.DAL.Core.Entities
         public virtual Manager Manager { get; set; }
 
         public Guid ProductId { get; set; }
-        public virtual Product Product { get; set; } 
+        public virtual Product Product { get; set; }
     }
 }

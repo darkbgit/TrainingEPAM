@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace WebOrdersInfo.Core.DTOs.Models.Statistics
 {
-    public class ManagerWithCountOrdersDto
+    public class ManagerNameWithGroupingPropertyDto
     {   
-        public Guid Id { get; set; }
         public string Name { get; set; }
-        public int Count { get; set; }
+        public int GroupingProperty { get; set; }
     }
 }

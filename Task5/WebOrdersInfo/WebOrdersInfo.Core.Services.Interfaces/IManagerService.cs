@@ -16,7 +16,8 @@ namespace WebOrdersInfo.Core.Services.Interfaces
         Task<ManagerDto> GetById(Guid id);
         Task<ManagerDto> GetByName(string name);
 
-        Task<IEnumerable<ManagerWithCountOrdersDto>> GetEntityWithOrdersCount(int take = 10, bool fromTop = true);
+        Task<IEnumerable<ManagerNameWithGroupingPropertyDto>> GetManagersWithOrdersCount(int take, bool fromTop, DateTime from, DateTime to);
+        Task<IEnumerable<ManagerNameWithGroupingPropertyDto>> GetManagersWithTotalPrice(int take, bool fromTop, DateTime from, DateTime to);
 
         Task Add(ManagerDto order);
         Task Update(ManagerDto order);

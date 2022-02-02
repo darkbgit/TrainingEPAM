@@ -5,6 +5,6 @@ namespace WebOrdersInfo.Models.ViewModels.Statistics
 {
     public class StatisticsViewModel
     {
-        public IEnumerable<ManagerWithCountOrdersDto> TopManagersByOrders { get; set; }
+        public IEnumerable<ManagerNameWithGroupingPropertyDto> TopManagersByOrders { get; set; }
     }
 }

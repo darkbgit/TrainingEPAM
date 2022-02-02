@@ -9,7 +9,7 @@ namespace WebOrdersInfo.Models.ViewModels.Account
         public string Email { get; set; }
 
         [Required(ErrorMessage ="Please fill year field")]
-        [Range(1980, 2100, ErrorMessage = "Недопустимый год рождения")]
+        [Range(1900, 2022, ErrorMessage = "Недопустимый год рождения")]
         [Display(Name ="Год рождения")]
         public int Year { get; set; }
 

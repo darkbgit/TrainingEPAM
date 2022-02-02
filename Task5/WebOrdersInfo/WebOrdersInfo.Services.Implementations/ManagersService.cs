@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using WebOrdersInfo.Core.DTOs;
 using WebOrdersInfo.Core.DTOs.Models.Pagination;
@@ -84,33 +85,72 @@ namespace WebOrdersInfo.Services.Implementations
             return _mapper.Map<ManagerDto>(result);
         }
 
-        public async Task<IEnumerable<ManagerWithCountOrdersDto>> GetEntityWithOrdersCount(int take = 10, bool fromTop = true)
+        public async Task<IEnumerable<ManagerNameWithGroupingPropertyDto>> GetManagersWithTotalPrice(int take, bool fromTop,
+            DateTime fromDateTime, DateTime toDateTime)
         {
-            var entities = _unitOfWork.Managers.GetAll()
-                .Select(m => new ManagerWithCountOrdersDto
+            var entities = _unitOfWork.Orders
+                .FindBy(o => o.Date >= fromDateTime && o.Date <= toDateTime,
+                    o => o.Manager)
+                .GroupBy(o => o.Manager.Name)
+                .Select(g => new ManagerNameWithGroupingPropertyDto
                 {
-                    Id = m.Id,
-                    Name = m.Name,
-                    Count = m.Orders.Count
+                    Name = g.Key,
+                    GroupingProperty = Convert.ToInt32(g.Sum(o => o.Price))
                 });
 
-            IOrderedQueryable<ManagerWithCountOrdersDto> orderedResult;
+            IOrderedQueryable<ManagerNameWithGroupingPropertyDto> ent;
             if (fromTop)
             {
-                orderedResult = entities
-                    .OrderByDescending(r => r.Count);
+                ent = entities
+                    .OrderByDescending(r => r.GroupingProperty);
             }
             else
             {
-                orderedResult = entities
-                    .OrderBy(r => r.Count);
+                ent = entities
+                    .OrderBy(r => r.GroupingProperty);
             }
 
-            var result = await orderedResult
+            var result = await ent
+                .ThenBy(m => m.Name)
                 .Take(take)
                 .ToListAsync();
+
             return result;
         }
+
+        public async Task<IEnumerable<ManagerNameWithGroupingPropertyDto>> GetManagersWithOrdersCount(int take, bool fromTop,
+            DateTime fromDateTime, DateTime toDateTime)
+        {
+            var entities = _unitOfWork.Orders
+                .FindBy(o => o.Date >= fromDateTime && o.Date <= toDateTime,
+                    o => o.Manager)
+                .GroupBy(o => o.Manager.Name)
+                .Select(g => new ManagerNameWithGroupingPropertyDto()
+                {
+                    Name = g.Key,
+                    GroupingProperty = g.Count()
+                });
+
+            IOrderedQueryable<ManagerNameWithGroupingPropertyDto> ent;
+            if (fromTop)
+            {
+                ent = entities
+                    .OrderByDescending(r => r.GroupingProperty);
+            }
+            else
+            {
+                ent = entities
+                    .OrderBy(r => r.GroupingProperty);
+            }
+
+            var result = await ent
+                .ThenBy(m => m.Name)
+                .Take(take)
+                .ToListAsync();
+
+            return result;
+        }
+
 
         public async Task Add(ManagerDto manager)
         {
@@ -132,34 +172,7 @@ namespace WebOrdersInfo.Services.Implementations
             await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<ManagerWithCountOrdersAndTotalPriceDto>> GetEntityWithOrdersCountAndPrice(int take = 10, bool fromTop = true)
-        {
-            var entities = _unitOfWork.Managers.GetAll()
-                .Select(m => new ManagerWithCountOrdersAndTotalPriceDto()
-                {
-                    Id = m.Id,
-                    Name = m.Name,
-                    Count = m.Orders.Count,
-                    TotalPrice = m.Orders.Sum(o => o.Price)
-                });
-
-            IOrderedQueryable<ManagerWithCountOrdersAndTotalPriceDto> orderedResult;
-            if (fromTop)
-            {
-                orderedResult = entities
-                    .OrderByDescending(r => r.Count);
-            }
-            else
-            {
-                orderedResult = entities
-                    .OrderBy(r => r.Count);
-            }
-
-            var result = await orderedResult
-                .Take(take)
-                .ToListAsync();
-            return result;
-        }
+        
 
     }
 }

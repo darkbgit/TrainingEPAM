@@ -3,37 +3,48 @@
     loadTopManagers();
 };
 
-loadTopManagers = function () {
+loadTopManagers = function() {
     let fromTop = document.querySelector('#topManagersFromTop');
     let takeNumber = document.querySelector('#topManagersNumber');
+    let period = document.querySelector('#topManagersPeriod');
+    let groupBy = document.querySelector('#topManagerGroupBy');
+
+
     $.ajax({
         type: 'GET',
         url: '/Statistics/TopManagersByOrders',
         data: {
             fromTop: fromTop.value,
-            take: takeNumber.value
+            take: takeNumber.value,
+            period: period.value,
+            groupBy: groupBy.value
         },
         dataType: 'json',
-        success: function (response) {
+        success: function(response) {
             let xLabels = [];
             let yValues = [];
             $.each(response.value,
                 function(idx, el) {
                     xLabels.push(el.name);
-                    yValues.push(el.count);
+                    yValues.push(el.groupingProperty);
                 });
-            //createManagersChart(xLabels, yValues);
-            updateTopManagers(window.topManagersChart, xLabels, yValues);
+            let chartLabel = groupBy.value === "ordersPriceSum" ?
+                "Топ менеджеров по общей стоимости заказов" : "Топ менеджеров по количеству заказов";
+            updateTopManagers(window.topManagersChart, xLabels, yValues, chartLabel);
+        },
+        error: function() {
+            alert("Error, try reload page");
         }
     });
 }
 
-createManagersChart = function (xLabels, yValues, count) {
+createManagersChart = function (xLabels, yValues) {
     var chartName = "topManagersByOrdersChart";
     var ctx = document.getElementById(chartName).getContext('2d');
     var data = {
         labels: xLabels,
         datasets: [{
+            type: 'bar',
             label: "Топ менеджеров по заказам",
             backgroundColor: [
                 'rgba(255, 99, 132, 0.2)',
@@ -71,7 +82,9 @@ createManagersChart = function (xLabels, yValues, count) {
     var options = {
         maintainAspectRatio: false,
         scales: {
-            y: {
+            yAxis: {
+                type: 'linear',
+                position: 'left',
                 ticks: {
                     //min: 0,
                     beginAtZero: true
@@ -81,7 +94,7 @@ createManagersChart = function (xLabels, yValues, count) {
                     color: "rgba(255,99,164,0.2)"
                 }
             },
-            x: {
+            xAxis: {
                 //ticks: {
                 //    min: 0,
                 //    beginAtZero: true
@@ -98,27 +111,29 @@ createManagersChart = function (xLabels, yValues, count) {
 
     window.topManagersChart = new Chart(ctx, {
         options: options,
-        data: data,
-        type: 'bar'
+        data: data
     });
 };
 
 
 
-function addData(chart, label, data) {
+function addData(chart, label, data, chartLabel) {
     chart.data.labels = label;
     chart.data.datasets[0].data = data;
+    chart.data.datasets[0].label = chartLabel;
     chart.update();
 }
 
 function removeData(chart) {
     chart.data.labels.pop();
-    chart.data.datasets[0].data.pop();
+    chart.data.datasets.forEach((dataset) => {
+        dataset.data.pop();
+    });
     //chart.update();
 }
 
 
-function updateTopManagers(chart, label, data) {
+function updateTopManagers(chart, label, data, chartLabel) {
     removeData(chart);
-    addData(chart, label, data);
+    addData(chart, label, data, chartLabel);
 }
