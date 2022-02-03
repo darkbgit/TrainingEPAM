@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using WebOrdersInfo.Core.Helpers.Exceptions;
 using WebOrdersInfo.Models;
 
 namespace WebOrdersInfo.Controllers
@@ -25,7 +26,7 @@ namespace WebOrdersInfo.Controllers
 
         public IActionResult Privacy()
         {
-            return View();
+            throw new AppException("Error check");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

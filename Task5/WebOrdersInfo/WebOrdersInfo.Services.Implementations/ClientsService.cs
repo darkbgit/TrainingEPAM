@@ -8,7 +8,7 @@ using WebOrdersInfo.Core.DTOs;
 using WebOrdersInfo.Core.DTOs.Models.Pagination;
 using WebOrdersInfo.Core.Services.Interfaces;
 using WebOrdersInfo.DAL.Core.Entities;
-using WebOrdersInfo.DAL.Repositories.Implementations;
+using WebOrdersInfo.Repositories.Interfaces;
 
 namespace WebOrdersInfo.Services.Implementations
 {

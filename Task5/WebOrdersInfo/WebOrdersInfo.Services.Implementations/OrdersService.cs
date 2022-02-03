@@ -1,17 +1,16 @@
-﻿using System;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Threading;
 using System.Threading.Tasks;
-using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using WebOrdersInfo.Core.DTOs;
 using WebOrdersInfo.Core.DTOs.Models.Filters;
 using WebOrdersInfo.Core.Services.Interfaces;
 using WebOrdersInfo.DAL.Core.Entities;
-using WebOrdersInfo.DAL.Repositories.Implementations;
+using WebOrdersInfo.Repositories.Interfaces;
 
 namespace WebOrdersInfo.Services.Implementations
 {
@@ -133,6 +132,6 @@ namespace WebOrdersInfo.Services.Implementations
             await _unitOfWork.SaveChangesAsync();
         }
 
-        
+
     }
 }

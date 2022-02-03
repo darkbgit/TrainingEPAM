@@ -3,14 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using WebOrdersInfo.Core.DTOs;
 using WebOrdersInfo.Core.DTOs.Models.Pagination;
 using WebOrdersInfo.Core.DTOs.Models.Statistics;
 using WebOrdersInfo.Core.Services.Interfaces;
 using WebOrdersInfo.DAL.Core.Entities;
-using WebOrdersInfo.DAL.Repositories.Implementations;
+using WebOrdersInfo.Repositories.Interfaces;
 
 namespace WebOrdersInfo.Services.Implementations
 {
@@ -19,8 +18,8 @@ namespace WebOrdersInfo.Services.Implementations
 
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        
-        
+
+
         public ManagerService(IMapper mapper, IUnitOfWork unitOfWork)
         {
             _mapper = mapper;
@@ -67,7 +66,7 @@ namespace WebOrdersInfo.Services.Implementations
             return result.Select(i => _mapper.Map<ManagerDto>(i));
         }
 
-        
+
 
         public async Task<ManagerDto> GetById(Guid id)
         {
@@ -172,7 +171,7 @@ namespace WebOrdersInfo.Services.Implementations
             await _unitOfWork.SaveChangesAsync();
         }
 
-        
+
 
     }
 }

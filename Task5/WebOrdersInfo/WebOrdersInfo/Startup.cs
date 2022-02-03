@@ -12,12 +12,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Storage;
 using WebOrdersInfo.Core.Services.Interfaces;
 using WebOrdersInfo.DAL.Core;
 using WebOrdersInfo.DAL.Core.Entities;
 using WebOrdersInfo.DAL.Repositories.Implementations;
 using WebOrdersInfo.Repositories.Interfaces;
 using WebOrdersInfo.DAL.Repositories.Implementations.Repositories;
+using WebOrdersInfo.Helpers;
 using WebOrdersInfo.Mapping;
 using WebOrdersInfo.Services.Implementations;
 using WebOrdersInfo.Services.Implementations.Mapping;
@@ -99,6 +101,8 @@ namespace WebOrdersInfo
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseMiddleware<ErrorHandlerMiddleware>();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -106,7 +110,14 @@ namespace WebOrdersInfo
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            CreateRoles(serviceProvider);
+            if (env.IsDevelopment())
+            {
+                CreateRoles(serviceProvider);
+                
+
+            }
+            
+            
         }
 
         private void CreateRoles(IServiceProvider serviceProvider)

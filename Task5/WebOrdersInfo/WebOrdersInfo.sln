@@ -11,17 +11,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebOrdersInfo.DAL", "WebOrd
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{254642BE-616C-4E31-ACB8-79AA53EF863E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebOrdersInfo.DAL.Core", "WebOrdersInfo.DAL.Core\WebOrdersInfo.DAL.Core.csproj", "{67C1BBE0-F8C2-4B16-9966-9E97CD6359A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebOrdersInfo.DAL.Core", "WebOrdersInfo.DAL.Core\WebOrdersInfo.DAL.Core.csproj", "{67C1BBE0-F8C2-4B16-9966-9E97CD6359A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebOrdersInfo.DAL.Repositories.Implementations", "WebOrdersInfo.DAL.Repositories.Implementations\WebOrdersInfo.DAL.Repositories.Implementations.csproj", "{1185FE25-619A-4B30-82C0-3A4722357AAE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebOrdersInfo.DAL.Repositories.Implementations", "WebOrdersInfo.DAL.Repositories.Implementations\WebOrdersInfo.DAL.Repositories.Implementations.csproj", "{1185FE25-619A-4B30-82C0-3A4722357AAE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebOrdersInfo.Repositories.Interfaces", "WebOrdersInfo.Repositories.Interfaces\WebOrdersInfo.Repositories.Interfaces.csproj", "{7E5BD7EB-5311-4D25-925D-34F77180661D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebOrdersInfo.Repositories.Interfaces", "WebOrdersInfo.Repositories.Interfaces\WebOrdersInfo.Repositories.Interfaces.csproj", "{7E5BD7EB-5311-4D25-925D-34F77180661D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebOrdersInfo.Core.Services.Interfaces", "WebOrdersInfo.Core.Services.Interfaces\WebOrdersInfo.Core.Services.Interfaces.csproj", "{142480CE-3C47-4723-ADFF-3C5F56B646F8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebOrdersInfo.Core.Services.Interfaces", "WebOrdersInfo.Core.Services.Interfaces\WebOrdersInfo.Core.Services.Interfaces.csproj", "{142480CE-3C47-4723-ADFF-3C5F56B646F8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebOrdersInfo.Services.Implementations", "WebOrdersInfo.Services.Implementations\WebOrdersInfo.Services.Implementations.csproj", "{0C9395DD-B8F7-4A7C-A4A0-0BBEF13FF015}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebOrdersInfo.Services.Implementations", "WebOrdersInfo.Services.Implementations\WebOrdersInfo.Services.Implementations.csproj", "{0C9395DD-B8F7-4A7C-A4A0-0BBEF13FF015}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebOrdersInfo.Core.DTOs", "WebOrdersInfo.Core.DTOs\WebOrdersInfo.Core.DTOs.csproj", "{3C1E0108-2D6E-4973-A5B1-D11BE305DAA4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebOrdersInfo.Core.DTOs", "WebOrdersInfo.Core.DTOs\WebOrdersInfo.Core.DTOs.csproj", "{3C1E0108-2D6E-4973-A5B1-D11BE305DAA4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebOrdersInfo.Core.Helpers", "WebOrdersInfo.Core.Helpers\WebOrdersInfo.Core.Helpers.csproj", "{D001647F-F117-4322-87DC-84DBF8E7A2EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +59,10 @@ Global
 		{3C1E0108-2D6E-4973-A5B1-D11BE305DAA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C1E0108-2D6E-4973-A5B1-D11BE305DAA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C1E0108-2D6E-4973-A5B1-D11BE305DAA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D001647F-F117-4322-87DC-84DBF8E7A2EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D001647F-F117-4322-87DC-84DBF8E7A2EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D001647F-F117-4322-87DC-84DBF8E7A2EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D001647F-F117-4322-87DC-84DBF8E7A2EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -68,6 +74,7 @@ Global
 		{142480CE-3C47-4723-ADFF-3C5F56B646F8} = {BEF0980F-F2D3-4C8D-84C1-2B709AA7344B}
 		{0C9395DD-B8F7-4A7C-A4A0-0BBEF13FF015} = {254642BE-616C-4E31-ACB8-79AA53EF863E}
 		{3C1E0108-2D6E-4973-A5B1-D11BE305DAA4} = {BEF0980F-F2D3-4C8D-84C1-2B709AA7344B}
+		{D001647F-F117-4322-87DC-84DBF8E7A2EC} = {BEF0980F-F2D3-4C8D-84C1-2B709AA7344B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4DAD0249-75AD-4AD1-99E6-19F3EA35DA57}

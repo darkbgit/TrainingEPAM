@@ -94,7 +94,7 @@ namespace WebOrdersInfo.Controllers
             }
             if (model.DateFrom > model.DateTo)
             {
-                ModelState.AddModelError("DateTo", "Дата окончания выборки должна быть больше начальной");
+                ModelState.AddModelError("DateTo", "Дата окончания выборки должна быть позже начальной");
                 return false;
             }
             return true;

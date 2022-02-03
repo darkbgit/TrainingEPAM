@@ -74,17 +74,8 @@ namespace WebOrdersInfo.Controllers
                     to = dt;
                     break;
                 case "previousMonth":
-                    if (dt.Month == 1)
-                    {
-                        from = new DateTime(dt.Year - 1, 12, 1);
-                        to = new DateTime(dt.Year - 1, 12, 1, 23, 59, 59);
-                    }
-                    else
-                    {
-                        from = new DateTime(dt.Year, dt.Month - 1, 1);
-                        to = new DateTime(dt.Year, dt.Month - 1, 1, 23, 59, 59);
-                    }
-                    
+                    from = new DateTime(dt.Year, dt.Month, 1).AddMonths(-1);
+                    to = new DateTime(dt.Year, dt.Month, 1, 23, 59, 59).AddDays(-1);
                     break;
                 case "thisYear":
                     from = new DateTime(dt.Year, 1, 1);

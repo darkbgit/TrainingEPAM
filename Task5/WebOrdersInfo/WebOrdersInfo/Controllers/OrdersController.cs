@@ -14,6 +14,7 @@ using WebOrdersInfo.Core.Services.Interfaces;
 using WebOrdersInfo.DAL.Core.Entities;
 using WebOrdersInfo.Extensions;
 using WebOrdersInfo.Models.ViewModels.Orders;
+using WebOrdersInfo.Models.ViewModels.OrdersFilter;
 using WebOrdersInfo.Pagination2;
 
 
@@ -121,7 +122,7 @@ namespace WebOrdersInfo.Controllers
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> Create(CreateOrderViewModel order)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && ValidateOrder(order))
             {
                 var orderDto = _mapper.Map<OrderDto>(order);
                 orderDto.Id = Guid.NewGuid();
@@ -241,6 +242,17 @@ namespace WebOrdersInfo.Controllers
             };
 
             return ordersListWithPagination;
+        }
+
+        private bool ValidateOrder(CreateOrderViewModel model)
+        {
+            if (model.Date > DateTime.Now)
+            {
+                ModelState.AddModelError("Date", $"Дата заказа {model.Date} не должна быть позже сегодняшней даты.");
+                return false;
+            }
+
+            return true;
         }
     }
 }

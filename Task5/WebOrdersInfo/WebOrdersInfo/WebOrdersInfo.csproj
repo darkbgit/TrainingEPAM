@@ -50,6 +50,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\WebOrdersInfo.Core.Helpers\WebOrdersInfo.Core.Helpers.csproj" />
     <ProjectReference Include="..\WebOrdersInfo.Core.Services.Interfaces\WebOrdersInfo.Core.Services.Interfaces.csproj" />
     <ProjectReference Include="..\WebOrdersInfo.DAL.Core\WebOrdersInfo.DAL.Core.csproj" />
     <ProjectReference Include="..\WebOrdersInfo.DAL.Repositories.Implementations\WebOrdersInfo.DAL.Repositories.Implementations.csproj" />
@@ -197,6 +198,7 @@
 
   <ItemGroup>
     <Folder Include="Extensions\" />
+    <Folder Include="Helpers\SeedDatabase\" />
     <Folder Include="Models\ViewModels\Statistics\" />
     <Folder Include="wwwroot\images\" />
   </ItemGroup>

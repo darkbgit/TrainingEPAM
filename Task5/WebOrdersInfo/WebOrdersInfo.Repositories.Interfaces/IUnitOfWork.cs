@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using WebOrdersInfo.DAL.Core.Entities;
-using WebOrdersInfo.Repositories.Interfaces;
 
-namespace WebOrdersInfo.DAL.Repositories.Implementations
+namespace WebOrdersInfo.Repositories.Interfaces
 {
     public interface IUnitOfWork : IDisposable
 
