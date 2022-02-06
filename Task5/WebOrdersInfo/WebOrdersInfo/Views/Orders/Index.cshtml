@@ -1,0 +1,48 @@
+﻿@model WebOrdersInfo.Models.ViewModels.Orders.OrdersListWithPaginationViewModel
+
+@{
+    ViewData["Title"] = "Заказы";
+}
+
+<div class="row text-center">
+    <h4>Заказы</h4>
+    @if (User.IsInRole("admin"))
+    {
+        <a asp-action="Create" asp-controller="Orders"></a>
+    }
+</div>
+
+
+<div class="row">
+    <div class="col">
+        <div id="ordersContainer" class="mb-3">
+            @{ await Html.RenderPartialAsync("_OrdersListWithPagination", @Model); }
+        </div>
+        @if (User.IsInRole("admin"))
+        {
+            <div class="input-group mb-3">
+                    <a asp-action="Index" asp-controller="Managers" type="button" class="btn btn-outline-primary">Менеджеры</a>
+                    <a asp-action="Index" asp-controller="Clients" type="button" class="btn btn-outline-primary">Клиенты</a>
+                    <a asp-action="Index" asp-controller="Products" type="button" class="btn btn-outline-primary">Продукты</a>
+            </div>
+        }
+    </div>
+    <div class="col-4">
+        <div id="filtersContainer">
+            @if (!User.Identity.IsAuthenticated)
+            {
+                <div>
+                    <p>Фильтрация заказов доступна только для зарегистрированных пользователей</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+@section scripts
+{
+    <script src="~/lib/jquery-ui-1.13.1/jquery-ui.min.js"></script>
+    <script src="~/js/pagination.js"></script>
+    <script src="~/js/filters.js"></script>
+}

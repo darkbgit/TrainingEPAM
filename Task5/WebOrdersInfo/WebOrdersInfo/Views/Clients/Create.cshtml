@@ -1,0 +1,31 @@
+﻿@model WebOrdersInfo.Models.ViewModels.Clients.CreateClientViewModel
+
+@{
+    ViewData["Title"] = "Добавление клиента";
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" asp-controller="Clients">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="input-group mb-3">
+                <span class="input-group-text">
+                    <label asp-for="Name"></label>
+                </span>
+                <input asp-for="Name" class="form-control"/>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="input-group mb-3">
+                <input type="submit" value="Сохранить" class="btn btn-outline-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Вернуться к списку</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

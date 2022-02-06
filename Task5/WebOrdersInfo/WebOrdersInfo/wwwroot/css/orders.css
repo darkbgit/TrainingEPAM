@@ -1,0 +1,78 @@
+﻿.table-orders {
+    width: 100%;
+}
+
+.pagination > li > a:hover {
+    cursor: pointer;
+}
+
+.pagination > li {
+    margin: 0px 1px;
+}
+
+.pagination {
+    margin: 5px 0px;
+}
+
+.price {
+    margin: 5px 0
+}
+
+.price label {
+    float: left;
+    width: 30px;
+    text-align: right;
+    margin: 0 10px 0 0;
+}
+
+.price input[type=text] {
+
+    margin: 0 0 0 10px;
+}
+
+.date-input {
+    margin: 5px 0
+}
+
+.date-input label {
+    float: left;
+    width: 30px;
+    text-align: right;
+    margin: 0 10px 0 0;
+}
+
+.price-row {
+    float: left;
+}
+
+.filter-buttons {
+    margin: 10px 0;
+}
+
+.filtersContainer {
+    background-color: darkgray;
+}
+
+.btn-delete {
+    padding-left: 25px;
+    background: url(~/images/x-lg.svg) no-repeat left;
+    background-size: 20px;
+}
+
+.hide-submit input[type="submit"] {
+    display: none;
+}
+
+#delete-icon {
+    fill: #ff0000;
+    cursor: pointer;
+    margin: 0 10px;
+}
+
+#amountPrice {
+    outline: 0;
+    border:0;
+    color:#1b6ec2;
+    font-weight:bold;
+    width: auto;
+}

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WebOrdersInfo.Core.DTOs\WebOrdersInfo.Core.DTOs.csproj" />
+    <ProjectReference Include="..\WebOrdersInfo.Core.Services.Interfaces\WebOrdersInfo.Core.Services.Interfaces.csproj" />
+    <ProjectReference Include="..\WebOrdersInfo.DAL.Repositories.Implementations\WebOrdersInfo.DAL.Repositories.Implementations.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Mapping\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="11.0.0" />
+  </ItemGroup>
+
+</Project>
