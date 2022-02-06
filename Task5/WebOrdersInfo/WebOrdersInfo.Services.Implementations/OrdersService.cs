@@ -33,13 +33,6 @@ namespace WebOrdersInfo.Services.Implementations
             return _mapper.Map<OrderDto>(entity);
         }
 
-        public void GetAll()
-        {
-            //_unitOfWork.Orders.GetAll().CountAsync()
-        }
-
-
-
         public async Task<Tuple<IEnumerable<OrderWithNamesDto>, int>> GetOrdersPerPage(int pageNumber,
             int newsPerPage,
             Expression<Func<Order, bool>> filter,
@@ -131,7 +124,5 @@ namespace WebOrdersInfo.Services.Implementations
             _unitOfWork.Orders.RemoveRange(entities);
             await _unitOfWork.SaveChangesAsync();
         }
-
-
     }
 }

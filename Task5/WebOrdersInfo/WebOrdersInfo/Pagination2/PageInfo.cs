@@ -5,7 +5,7 @@ namespace WebOrdersInfo.Pagination2
 {
     public class PageInfo
     {
-        public PageInfo(int pageNumber, int totalNews, int pageSize = Constants.OrdersPerPage)
+        public PageInfo(int pageNumber, int totalNews, int pageSize = Constants.ORDERS_PER_PAGE)
         {
             PageSize = pageSize;
             PageNumber = pageNumber;

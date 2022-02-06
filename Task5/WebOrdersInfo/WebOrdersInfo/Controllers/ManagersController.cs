@@ -48,7 +48,7 @@ namespace WebOrdersInfo.Controllers
 
             ViewData["CurrentFilter"] = searchString;
 
-            var managers = await _managerService.GetManagersPerPage(sortOrder, searchString, pageNumber.Value);
+            var managers = await _managerService.GetManagersPerPage(sortOrder, searchString, pageNumber.Value, Utilities.Constants.MANAGERS_PER_PAGE);
             
             return View(managers);
         }

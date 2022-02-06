@@ -2,9 +2,12 @@
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using WebOrdersInfo.Core.DTOs.Models.Filters;
 using WebOrdersInfo.Core.Services.Interfaces;
+using WebOrdersInfo.DAL.Core;
 using WebOrdersInfo.DAL.Core.Entities;
+using WebOrdersInfo.Repositories.Interfaces;
 using WebOrdersInfo.Services.Implementations.Extensions;
 
 namespace WebOrdersInfo.Services.Implementations
@@ -15,16 +18,24 @@ namespace WebOrdersInfo.Services.Implementations
         private readonly IManagerService _managerService;
         private readonly IProductService _productService;
         private readonly IOrderService _orderService;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly WebOrdersInfoContext _context;
+
+
 
         public FilterService(IClientService clientService,
             IManagerService managerService,
             IProductService productService,
-            IOrderService orderService)
+            IOrderService orderService,
+            IUnitOfWork unitOfWork,
+            WebOrdersInfoContext context)
         {
             _clientService = clientService;
             _managerService = managerService;
             _productService = productService;
             _orderService = orderService;
+            _unitOfWork = unitOfWork;
+            _context = context;
         }
 
         public Expression<Func<Order, bool>> Query(OrdersFilter filter)
@@ -84,7 +95,6 @@ namespace WebOrdersInfo.Services.Implementations
                 Id = c.Id,
                 Name = c.Name,
                 IsChecked = false
-
             }).ToList();
 
             var managersDto = (await _managerService.GetAll()).OrderBy(n => n.Name);

@@ -11,10 +11,8 @@ using WebOrdersInfo.Core.DTOs;
 using WebOrdersInfo.Core.DTOs.Models.Filters;
 using WebOrdersInfo.Core.DTOs.Models.Pagination;
 using WebOrdersInfo.Core.Services.Interfaces;
-using WebOrdersInfo.DAL.Core.Entities;
 using WebOrdersInfo.Extensions;
 using WebOrdersInfo.Models.ViewModels.Orders;
-using WebOrdersInfo.Models.ViewModels.OrdersFilter;
 using WebOrdersInfo.Pagination2;
 
 
@@ -68,7 +66,7 @@ namespace WebOrdersInfo.Controllers
                     filter = null;
                     _logger.LogError(e.Message);
                 }
-                
+
                 HttpContext.Session.SetData("ordersFilters", filter);
             }
 

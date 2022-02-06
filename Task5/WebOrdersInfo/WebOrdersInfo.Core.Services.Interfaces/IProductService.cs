@@ -11,7 +11,8 @@ namespace WebOrdersInfo.Core.Services.Interfaces
         Task<IEnumerable<ProductDto>> GetAll();
         Task<PaginatedList<ProductDto>> GetProductsPerPage(string sortOrder,
             string searchString,
-            int pageNumber);
+            int pageNumber,
+            int pageSize);
         Task<ProductDto> GetById(Guid id);
         Task<ProductDto> GetByName(string name);
 

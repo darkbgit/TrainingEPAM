@@ -1,15 +1,12 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Serialization;
 using WebOrdersInfo.Core.DTOs.Models.Statistics;
 using WebOrdersInfo.Core.Services.Interfaces;
-using WebOrdersInfo.DAL.Core.Entities;
-using WebOrdersInfo.Models.ViewModels.Statistics;
 
 namespace WebOrdersInfo.Controllers
 {
@@ -31,10 +28,10 @@ namespace WebOrdersInfo.Controllers
             return View();
         }
 
-        
+
         public async Task<JsonResult> TopManagersByOrders(bool fromTop, int take, string period, string groupBy)
         {
-            var(from, to) = GetPeriod(period);
+            var (from, to) = GetPeriod(period);
 
             try
             {
@@ -42,7 +39,7 @@ namespace WebOrdersInfo.Controllers
                 switch (groupBy)
                 {
                     case "ordersCount":
-                        default:
+                    default:
                         result = await _managerService.GetManagersWithOrdersCount(take, fromTop, from, to);
                         break;
                     case "ordersPriceSum":

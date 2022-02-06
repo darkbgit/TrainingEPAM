@@ -1,17 +1,14 @@
-﻿using System;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 using WebOrdersInfo.Core.DTOs;
 using WebOrdersInfo.Core.DTOs.Models.Pagination;
 using WebOrdersInfo.Core.Services.Interfaces;
 using WebOrdersInfo.DAL.Core.Entities;
-using WebOrdersInfo.DAL.Repositories.Implementations;
 using WebOrdersInfo.Repositories.Interfaces;
-using WebOrdersInfo.Services.Implementations.Base;
 
 namespace WebOrdersInfo.Services.Implementations
 {
@@ -27,10 +24,9 @@ namespace WebOrdersInfo.Services.Implementations
 
         public async Task<PaginatedList<ProductDto>> GetProductsPerPage(string sortOrder,
             string searchString,
-            int pageNumber)
+            int pageNumber,
+            int pageSize)
         {
-            const int PAGE_SIZE = 5;
-
             var products = _unitOfWork.Products.GetAll();
 
             if (!string.IsNullOrEmpty(searchString))
@@ -45,8 +41,8 @@ namespace WebOrdersInfo.Services.Implementations
             };
 
             var items = await products
-                .Skip((pageNumber - 1) * PAGE_SIZE)
-                .Take(PAGE_SIZE)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
 
             var count = await products.CountAsync();
@@ -57,7 +53,7 @@ namespace WebOrdersInfo.Services.Implementations
             var result = new PaginatedList<ProductDto>(productDto,
                 count,
                 pageNumber,
-                PAGE_SIZE);
+                pageSize);
 
             return result;
         }

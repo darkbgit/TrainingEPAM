@@ -10,11 +10,10 @@ namespace WebOrdersInfo.DAL.Repositories.Implementations
     {
         private readonly WebOrdersInfoContext _context;
 
-        public UnitOfWork(WebOrdersInfoContext context, IRepository<Order> orders, IRepository<User> users, IRepository<Client> clients, IRepository<Manager> managers, IRepository<Product> products)
+        public UnitOfWork(WebOrdersInfoContext context, IRepository<Order> orders, IRepository<Client> clients, IRepository<Manager> managers, IRepository<Product> products)
         {
             _context = context;
             Orders = orders;
-            Users = users;
             Clients = clients;
             Managers = managers;
             Products = products;
@@ -24,8 +23,6 @@ namespace WebOrdersInfo.DAL.Repositories.Implementations
         public IRepository<Client> Clients { get; }
         public IRepository<Manager> Managers { get; }
         public IRepository<Product> Products { get; }
-
-        public IRepository<User> Users { get; }
 
         public async Task<int> SaveChangesAsync()
         {

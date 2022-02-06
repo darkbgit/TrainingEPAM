@@ -1,16 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
 using WebOrdersInfo.Core.DTOs.Models.Filters;
 using WebOrdersInfo.Core.Services.Interfaces;
-using WebOrdersInfo.DAL.Core.Entities;
 using WebOrdersInfo.Extensions;
-using WebOrdersInfo.Models.ViewModels.Orders;
 using WebOrdersInfo.Models.ViewModels.OrdersFilter;
 
 namespace WebOrdersInfo.Controllers
@@ -43,7 +39,7 @@ namespace WebOrdersInfo.Controllers
                 _logger.LogError(e.Message);
                 return BadRequest();
             }
-            
+
             var filterViewModel = _mapper.Map<OrdersFilterViewModel>(filter);
 
             HttpContext.Session.SetData("ordersFilters", filter);
@@ -81,7 +77,7 @@ namespace WebOrdersInfo.Controllers
             {
                 HttpContext.Response.StatusCode = 400;
             }
-            
+
             return PartialView("_Filters", model);
         }
 

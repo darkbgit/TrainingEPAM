@@ -11,7 +11,8 @@ namespace WebOrdersInfo.Core.Services.Interfaces
         Task<IEnumerable<ClientDto>> GetAll();
         Task<PaginatedList<ClientDto>> GetClientsPerPage(string sortOrder,
             string searchString,
-            int pageNumber);
+            int pageNumber,
+            int pageSize);
         Task<ClientDto> GetById(Guid id);
         Task<ClientDto> GetByName(string name);
 

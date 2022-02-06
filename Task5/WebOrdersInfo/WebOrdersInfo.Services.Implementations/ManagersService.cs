@@ -26,10 +26,11 @@ namespace WebOrdersInfo.Services.Implementations
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<PaginatedList<ManagerDto>> GetManagersPerPage(string sortOrder, string searchString, int pageNumber)
+        public async Task<PaginatedList<ManagerDto>> GetManagersPerPage(string sortOrder,
+            string searchString,
+            int pageNumber,
+            int pageSize)
         {
-            const int PAGE_SIZE = 5;
-
             var managers = _unitOfWork.Managers.GetAll();
 
             if (!string.IsNullOrEmpty(searchString))
@@ -44,8 +45,8 @@ namespace WebOrdersInfo.Services.Implementations
             };
 
             var items = await managers
-                .Skip((pageNumber - 1) * PAGE_SIZE)
-                .Take(PAGE_SIZE)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
 
             var count = await managers.CountAsync();
@@ -55,7 +56,7 @@ namespace WebOrdersInfo.Services.Implementations
             var result = new PaginatedList<ManagerDto>(managerDto,
                 count,
                 pageNumber,
-                PAGE_SIZE);
+                pageSize);
 
             return result;
         }

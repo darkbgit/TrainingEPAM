@@ -45,7 +45,7 @@ namespace WebOrdersInfo.Controllers
 
             ViewData["CurrentFilter"] = searchString;
 
-            var products = await _productService.GetProductsPerPage(sortOrder, searchString, pageNumber.Value);
+            var products = await _productService.GetProductsPerPage(sortOrder, searchString, pageNumber.Value, Utilities.Constants.PRODUCTS_PER_PAGE);
 
             return View(products);
         }

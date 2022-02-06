@@ -12,7 +12,8 @@ namespace WebOrdersInfo.Core.Services.Interfaces
         Task<IEnumerable<ManagerDto>> GetAll();
         Task<PaginatedList<ManagerDto>> GetManagersPerPage(string sortOrder,
             string searchString,
-            int pageNumber);
+            int pageNumber,
+            int pageSize);
         Task<ManagerDto> GetById(Guid id);
         Task<ManagerDto> GetByName(string name);
 

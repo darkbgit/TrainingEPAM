@@ -116,8 +116,6 @@ namespace WebOrdersInfo
                 
 
             }
-            
-            
         }
 
         private void CreateRoles(IServiceProvider serviceProvider)

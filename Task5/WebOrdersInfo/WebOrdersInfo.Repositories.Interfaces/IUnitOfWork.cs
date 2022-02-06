@@ -5,14 +5,11 @@ using WebOrdersInfo.DAL.Core.Entities;
 namespace WebOrdersInfo.Repositories.Interfaces
 {
     public interface IUnitOfWork : IDisposable
-
     {
         IRepository<Order> Orders { get; }
         IRepository<Client> Clients { get; }
         IRepository<Manager> Managers { get; }
         IRepository<Product> Products { get; }
-        IRepository<User> Users { get; }
-
         Task<int> SaveChangesAsync();
     }
 }

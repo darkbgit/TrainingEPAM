@@ -24,10 +24,9 @@ namespace WebOrdersInfo.Services.Implementations
 
         public async Task<PaginatedList<ClientDto>> GetClientsPerPage(string sortOrder,
             string searchString,
-            int pageNumber)
+            int pageNumber,
+            int pageSize)
         {
-            const int PAGE_SIZE = 5;
-
             var clients = _unitOfWork.Clients.GetAll();
 
             if (!string.IsNullOrEmpty(searchString))
@@ -42,8 +41,8 @@ namespace WebOrdersInfo.Services.Implementations
             };
 
             var items = await clients
-                .Skip((pageNumber - 1) * PAGE_SIZE)
-                .Take(PAGE_SIZE)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
 
             var count = await clients.CountAsync();
@@ -53,7 +52,7 @@ namespace WebOrdersInfo.Services.Implementations
             var result = new PaginatedList<ClientDto>(clientDto,
                 count,
                 pageNumber,
-                PAGE_SIZE);
+                pageSize);
 
             return result;
         }
