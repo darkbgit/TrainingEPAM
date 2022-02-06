@@ -1,0 +1,47 @@
+﻿@model WebOrdersInfo.Models.ViewModels.Account.LoginViewModel
+
+@{
+    Layout = null;
+}
+
+<div class="modal fade" id="modalLogin" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loginModalLabel">Вход в приложение</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form role="form" id="loginForm" name="loginForm" method="post" asp-controller="Account" asp-action="Login"
+                  asp-route-reurnUrl="@Model.ReturnUrl">
+                <input name="IsValid" type="hidden" value="@ViewData.ModelState.IsValid.ToString()" />
+
+                <div class="modal-body">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">
+                            <label asp-for="Email"></label>
+                        </span>
+                        <input asp-for="Email" class="form-control"/>
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">
+                            <label asp-for="Password"></label>
+                        </span>
+                        <input asp-for="Password" class="form-control"/>
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <a href="#">Забыли пароль?</a>
+                </div>
+
+                <div class="modal-footer">
+                    <input asp-for="RememberMe" class="form-check" />
+                    <label asp-for="RememberMe"></label>
+                    <button type="submit" class="btn btn-primary" data-login="modal">Login</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

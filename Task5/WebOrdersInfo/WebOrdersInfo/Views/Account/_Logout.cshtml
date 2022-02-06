@@ -1,0 +1,17 @@
+﻿@{
+    Layout = null;
+}
+
+<div class="d-flex justify-content-end">
+    <div class="nav-login d-flex align-items-center">
+        <span>Привет</span>
+        <label>
+            <strong class="user-name">@User.Identity.Name</strong>
+        </label>
+    </div>
+    <div class="nav-login">
+        <form method="post" asp-controller="Account" asp-action="Logout">
+            <input class="btn btn-outline-primary" type="submit" id="loginForm" value="Logout"/>
+        </form>
+    </div>
+</div>

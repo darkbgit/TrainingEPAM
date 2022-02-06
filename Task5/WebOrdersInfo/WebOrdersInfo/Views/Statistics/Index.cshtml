@@ -1,0 +1,52 @@
+﻿@{
+    ViewData["Title"] = "Статистика";
+}
+
+@if (!User.Identity.IsAuthenticated)
+{
+    <div>
+        <p>Статистика доступна только для зарегистрированных пользователей</p>
+    </div>
+}
+
+<div id="topManagersChart-container" class="mb-3">
+    <canvas id="topManagersByOrdersChart" style="width: 100%; height: 500px"></canvas>
+</div>
+<div class="text-center">
+    <div class="input-group mb-3">
+        <span class="input-group-text">Выбрать</span>
+        <select id="topManagersNumber" class="form-select" style="max-width: 100px">
+            <option selected>5</option>
+            <option>10</option>
+            <option>15</option>
+        </select>
+        <select id="topManagersFromTop" class="form-select" style="max-width: 150px">
+            <option value="true" selected>первых</option>
+            <option value="false">последних</option>
+        </select>
+        <span class="input-group-text">за</span>
+        <select id="topManagersPeriod" class="form-select">
+            <option value="thisMonth" selected>текущий месяц</option>
+            <option value="previousMonth">предыдущий месяц</option>
+            <option value="thisYear">текущий год</option>
+            <option value="previousYear">предыдущий год</option>
+        </select>
+        <span class="input-group-text">сортировать по</span>
+        <select id="topManagerGroupBy" class="form-select">
+            <option value="ordersCount">количеству заказов</option>
+            <option value="ordersPriceSum" selected>общей стоимости заказов</option>
+        </select>
+        <input id="topManagersLoad" class="btn btn-outline-primary" type="button" value="Обновить" onclick="loadTopManagers()"/>
+    </div>
+</div>
+
+
+<div id="topProductsChart-container">
+    <canvas id="topProductsChart" style="width: 100%; height: 500px"></canvas>
+</div>
+
+@section scripts
+{
+    <script src="~/lib/chart/chart.min.js"></script>
+    <script src="js/charts.js"></script>
+}

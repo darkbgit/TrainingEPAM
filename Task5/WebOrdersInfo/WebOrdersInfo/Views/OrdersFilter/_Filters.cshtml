@@ -1,0 +1,167 @@
+﻿@using WebOrdersInfo.Core.DTOs.Models.Filters
+@model WebOrdersInfo.Models.ViewModels.OrdersFilter.OrdersFilterViewModel
+
+@{
+    Layout = null;
+}
+
+<div class="container">
+    <form id="filterForm">
+        @*@Html.ValidationSummary()*@
+        <div class="input-group mb-3">
+            <span id="filterByFilterText" class="input-group-text">
+                <label asp-for="OrderBy" class="col-form-label"></label>
+            </span>
+            <select asp-for="OrderBy" asp-items="Html.GetEnumSelectList(typeof(OrderSortEnum))" class="form-select" aria-describedby="filterByFilterText"></select>
+        </div>
+
+        <div class="row mb-3">
+            <text class="text-center">Фильтровать по</text>
+        </div>
+        @{
+            var clientsButtonCollapsed = "collapsed";
+            var clientsCollapseShow = "";
+            var clientsAriaExpanded = "true";
+            if (Model.Clients.Any(m => m.IsChecked))
+            {
+                clientsButtonCollapsed = "";
+                clientsCollapseShow = "show";
+                clientsAriaExpanded = "false";
+            }
+        }
+        <div class="accordion mb-3" id="accordionExample">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button  @clientsButtonCollapsed"  type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="@clientsAriaExpanded" aria-controls="collapseOne">
+                        Клиенты
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse @clientsCollapseShow" aria-labelledby="headingOne" >
+                    <div class="accordion-body">
+                        @for (var i = 0; i < Model.Clients.Count; i++)
+                        {
+                            <div class="form-check">
+                                <input asp-for="Clients[i].Id" type="hidden"/>
+                                <input asp-for="Clients[i].Name" type="hidden"/>
+                                <input asp-for="Clients[i].IsChecked" type="checkbox" class="form-check-input"/>
+                                <label asp-for="Clients[i].IsChecked" class="form-check-label">@Model.Clients[i].Name</label>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            @{
+                var managersButtonCollapsed = "collapsed";
+                var managersCollapseShow = "";
+                var managersAriaExpanded = "true";
+                if (Model.Managers.Any(m => m.IsChecked))
+                {
+                    managersButtonCollapsed = "";
+                    managersCollapseShow = "show";
+                    managersAriaExpanded = "false";
+                }
+            }
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button @managersButtonCollapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="@managersAriaExpanded" aria-controls="collapseTwo">
+                        Менеджеры
+                    </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse @managersCollapseShow" aria-labelledby="headingTwo">
+                    <div class="accordion-body">
+                        @for (var i = 0; i < Model.Managers.Count; i++)
+                        {
+                            <div class="form-check">
+                                <input asp-for="Managers[i].Id" type="hidden"/>
+                                <input asp-for="Managers[i].Name" type="hidden"/>
+                                <input asp-for="Managers[i].IsChecked" type="checkbox" class="form-check-input"/>
+                                <label asp-for="Managers[i].IsChecked" class="form-check-label">@Model.Managers[i].Name</label>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            @{
+                var productsButtonCollapsed = "collapsed";
+                var productsCollapseShow = "";
+                var productsAriaExpanded = "true";
+                if (Model.Products.Any(m => m.IsChecked))
+                {
+                    productsButtonCollapsed = "";
+                    productsCollapseShow = "show";
+                    productsAriaExpanded = "false";
+                }
+            }
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="productsFilterHeader">
+                    <button class="accordion-button @productsButtonCollapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProducts" aria-expanded="@productsAriaExpanded" aria-controls="collapseProducts">
+                        Продукты
+                    </button>
+                </h2>
+                <div id="collapseProducts" class="accordion-collapse collapse @productsCollapseShow" aria-labelledby="productsFilterHeader">
+                    <div class="accordion-body">
+                        @for (var i = 0; i < Model.Products.Count; i++)
+                        {
+                            <div class="form-check">
+                                <input asp-for="Products[i].Id" type="hidden"/>
+                                <input asp-for="Products[i].Name" type="hidden"/>
+                                <input asp-for="Products[i].IsChecked" type="checkbox" class="form-check-input"/>
+                                <label asp-for="Products[i].IsChecked" class="form-check-label">@Model.Products[i].Name</label>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-3">
+            <p class="text-center">
+                <label for="amountPrice">Цена</label>
+                <span asp-validation-for="PriceFrom" class="text-danger"></span>
+                <span asp-validation-for="PriceTo" class="text-danger"></span>
+                <input type="text" id="amountPrice" readonly/>
+            </p>
+        
+            <div id="sliderPrice"></div>
+        
+            <input asp-for="MinPrice" type="hidden"/>
+            <input asp-for="MaxPrice" type="hidden"/>
+            <input asp-for="PriceFrom" type="hidden"/>
+            <input asp-for="PriceTo" type="hidden"/>
+        </div>
+
+        <div class="row mb-3">
+            <text class="text-center">Дата</text>
+        </div>
+
+        <div class="input-group mb-3">
+            <span id="dateFromFilterText" class="input-group-text">
+                <label asp-for="DateFrom" class="col-form-label"></label>
+            </span>
+            <input asp-for="DateFrom" type="text" id="datepickerFrom" class="form-control" aria-describedby="dateFromFilterText"/>
+            <span asp-validation-for="DateFrom" class="text-danger"></span>
+        </div>
+
+        <div class="input-group mb-3">
+            <span id="dateToFilterText" class="input-group-text">
+                <label asp-for="DateTo" class="col-form-label"></label>
+            </span>
+            <input asp-for="DateTo" type="text" id="datepickerTo" class="form-control" aria-describedby="dateToFilterText"/>
+            <span asp-validation-for="DateTo" class="text-danger"></span>
+        </div>
+
+
+        <div class="row filter-buttons">
+            <div class="col">
+                <input type="button" class="btn btn-primary" id="applyFilters" value="Применить"/>
+            </div>
+            <div class="col">
+                <button type="button" class="btn btn-outline-primary" id="clearFilters">Сбросить</button>
+            </div>
+        </div>
+        
+    </form>
+</div>
+
+
+<script src="~/js/filtersUi.js"></script>

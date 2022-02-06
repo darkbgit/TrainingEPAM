@@ -68,7 +68,7 @@ namespace CsvManager.Services.Implementation
 
                     while (await csv.ReadAsync())
                     {
-                        Thread.Sleep(100);
+                        //Thread.Sleep(100);
 
                         cancellationToken.ThrowIfCancellationRequested();
 
