@@ -95,7 +95,7 @@ namespace WebOrdersInfo.Services.Implementations
 
         public async Task Delete(Guid id)
         {
-            _unitOfWork.Clients.Remove(id);
+            await _unitOfWork.Clients.Remove(id);
             await _unitOfWork.SaveChangesAsync();
         }
     }
