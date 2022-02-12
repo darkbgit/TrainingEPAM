@@ -131,7 +131,7 @@ namespace WebOrdersInfo.Controllers
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError("Order can\'t be added");
+                    _logger.LogError("Order can\'t be added. " + e.Message);
                 }
 
                 return RedirectToAction(nameof(Index));
@@ -202,7 +202,15 @@ namespace WebOrdersInfo.Controllers
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            await _orderService.Delete(id);
+            try
+            {
+                await _orderService.Delete(id);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+            }
+
             return RedirectToAction(nameof(Index));
         }
 

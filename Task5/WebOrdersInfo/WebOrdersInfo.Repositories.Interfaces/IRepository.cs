@@ -19,7 +19,7 @@ namespace WebOrdersInfo.Repositories.Interfaces
 
         void Update(T entity);
 
-        void Remove(Guid id);
+        Task Remove(Guid id);
         void RemoveRange(IEnumerable<T> entities);
     }
 }

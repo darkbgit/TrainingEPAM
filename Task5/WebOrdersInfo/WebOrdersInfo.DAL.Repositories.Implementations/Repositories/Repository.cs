@@ -53,7 +53,7 @@ namespace WebOrdersInfo.DAL.Repositories.Implementations.Repositories
             Table.Update(element);
         }
 
-        public async void Remove(Guid id)
+        public async Task Remove(Guid id)
         {
             var entity = await Get(id);
             Table.Remove(entity);
